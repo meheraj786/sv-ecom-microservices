@@ -1,0 +1,53 @@
+syntax = "proto3";
+
+package order;
+
+service OrderGrpcService {
+  rpc CreateOrder (CreateOrderRequest) returns (OrderResponse);
+  rpc GetOrders (GetOrdersRequest) returns (GetOrdersResponse);
+}
+
+message CreateOrderRequest {
+  string userId = 1;
+}
+
+message OrderResponse {
+  string id = 1;
+  string userId = 2;
+  double totalAmount = 3;
+  string status = 4;
+  string message = 5;
+}
+
+message GetOrdersRequest {
+  string userId = 1;
+  int32 page = 2;
+  int32 limit = 3;
+}
+
+message OrderItemPayload {
+  string id = 1;
+  string productId = 2;
+  int32 quantity = 3;
+  double price = 4;
+}
+
+message OrderDetail {
+  string id = 1;
+  string userId = 2;
+  double totalAmount = 3;
+  string status = 4;
+  repeated OrderItemPayload items = 5;
+  string createdAt = 6;
+}
+
+message GetOrdersResponse {
+  message Meta {
+    int32 totalOrders = 1;
+    int32 page = 2;
+    int32 limit = 3;
+    int32 totalPages = 4;
+  }
+  Meta meta = 1;
+  repeated OrderDetail orders = 2;
+}
