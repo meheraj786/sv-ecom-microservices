@@ -1,0 +1,121 @@
+syntax = "proto3";
+
+package product;
+
+service ProductGrpcService {
+  // Category APIs
+  rpc CreateCategory (CreateCategoryRequest) returns (CategoryResponse);
+  rpc GetCategories (PaginationRequest) returns (GetCategoriesResponse);
+
+  // Subcategory APIs
+  rpc CreateSubCategory (CreateSubCategoryRequest) returns (SubCategoryResponse);
+  rpc GetSubCategories (PaginationRequest) returns (GetSubCategoriesResponse);
+
+  // Product APIs
+  rpc CreateProduct (CreateProductRequest) returns (ProductResponse);
+  rpc GetProducts (GetProductsRequest) returns (GetProductsResponse);
+  rpc GetProductBySlug (GetProductBySlugRequest) returns (ProductResponse);
+}
+
+message PaginationRequest {
+  int32 page = 1;
+  int32 limit = 2;
+}
+
+message CreateCategoryRequest {
+  string name = 1;
+  string slug = 2;
+}
+
+message CategoryResponse {
+  string id = 1;
+  string name = 2;
+  string slug = 3;
+}
+
+message GetCategoriesResponse {
+  message CategoryWithSubs {
+    string id = 1;
+    string name = 2;
+    string slug = 3;
+    repeated SubCategoryResponse subCategories = 4;
+  }
+  message Meta {
+    int32 totalCategories = 1;
+    int32 page = 2;
+    int32 limit = 3;
+    int32 totalPages = 4;
+  }
+  Meta meta = 1;
+  repeated CategoryWithSubs categories = 2;
+}
+
+message CreateSubCategoryRequest {
+  string name = 1;
+  string slug = 2;
+  string categoryId = 3;
+}
+
+message SubCategoryResponse {
+  string id = 1;
+  string name = 2;
+  string slug = 3;
+  string categoryId = 4;
+}
+
+message GetSubCategoriesResponse {
+  message Meta {
+    int32 totalSubCategories = 1;
+    int32 page = 2;
+    int32 limit = 3;
+    int32 totalPages = 4;
+  }
+  Meta meta = 1;
+  repeated SubCategoryResponse subcategories = 2;
+}
+
+message CreateProductRequest {
+  string name = 1;
+  string slug = 2;
+  string description = 3;
+  double price = 4;
+  string sku = 5;
+  string categoryId = 6;
+  string subCategoryId = 7;
+}
+
+message ProductResponse {
+  string id = 1;
+  string name = 2;
+  string slug = 3;
+  string description = 4;
+  double price = 5;
+  string sku = 6;
+  string categoryId = 7;
+  string subCategoryId = 8;
+}
+
+message GetProductsRequest {
+  int32 page = 1;
+  int32 limit = 2;
+  string categoryId = 3;
+  string subCategoryId = 4;
+  double minPrice = 5;
+  double maxPrice = 6;
+  string search = 7;
+}
+
+message GetProductsResponse {
+  message Meta {
+    int32 totalProducts = 1;
+    int32 page = 2;
+    int32 limit = 3;
+    int32 totalPages = 4;
+  }
+  Meta meta = 1;
+  repeated ProductResponse products = 2;
+}
+
+message GetProductBySlugRequest {
+  string slug = 1;
+}

@@ -1,0 +1,107 @@
+syntax = "proto3";
+
+package user;
+
+service UserService {
+  rpc RegisterUser (RegisterUserRequest) returns (RegisterUserResponse);
+  rpc LoginUser (LoginUserRequest) returns (LoginUserResponse);
+  rpc RegisterVendor (RegisterVendorRequest) returns (RegisterVendorResponse);
+  rpc LoginVendor (LoginVendorRequest) returns (LoginVendorResponse);
+  rpc GetSettings (GetSettingsRequest) returns (GetSettingsResponse);
+  rpc UpdateSettings (UpdateSettingsRequest) returns (UpdateSettingsResponse);
+}
+
+
+
+message RegisterUserRequest {
+  string email = 1;
+  string password = 2;
+  string name = 3;
+}
+
+message RegisterUserResponse {
+  string message = 1;
+  string userId = 2;
+}
+
+message LoginUserRequest {
+  string email = 1;
+  string password = 2;
+}
+
+message LoginUserResponse {
+  string message = 1;
+  string token = 2;
+  UserInfo user = 3;
+}
+
+message UserInfo {
+  string id = 1;
+  string email = 2;
+  string name = 3;
+}
+
+message RegisterVendorRequest {
+  string email = 1;
+  string password = 2;
+  string name = 3;
+  string role = 4;
+}
+
+message RegisterVendorResponse {
+  string message = 1;
+  string vendorId = 2;
+}
+
+message LoginVendorRequest {
+  string email = 1;
+  string password = 2;
+}
+
+message LoginVendorResponse {
+  string message = 1;
+  string token = 2;
+  VendorInfo vendor = 3;
+}
+
+message VendorInfo {
+  string id = 1;
+  string email = 2;
+  string name = 3;
+  string role = 4;
+}
+
+message GetSettingsRequest {
+  string vendorId = 1;
+}
+
+message GetSettingsResponse {
+  string id = 1;
+  string themeColor = 2;
+  string bannerLayout = 3;
+  repeated string bannerImages = 4;
+  repeated string featuredCategoryIds = 5;
+}
+
+message UpdateSettingsRequest {
+  string vendorId = 1;
+  string themeColor = 2;
+  string bannerLayout = 3;
+  repeated string bannerImages = 4;
+  repeated string featuredCategoryIds = 5;
+}
+
+message UpdateSettingsResponse {
+  string message = 1;
+  GetSettingsResponse settings = 2;
+}
+
+
+message SettingsResponse {
+  string id = 1;
+  string vendorId = 2;
+  string themeColor = 3;
+  string bannerLayout = 4;
+  repeated string bannerImages = 5;
+  repeated string featuredCategoryIds = 6;
+}
