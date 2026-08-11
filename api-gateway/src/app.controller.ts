@@ -1,0 +1,238 @@
+import {
+  Controller,
+  Get,
+  Post,
+  Delete,
+  Body,
+  Param,
+  Query,
+  Res,
+  Req,
+  UseGuards,
+} from '@nestjs/common';
+import type { Response } from 'express';
+import { AppService } from './app.service';
+import { JwtAuthGuard } from './common/guards/jwt-auth.guard';
+import { AdminGuard } from './common/guards/admin.guard';
+import {
+  RegisterUserDto,
+  RegisterVendorDto,
+  LoginDto,
+  UpdateAccountDto,
+  CreateCategoryDto,
+  CreateSubCategoryDto,
+  CreateProductDto,
+  GetProductsQueryDto,
+  PaginationQueryDto,
+  AddToCartDto,
+} from './dto/gateway.dto';
+
+@Controller()
+export class AppController {
+  constructor(private appService: AppService) {}
+
+  // =================================-------------------
+  // 1. USER & AUTHENTICATION ENDPOINTS (Sets Cookies)
+  // =================================-------------------
+
+  @Post('auth/register')
+  registerUser(@Body() dto: RegisterUserDto) {
+    return this.appService.rpcCall(
+      this.appService.userService.registerUser(dto),
+    );
+  }
+
+  @Post('auth/login')
+  async loginUser(
+    @Body() dto: LoginDto,
+    @Res({ passthrough: true }) response: Response,
+  ) {
+    const result: any = await this.appService.rpcCall(
+      this.appService.userService.loginUser(dto),
+    );
+
+    // Set HTTP-Only Cookie securely at Gateway level
+    response.cookie('token', result.token, {
+      httpOnly: true,
+      secure: true,
+      sameSite: 'none',
+      maxAge: 24 * 60 * 60 * 1000, // 24 Hours
+    });
+
+    return { message: result.message, user: result.user };
+  }
+
+  @Post('auth/vendor/register')
+  registerVendor(@Body() dto: RegisterVendorDto) {
+    return this.appService.rpcCall(
+      this.appService.userService.registerVendor(dto),
+    );
+  }
+
+  @Post('auth/vendor/login')
+  async loginVendor(
+    @Body() dto: LoginDto,
+    @Res({ passthrough: true }) response: Response,
+  ) {
+    const result: any = await this.appService.rpcCall(
+      this.appService.userService.loginVendor(dto),
+    );
+
+    response.cookie('token', result.token, {
+      httpOnly: true,
+      secure: true,
+      sameSite: 'none',
+      maxAge: 24 * 60 * 60 * 1000,
+    });
+
+    return { message: result.message, vendor: result.vendor };
+  }
+
+  @Post('auth/logout')
+  logout(@Res({ passthrough: true }) response: Response) {
+    response.clearCookie('token', {
+      httpOnly: true,
+      secure: true,
+      sameSite: 'none',
+    });
+    return { message: 'Logged out successfully' };
+  }
+
+  // =================================-------------------
+  // 2. STOREFRONT CMS SETTINGS
+  // =================================-------------------
+
+  @Get('account/:vendorId')
+  getStoreSettings(@Param('vendorId') vendorId: string) {
+    return this.appService.rpcCall(
+      this.appService.userService.getSettings({ vendorId }),
+    );
+  }
+
+  @UseGuards(JwtAuthGuard, AdminGuard)
+  @Post('account/update')
+  updateStoreSettings(@Req() req: any, @Body() dto: UpdateAccountDto) {
+    const vendorId = req.user.userId;
+    return this.appService.rpcCall(
+      this.appService.userService.updateSettings({ vendorId, ...dto }),
+    );
+  }
+
+  // =================================-------------------
+  // 3. PRODUCT CATALOG ENDPOINTS (With filters and pagination)
+  // =================================-------------------
+
+  @UseGuards(JwtAuthGuard, AdminGuard)
+  @Post('product/category')
+  createCategory(@Body() dto: CreateCategoryDto) {
+    return this.appService.rpcCall(
+      this.appService.productService.createCategory(dto),
+    );
+  }
+
+  @Get('product/categories')
+  getCategories(@Query() query: PaginationQueryDto) {
+    return this.appService.rpcCall(
+      this.appService.productService.getCategories(query),
+    );
+  }
+
+  @UseGuards(JwtAuthGuard, AdminGuard)
+  @Post('product/subcategory')
+  createSubCategory(@Body() dto: CreateSubCategoryDto) {
+    return this.appService.rpcCall(
+      this.appService.productService.createSubCategory(dto),
+    );
+  }
+
+  @Get('product/subcategories')
+  getSubCategories(@Query() query: PaginationQueryDto) {
+    return this.appService.rpcCall(
+      this.appService.productService.getSubCategories(query),
+    );
+  }
+
+  @UseGuards(JwtAuthGuard, AdminGuard)
+  @Post('product')
+  createProduct(@Body() dto: CreateProductDto) {
+    return this.appService.rpcCall(
+      this.appService.productService.createProduct(dto),
+    );
+  }
+
+  @Get('product')
+  getProducts(@Query() query: GetProductsQueryDto) {
+    return this.appService.rpcCall(
+      this.appService.productService.getProducts(query),
+    );
+  }
+
+  @Get('product/:slug')
+  getProductBySlug(@Param('slug') slug: string) {
+    return this.appService.rpcCall(
+      this.appService.productService.getProductBySlug({ slug }),
+    );
+  }
+
+  // =================================-------------------
+  // 4. SHOPPING CART ENDPOINTS (Automatic userId injection)
+  // =================================-------------------
+
+  @UseGuards(JwtAuthGuard)
+  @Get('cart')
+  getCart(@Req() req: any) {
+    const userId = req.user.userId;
+    return this.appService.rpcCall(
+      this.appService.cartService.getCart({ userId }),
+    );
+  }
+
+  @UseGuards(JwtAuthGuard)
+  @Post('cart/add')
+  addToCart(@Req() req: any, @Body() dto: AddToCartDto) {
+    const userId = req.user.userId;
+    return this.appService.rpcCall(
+      this.appService.cartService.addToCart({ userId, ...dto }),
+    );
+  }
+
+  @UseGuards(JwtAuthGuard)
+  @Delete('cart/:productId')
+  removeFromCart(@Req() req: any, @Param('productId') productId: string) {
+    const userId = req.user.userId;
+    return this.appService.rpcCall(
+      this.appService.cartService.removeFromCart({ userId, productId }),
+    );
+  }
+
+  @UseGuards(JwtAuthGuard)
+  @Delete('cart')
+  clearCart(@Req() req: any) {
+    const userId = req.user.userId;
+    return this.appService.rpcCall(
+      this.appService.cartService.clearCart({ userId }),
+    );
+  }
+
+  // =================================-------------------
+  // 5. ORDER CHECKOUT & PURCHASES
+  // =================================-------------------
+
+  @UseGuards(JwtAuthGuard)
+  @Post('order')
+  createOrder(@Req() req: any) {
+    const userId = req.user.userId;
+    return this.appService.rpcCall(
+      this.appService.orderService.createOrder({ userId }),
+    );
+  }
+
+  @UseGuards(JwtAuthGuard)
+  @Get('order')
+  getOrders(@Req() req: any, @Query() query: PaginationQueryDto) {
+    const userId = req.user.userId;
+    return this.appService.rpcCall(
+      this.appService.orderService.getOrders({ userId, ...query }),
+    );
+  }
+}

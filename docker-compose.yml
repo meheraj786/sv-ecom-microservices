@@ -1,0 +1,110 @@
+version: '3.8'
+
+services:
+  # 1. Shared Cache Database (Redis)
+  redis:
+    image: redis:alpine
+    container_name: ecommerce_redis
+    ports:
+      - "6379:6379"
+    networks:
+      - ecommerce-network
+
+  # 2. Central API Gateway (NestJS BFF on Port 3000)
+  api-gateway:
+    build:
+      context: ./services/api-gateway
+      dockerfile: Dockerfile
+    container_name: api_gateway
+    ports:
+      - "3000:3000"
+    environment:
+      - PORT=3000
+      - JWT_SECRET_KEY=${JWT_SECRET_KEY}
+    depends_on:
+      - user-service
+      - product-service
+      - cart-service
+      - order-service
+    networks:
+      - ecommerce-network
+
+  # 3. User Service (Mongoose + MongoDB - gRPC 50051)
+  user-service:
+    build:
+      context: ./services/user-service
+      dockerfile: Dockerfile
+    container_name: user_service
+    environment:
+      - DATABASE_URL=${USER_SERVICE_DB_URL}
+      - JWT_SECRET_KEY=${JWT_SECRET_KEY}
+    networks:
+      - ecommerce-network
+
+  # 4. Product Service (Prisma + Postgres - gRPC 50052)
+  product-service:
+    build:
+      context: ./services/product-service
+      dockerfile: Dockerfile
+    container_name: product_service
+    environment:
+      - DATABASE_URL=${PRODUCT_SERVICE_WRITE_DB_URL}
+      - REPLICA_DATABASE_URL=${PRODUCT_SERVICE_READ_DB_URL}
+    networks:
+      - ecommerce-network
+
+  # 5. Cart Service (ioredis + Redis - gRPC 50053)
+  cart-service:
+    build:
+      context: ./services/cart-service
+      dockerfile: Dockerfile
+    container_name: cart_service
+    environment:
+      - REDIS_URL=redis://redis:6379 # Connects internally to Redis container
+    depends_on:
+      - redis
+    networks:
+      - ecommerce-network
+
+  # 6. Inventory Service (Prisma + Postgres - gRPC 50054 & RMQ Listener)
+  inventory-service:
+    build:
+      context: ./services/inventory-service
+      dockerfile: Dockerfile
+    container_name: inventory_service
+    environment:
+      - DATABASE_URL=${INVENTORY_SERVICE_DB_URL}
+      - RABBITMQ_URL=${RABBITMQ_URL}
+    networks:
+      - ecommerce-network
+
+  # 7. Order Service (Prisma + Postgres - gRPC 50055 & RMQ Publisher)
+  order-service:
+    build:
+      context: ./services/order-service
+      dockerfile: Dockerfile
+    container_name: order_service
+    environment:
+      - DATABASE_URL=${ORDER_SERVICE_DB_URL}
+      - RABBITMQ_URL=${RABBITMQ_URL}
+    depends_on:
+      - redis
+    networks:
+      - ecommerce-network
+
+  # 8. Global Nginx Gateway (The Front Door - Port 80)
+  gateway:
+    build:
+      context: ./gateway
+      dockerfile: Dockerfile
+    container_name: global_gateway
+    ports:
+      - "80:80" # Exposed publicly on standard HTTP port
+    depends_on:
+      - api-gateway
+    networks:
+      - ecommerce-network
+
+networks:
+  ecommerce-network:
+    driver: bridge
