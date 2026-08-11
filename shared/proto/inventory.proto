@@ -1,0 +1,32 @@
+syntax = "proto3";
+
+package inventory;
+
+service InventoryGrpcService {
+  rpc CalculateFifoPrice (FifoPriceRequest) returns (FifoPriceResponse);
+  rpc AddBatch (AddBatchRequest) returns (BatchResponse);
+}
+
+message FifoPriceRequest {
+  string productId = 1;
+  int32 quantity = 2;
+}
+
+message FifoPriceResponse {
+  double totalPrice = 1;
+  bool isAvailable = 2;
+}
+
+message AddBatchRequest {
+  string productId = 1;
+  string batchNumber = 2;
+  double purchasePrice = 3;
+  double sellingPrice = 4;
+  int32 quantityReceived = 5;
+}
+
+message BatchResponse {
+  string id = 1;
+  string batchNumber = 2;
+  int32 quantityRemaining = 3;
+}
