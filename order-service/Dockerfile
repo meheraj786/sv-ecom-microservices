@@ -10,6 +10,7 @@ COPY package.json pnpm-lock.yaml ./
 RUN pnpm install --frozen-lockfile
 
 COPY . .
+RUN mkdir -p ./prisma ./src/generated
 
 # Automatically generate Prisma Client if prisma folder exists (Zero-config for Mongo/Postgres/Redis!)
 RUN if [ -d "./prisma" ]; then pnpm prisma generate; fi
@@ -32,7 +33,7 @@ COPY --from=builder /app/dist ./dist
 COPY --from=builder /app/node_modules/.pnpm ./node_modules/.pnpm
 
 # Safely copy prisma assets if they exist
-COPY --from=builder /app/prisma ./prisma || true
-COPY --from=builder /app/src/generated ./src/generated || true
+COPY --from=builder /app/prisma ./prisma
+COPY --from=builder /app/src/generated ./src/generated
 
 CMD ["pnpm", "run", "start:prod"]
