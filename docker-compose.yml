@@ -13,7 +13,7 @@ services:
   # 2. Central API Gateway (NestJS BFF on Port 3000)
   api-gateway:
     build:
-      context: ./services/api-gateway
+      context: ./api-gateway
       dockerfile: Dockerfile
     container_name: api_gateway
     ports:
@@ -32,7 +32,7 @@ services:
   # 3. User Service (Mongoose + MongoDB - gRPC 50051)
   user-service:
     build:
-      context: ./services/user-service
+      context: ./user-service
       dockerfile: Dockerfile
     container_name: user_service
     environment:
@@ -44,7 +44,7 @@ services:
   # 4. Product Service (Prisma + Postgres - gRPC 50052)
   product-service:
     build:
-      context: ./services/product-service
+      context: ./product-service
       dockerfile: Dockerfile
     container_name: product_service
     environment:
@@ -56,7 +56,7 @@ services:
   # 5. Cart Service (ioredis + Redis - gRPC 50053)
   cart-service:
     build:
-      context: ./services/cart-service
+      context: ./cart-service
       dockerfile: Dockerfile
     container_name: cart_service
     environment:
@@ -69,7 +69,7 @@ services:
   # 6. Inventory Service (Prisma + Postgres - gRPC 50054 & RMQ Listener)
   inventory-service:
     build:
-      context: ./services/inventory-service
+      context: ./inventory-service
       dockerfile: Dockerfile
     container_name: inventory_service
     environment:
@@ -81,7 +81,7 @@ services:
   # 7. Order Service (Prisma + Postgres - gRPC 50055 & RMQ Publisher)
   order-service:
     build:
-      context: ./services/order-service
+      context: ./order-service
       dockerfile: Dockerfile
     container_name: order_service
     environment:
