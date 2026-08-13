@@ -10,10 +10,10 @@ COPY package.json pnpm-lock.yaml ./
 RUN pnpm install --frozen-lockfile
 
 COPY . .
-RUN mkdir -p ./prisma ./src/generated
 
-# Automatically generate Prisma Client if prisma folder exists (Zero-config for Mongo/Postgres/Redis!)
-RUN if [ -d "./prisma" ]; then pnpm prisma generate; fi
+RUN if [ -f "./prisma/schema.prisma" ]; then \
+      pnpm exec prisma generate; \
+    fi
 
 RUN pnpm run build
 
