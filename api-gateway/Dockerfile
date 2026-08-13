@@ -9,9 +9,10 @@ COPY package.json pnpm-lock.yaml ./
 RUN pnpm install --frozen-lockfile
 
 COPY . .
-RUN mkdir -p ./prisma ./src/generated
 
-RUN if [ -d "./prisma" ]; then pnpm prisma generate; fi
+RUN if [ -f "./prisma/schema.prisma" ]; then \
+      pnpm exec prisma generate; \
+    fi
 
 RUN pnpm run build
 
@@ -26,7 +27,7 @@ COPY package.json pnpm-lock.yaml ./
 RUN pnpm install --prod --frozen-lockfile
 
 COPY --from=builder /app/dist ./dist
-COPY --from=builder /app/node_modules/.pnpm ./node_modules/.pnpm
+COPY --from=builder /app/node_modules ./node_modules
 
 COPY --from=builder /app/prisma ./prisma
 COPY --from=builder /app/src/generated ./src/generated
