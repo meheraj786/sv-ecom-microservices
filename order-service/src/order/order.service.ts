@@ -1,12 +1,6 @@
-import {
-  Injectable,
-  OnModuleInit,
-  Inject,
-  BadRequestException,
-} from '@nestjs/common';
+import { Injectable, BadRequestException } from '@nestjs/common';
 import { ClientProxy } from '@nestjs/microservices';
-import type { ClientGrpc } from '@nestjs/microservices'; // <--- Type-only import to satisfy TS1272
-import { firstValueFrom } from 'rxjs';
+import { Inject } from '@nestjs/common';
 import { PrismaService } from '../prisma/prisma.service';
 import { PaginationQueryDto } from './dto/pagination-query.dto';
 
@@ -16,42 +10,55 @@ interface CartItem {
   price: number;
 }
 
-interface CartGrpcService {
-  getCart(data: { userId: string }): any;
-  clearCart(data: { userId: string }): any;
-}
-
-interface InventoryGrpcService {
-  calculateFifoPrice(data: { productId: string; quantity: number }): any;
-}
-
 @Injectable()
-export class OrderService implements OnModuleInit {
-  private cartService: CartGrpcService;
-  private inventoryService: InventoryGrpcService;
+export class OrderService {
+  private readonly cartBaseUrl =
+    process.env.CART_SERVICE_URL ?? 'http://localhost:3003';
+  private readonly inventoryBaseUrl =
+    process.env.INVENTORY_SERVICE_URL ?? 'http://localhost:3004';
 
   constructor(
     private prisma: PrismaService,
-    @Inject('CART_PACKAGE') private cartClient: ClientGrpc,
-    @Inject('INVENTORY_PACKAGE') private inventoryClient: ClientGrpc,
-    @Inject('RABBITMQ_SERVICE') private rmqClient: ClientProxy, // Inject RabbitMQ Publisher
+    @Inject('RABBITMQ_SERVICE') private rmqClient: ClientProxy,
   ) {}
 
-  onModuleInit() {
-    // Instantiate gRPC services on startup
-    this.cartService =
-      this.cartClient.getService<CartGrpcService>('CartGrpcService');
-    this.inventoryService =
-      this.inventoryClient.getService<InventoryGrpcService>(
-        'InventoryGrpcService',
+  private async httpRequest<T>(
+    baseUrl: string,
+    path: string,
+    method: 'GET' | 'POST' | 'DELETE' = 'GET',
+    body?: any,
+  ): Promise<T> {
+    const url = new URL(path, baseUrl.endsWith('/') ? baseUrl : `${baseUrl}/`);
+    const response = await fetch(url.toString(), {
+      method,
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body:
+        body !== undefined && method !== 'GET'
+          ? JSON.stringify(body)
+          : undefined,
+    });
+
+    if (!response.ok) {
+      const text = await response.text();
+      throw new Error(
+        `HTTP ${method} ${url.toString()} failed with status ${response.status}: ${text}`,
       );
+    }
+
+    if (response.status === 204) {
+      return undefined as T;
+    }
+
+    return (await response.json()) as T;
   }
 
-  // --- CORE CHECKOUT TRANSACTION ---
   async createOrder(userId: string) {
-    // 1. Fetch user's cart items from Cart Service (via gRPC with explicit typing)
-    const cartResponse = await firstValueFrom<{ items: CartItem[] }>(
-      this.cartService.getCart({ userId }),
+    const cartResponse = await this.httpRequest<{ items: CartItem[] }>(
+      this.cartBaseUrl,
+      `/cart?userId=${encodeURIComponent(userId)}`,
+      'GET',
     );
     const cartItems: CartItem[] = cartResponse.items || [];
 
@@ -68,17 +75,14 @@ export class OrderService implements OnModuleInit {
       price: number;
     }[] = [];
 
-    // 2. Verify pricing & stock availability dynamically from Inventory Service (via gRPC with explicit typing)
     for (const item of cartItems) {
-      const fifoCheck = await firstValueFrom<{
+      const fifoCheck = await this.httpRequest<{
         totalPrice: number;
         isAvailable: boolean;
-      }>(
-        this.inventoryService.calculateFifoPrice({
-          productId: item.productId,
-          quantity: item.quantity,
-        }),
-      );
+      }>(this.inventoryBaseUrl, '/inventory/fifo-price', 'POST', {
+        productId: item.productId,
+        quantity: item.quantity,
+      });
 
       if (!fifoCheck.isAvailable) {
         throw new BadRequestException(
@@ -90,21 +94,19 @@ export class OrderService implements OnModuleInit {
       orderItemsToCreate.push({
         productId: item.productId,
         quantity: item.quantity,
-        price: fifoCheck.totalPrice / item.quantity, // Set average unit price dynamically
+        price: fifoCheck.totalPrice / item.quantity,
       });
     }
 
-    // 3. Save Order and OrderItems to PostgreSQL inside a transactional block
     const order = await this.prisma.$transaction(async (tx) => {
       const newOrder = await tx.order.create({
         data: {
           userId,
           totalAmount,
-          status: 'PAID', // In production, this shifts based on Payment gateway callbacks
+          status: 'PAID',
         },
       });
 
-      // Create child order items
       await tx.orderItem.createMany({
         data: orderItemsToCreate.map((item) => ({
           orderId: newOrder.id,
@@ -117,8 +119,6 @@ export class OrderService implements OnModuleInit {
       return newOrder;
     });
 
-    // 4. Publish 'order_created' asynchronous event to RabbitMQ
-    // This triggers Inventory Service in background to deduct stock!
     this.rmqClient.emit('order_created', {
       orderId: order.id,
       userId,
@@ -127,11 +127,12 @@ export class OrderService implements OnModuleInit {
         quantity: item.quantity,
       })),
     });
-    console.log(`RabbitMQ: Emitted order_created event for Order ${order.id}.`);
 
-    // 5. Clear User's Cart in background (via gRPC with explicit typing)
-    await firstValueFrom<{ message: string }>(
-      this.cartService.clearCart({ userId }),
+    await this.httpRequest<{ message: string }>(
+      this.cartBaseUrl,
+      '/cart',
+      'DELETE',
+      { userId },
     );
 
     return {
@@ -143,7 +144,6 @@ export class OrderService implements OnModuleInit {
     };
   }
 
-  // --- FETCH PERSONAL ORDERS ---
   async getOrders(userId: string, query: PaginationQueryDto) {
     const page = query.page || 1;
     const limit = query.limit || 10;

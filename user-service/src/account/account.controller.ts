@@ -1,5 +1,4 @@
-import { Controller } from '@nestjs/common';
-import { GrpcMethod } from '@nestjs/microservices'; // <--- Import GrpcMethod
+import { Body, Controller, Get, Param, Post } from '@nestjs/common';
 import { AccountService } from './account.service';
 import { UpdateAccountDto } from './dto/update-account.dto';
 
@@ -7,13 +6,13 @@ import { UpdateAccountDto } from './dto/update-account.dto';
 export class AccountController {
   constructor(private accountService: AccountService) {}
 
-  @GrpcMethod('UserGrpcService', 'GetSettings')
-  getSettings(dto: { vendorId: string }) {
-    return this.accountService.getSettings(dto.vendorId);
+  @Get('account/:vendorId')
+  getSettings(@Param('vendorId') vendorId: string) {
+    return this.accountService.getSettings(vendorId);
   }
 
-  @GrpcMethod('UserGrpcService', 'UpdateSettings')
-  updateSettings(dto: UpdateAccountDto & { vendorId: string }) {
+  @Post('account/update')
+  updateSettings(@Body() dto: UpdateAccountDto & { vendorId: string }) {
     const { vendorId, ...updateDto } = dto;
     return this.accountService.updateSettings(vendorId, updateDto);
   }

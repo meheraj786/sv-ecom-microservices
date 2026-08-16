@@ -1,21 +1,9 @@
 import { NestFactory } from '@nestjs/core';
-import { AppModule } from './app.module';
-import { MicroserviceOptions, Transport } from '@nestjs/microservices';
 import { ValidationPipe } from '@nestjs/common';
-import { join } from 'path';
+import { AppModule } from './app.module';
 
 async function bootstrap() {
-  const app = await NestFactory.createMicroservice<MicroserviceOptions>(
-    AppModule,
-    {
-      transport: Transport.GRPC,
-      options: {
-        package: 'cart',
-        protoPath: join(__dirname, '../../shared/proto/cart.proto'),
-        url: '0.0.0.0:50053',
-      },
-    },
-  );
+  const app = await NestFactory.create(AppModule);
 
   app.useGlobalPipes(
     new ValidationPipe({
@@ -24,7 +12,8 @@ async function bootstrap() {
     }),
   );
 
-  await app.listen();
-  console.log('Cart gRPC Microservice is listening on port 50053...');
+  const port = Number(process.env.PORT ?? 3003);
+  await app.listen(port, '0.0.0.0');
+  console.log(`Cart service is listening on port ${port}`);
 }
 bootstrap();

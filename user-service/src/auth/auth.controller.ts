@@ -1,5 +1,4 @@
-import { Controller } from '@nestjs/common';
-import { GrpcMethod } from '@nestjs/microservices'; // <--- Import GrpcMethod Decorator
+import { Body, Controller, Post } from '@nestjs/common';
 import { AuthService } from './auth.service';
 import { RegisterUserDto } from './dto/register-user.dto';
 import { RegisterVendorDto } from './dto/register-vendor.dto';
@@ -9,23 +8,23 @@ import { LoginDto } from './dto/login.dto';
 export class AuthController {
   constructor(private authService: AuthService) {}
 
-  @GrpcMethod('UserGrpcService', 'RegisterUser')
-  registerUser(dto: RegisterUserDto) {
+  @Post('auth/register')
+  registerUser(@Body() dto: RegisterUserDto) {
     return this.authService.registerUser(dto);
   }
 
-  @GrpcMethod('UserGrpcService', 'LoginUser')
-  loginUser(dto: LoginDto) {
+  @Post('auth/login')
+  loginUser(@Body() dto: LoginDto) {
     return this.authService.loginUser(dto);
   }
 
-  @GrpcMethod('UserGrpcService', 'RegisterVendor')
-  registerVendor(dto: RegisterVendorDto) {
+  @Post('auth/vendor/register')
+  registerVendor(@Body() dto: RegisterVendorDto) {
     return this.authService.registerVendor(dto);
   }
 
-  @GrpcMethod('UserGrpcService', 'LoginVendor')
-  loginVendor(dto: LoginDto) {
+  @Post('auth/vendor/login')
+  loginVendor(@Body() dto: LoginDto) {
     return this.authService.loginVendor(dto);
   }
 }

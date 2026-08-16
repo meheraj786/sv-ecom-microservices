@@ -1,5 +1,4 @@
-import { Controller } from '@nestjs/common';
-import { GrpcMethod } from '@nestjs/microservices';
+import { Body, Controller, Get, Post, Query } from '@nestjs/common';
 import { OrderService } from './order.service';
 import { PaginationQueryDto } from './dto/pagination-query.dto';
 
@@ -7,16 +6,16 @@ import { PaginationQueryDto } from './dto/pagination-query.dto';
 export class OrderController {
   constructor(private orderService: OrderService) {}
 
-  // 1. Create Order (gRPC Write)
-  @GrpcMethod('OrderGrpcService', 'CreateOrder')
-  createOrder(dto: { userId: string }) {
+  @Post('order')
+  createOrder(@Body() dto: { userId: string }) {
     return this.orderService.createOrder(dto.userId);
   }
 
-  // 2. Get Orders (gRPC Read)
-  @GrpcMethod('OrderGrpcService', 'GetOrders')
-  getOrders(dto: PaginationQueryDto & { userId: string }) {
-    const { userId, ...query } = dto;
+  @Get('order')
+  getOrders(
+    @Query('userId') userId: string,
+    @Query() query: PaginationQueryDto,
+  ) {
     return this.orderService.getOrders(userId, query);
   }
 }

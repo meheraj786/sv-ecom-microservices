@@ -1,5 +1,4 @@
-import { Controller } from '@nestjs/common';
-import { GrpcMethod } from '@nestjs/microservices'; // <--- Import GrpcMethod Decorator
+import { Body, Controller, Get, Param, Post, Query } from '@nestjs/common';
 import { ProductService } from './product.service';
 import { CreateCategoryDto } from './dto/create-category.dto';
 import { CreateSubCategoryDto } from './dto/create-subcategory.dto';
@@ -11,38 +10,38 @@ import { PaginationQueryDto } from './dto/pagination-query.dto';
 export class ProductController {
   constructor(private productService: ProductService) {}
 
-  @GrpcMethod('ProductGrpcService', 'CreateCategory')
-  createCategory(dto: CreateCategoryDto) {
+  @Post('product/category')
+  createCategory(@Body() dto: CreateCategoryDto) {
     return this.productService.createCategory(dto);
   }
 
-  @GrpcMethod('ProductGrpcService', 'GetCategories')
-  getCategories(query: PaginationQueryDto) {
+  @Get('product/categories')
+  getCategories(@Query() query: PaginationQueryDto) {
     return this.productService.getCategories(query);
   }
 
-  @GrpcMethod('ProductGrpcService', 'CreateSubCategory')
-  createSubCategory(dto: CreateSubCategoryDto) {
+  @Post('product/subcategory')
+  createSubCategory(@Body() dto: CreateSubCategoryDto) {
     return this.productService.createSubCategory(dto);
   }
 
-  @GrpcMethod('ProductGrpcService', 'GetSubCategories')
-  getSubCategories(query: PaginationQueryDto) {
+  @Get('product/subcategories')
+  getSubCategories(@Query() query: PaginationQueryDto) {
     return this.productService.getSubCategories(query);
   }
 
-  @GrpcMethod('ProductGrpcService', 'CreateProduct')
-  createProduct(dto: CreateProductDto) {
+  @Post('product')
+  createProduct(@Body() dto: CreateProductDto) {
     return this.productService.createProduct(dto);
   }
 
-  @GrpcMethod('ProductGrpcService', 'GetProducts')
-  getProducts(query: GetProductsQueryDto) {
+  @Get('product')
+  getProducts(@Query() query: GetProductsQueryDto) {
     return this.productService.getProducts(query);
   }
 
-  @GrpcMethod('ProductGrpcService', 'GetProductBySlug')
-  getProductBySlug(dto: { slug: string }) {
-    return this.productService.getProductBySlug(dto.slug);
+  @Get('product/:slug')
+  getProductBySlug(@Param('slug') slug: string) {
+    return this.productService.getProductBySlug(slug);
   }
 }

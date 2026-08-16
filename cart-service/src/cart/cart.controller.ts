@@ -1,5 +1,12 @@
-import { Controller } from '@nestjs/common';
-import { GrpcMethod } from '@nestjs/microservices'; // <--- Import GrpcMethod
+import {
+  Body,
+  Controller,
+  Delete,
+  Get,
+  Param,
+  Post,
+  Query,
+} from '@nestjs/common';
 import { CartService } from './cart.service';
 import { AddToCartDto } from './dto/add-to-cart.dto';
 
@@ -7,30 +14,30 @@ import { AddToCartDto } from './dto/add-to-cart.dto';
 export class CartController {
   constructor(private cartService: CartService) {}
 
-  @GrpcMethod('CartGrpcService', 'GetCart')
-  async getCart(dto: { userId: string }) {
-    const items = await this.cartService.getCart(dto.userId);
+  @Get('cart')
+  async getCart(@Query('userId') userId: string) {
+    const items = await this.cartService.getCart(userId);
     return { items };
   }
 
-  @GrpcMethod('CartGrpcService', 'AddToCart')
-  async addToCart(dto: AddToCartDto & { userId: string }) {
+  @Post('cart/add')
+  async addToCart(@Body() dto: AddToCartDto & { userId: string }) {
     const { userId, ...addToCartDto } = dto;
     const items = await this.cartService.addToCart(userId, addToCartDto);
     return { items };
   }
 
-  @GrpcMethod('CartGrpcService', 'RemoveFromCart')
-  async removeFromCart(dto: { userId: string; productId: string }) {
-    const items = await this.cartService.removeFromCart(
-      dto.userId,
-      dto.productId,
-    );
+  @Delete('cart/:productId')
+  async removeFromCart(
+    @Param('productId') productId: string,
+    @Body('userId') userId: string,
+  ) {
+    const items = await this.cartService.removeFromCart(userId, productId);
     return { items };
   }
 
-  @GrpcMethod('CartGrpcService', 'ClearCart')
-  clearCart(dto: { userId: string }) {
-    return this.cartService.clearCart(dto.userId);
+  @Delete('cart')
+  clearCart(@Body('userId') userId: string) {
+    return this.cartService.clearCart(userId);
   }
 }

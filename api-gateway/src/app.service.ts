@@ -1,67 +1,148 @@
-import { Injectable, OnModuleInit, Inject } from '@nestjs/common';
-import type { ClientGrpc } from '@nestjs/microservices';
-import { firstValueFrom } from 'rxjs';
+import { Injectable } from '@nestjs/common';
 
-// Define gRPC service interfaces
-interface UserGrpcService {
-  registerUser(data: any): any;
-  loginUser(data: any): any;
-  registerVendor(data: any): any;
-  loginVendor(data: any): any;
-  getSettings(data: any): any;
-  updateSettings(data: any): any;
-}
+type ServiceName = 'user' | 'product' | 'cart' | 'order';
 
-interface ProductGrpcService {
-  createCategory(data: any): any;
-  getCategories(data: any): any;
-  createSubCategory(data: any): any;
-  getSubCategories(data: any): any;
-  createProduct(data: any): any;
-  getProducts(data: any): any;
-  getProductBySlug(data: any): any;
-}
-
-interface CartGrpcService {
-  getCart(data: any): any;
-  addToCart(data: any): any;
-  removeFromCart(data: any): any;
-  clearCart(data: any): any;
-}
-
-interface OrderGrpcService {
-  createOrder(data: any): any;
-  getOrders(data: any): any;
-}
+type QueryValue = string | number | boolean | undefined | null;
 
 @Injectable()
-export class AppService implements OnModuleInit {
-  public userService: UserGrpcService;
-  public productService: ProductGrpcService;
-  public cartService: CartGrpcService;
-  public orderService: OrderGrpcService;
+export class AppService {
+  private readonly serviceUrls: Record<ServiceName, string> = {
+    user: process.env.USER_SERVICE_URL ?? 'http://localhost:3001',
+    product: process.env.PRODUCT_SERVICE_URL ?? 'http://localhost:3002',
+    cart: process.env.CART_SERVICE_URL ?? 'http://localhost:3003',
+    order: process.env.ORDER_SERVICE_URL ?? 'http://localhost:3005',
+  };
 
-  constructor(
-    @Inject('USER_PACKAGE') private userClient: ClientGrpc,
-    @Inject('PRODUCT_PACKAGE') private productClient: ClientGrpc,
-    @Inject('CART_PACKAGE') private cartClient: ClientGrpc,
-    @Inject('ORDER_PACKAGE') private orderClient: ClientGrpc,
-  ) {}
+  public userService = {
+    registerUser: (data: any) =>
+      this.httpRequest('user', '/auth/register', 'POST', data),
+    loginUser: (data: any) =>
+      this.httpRequest('user', '/auth/login', 'POST', data),
+    registerVendor: (data: any) =>
+      this.httpRequest('user', '/auth/vendor/register', 'POST', data),
+    loginVendor: (data: any) =>
+      this.httpRequest('user', '/auth/vendor/login', 'POST', data),
+    getSettings: (data: any) =>
+      this.httpRequest('user', `/account/${data.vendorId}`, 'GET'),
+    updateSettings: (data: any) =>
+      this.httpRequest('user', '/account/update', 'POST', data),
+  };
 
-  onModuleInit() {
-    // Bind services on startup
-    this.userService =
-      this.userClient.getService<UserGrpcService>('UserService');
-    this.productService =
-      this.productClient.getService<ProductGrpcService>('ProductGrpcService');
-    this.cartService =
-      this.cartClient.getService<CartGrpcService>('CartGrpcService');
-    this.orderService =
-      this.orderClient.getService<OrderGrpcService>('OrderGrpcService');
+  public productService = {
+    createCategory: (data: any) =>
+      this.httpRequest('product', '/product/category', 'POST', data),
+    getCategories: (query: any) =>
+      this.httpRequest(
+        'product',
+        '/product/categories',
+        'GET',
+        undefined,
+        query,
+      ),
+    createSubCategory: (data: any) =>
+      this.httpRequest('product', '/product/subcategory', 'POST', data),
+    getSubCategories: (query: any) =>
+      this.httpRequest(
+        'product',
+        '/product/subcategories',
+        'GET',
+        undefined,
+        query,
+      ),
+    createProduct: (data: any) =>
+      this.httpRequest('product', '/product', 'POST', data),
+    getProducts: (query: any) =>
+      this.httpRequest('product', '/product', 'GET', undefined, query),
+    getProductBySlug: (data: any) =>
+      this.httpRequest(
+        'product',
+        `/product/${encodeURIComponent(data.slug)}`,
+        'GET',
+      ),
+  };
+
+  public cartService = {
+    getCart: (data: any) =>
+      this.httpRequest('cart', '/cart', 'GET', undefined, {
+        userId: data.userId,
+      }),
+    addToCart: (data: any) =>
+      this.httpRequest('cart', '/cart/add', 'POST', data),
+    removeFromCart: (data: any) =>
+      this.httpRequest(
+        'cart',
+        `/cart/${encodeURIComponent(data.productId)}`,
+        'DELETE',
+        {
+          userId: data.userId,
+        },
+      ),
+    clearCart: (data: any) =>
+      this.httpRequest('cart', '/cart', 'DELETE', { userId: data.userId }),
+  };
+
+  public orderService = {
+    createOrder: (data: any) =>
+      this.httpRequest('order', '/order', 'POST', data),
+    getOrders: (data: any) =>
+      this.httpRequest('order', '/order', 'GET', undefined, {
+        userId: data.userId,
+        ...(data.page ? { page: data.page } : {}),
+        ...(data.limit ? { limit: data.limit } : {}),
+      }),
+  };
+
+  async rpcCall<T>(value: Promise<T> | T): Promise<T> {
+    return await Promise.resolve(value as Promise<T> | T);
   }
 
-  // --- HELPER TO CONVERT OBSERVALBES TO PROMISES cleanly ---
-  async rpcCall<T>(observable: any): Promise<T> {
-    return firstValueFrom(observable);
+  private async httpRequest<T>(
+    service: ServiceName,
+    path: string,
+    method: 'GET' | 'POST' | 'DELETE' = 'GET',
+    body?: any,
+    query?: Record<string, QueryValue>,
+  ): Promise<T> {
+    const baseUrl = this.serviceUrls[service];
+    const url = new URL(path, baseUrl.endsWith('/') ? baseUrl : `${baseUrl}/`);
+
+    if (query) {
+      Object.entries(query).forEach(([key, value]) => {
+        if (value !== undefined && value !== null && value !== '') {
+          url.searchParams.set(key, String(value));
+        }
+      });
+    }
+
+    const headers: Record<string, string> = {
+      'Content-Type': 'application/json',
+    };
+
+    const response = await fetch(url.toString(), {
+      method,
+      headers,
+      body:
+        body !== undefined && method !== 'GET'
+          ? JSON.stringify(body)
+          : undefined,
+    });
+
+    if (!response.ok) {
+      const errorText = await response.text();
+      throw new Error(
+        `HTTP ${method} ${url.toString()} failed with status ${response.status}: ${errorText}`,
+      );
+    }
+
+    if (response.status === 204) {
+      return undefined as T;
+    }
+
+    const contentType = response.headers.get('content-type') || '';
+    if (contentType.includes('application/json')) {
+      return (await response.json()) as T;
+    }
+
+    return (await response.text()) as unknown as T;
   }
 }
