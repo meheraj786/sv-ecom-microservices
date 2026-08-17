@@ -27,6 +27,8 @@ import {
   AddToCartDto,
 } from './dto/gateway.dto';
 
+const isProduction = process.env.NODE_ENV === 'production';
+
 @Controller()
 export class AppController {
   constructor(private appService: AppService) {}
@@ -51,11 +53,11 @@ export class AppController {
       this.appService.userService.loginUser(dto),
     );
 
-    // Set HTTP-Only Cookie securely at Gateway level
+    // Set HTTP-Only Cookie securely based on Environment
     response.cookie('token', result.token, {
       httpOnly: true,
-      secure: true,
-      sameSite: 'none',
+      secure: isProduction, 
+      sameSite: isProduction ? 'none' : 'lax', 
       maxAge: 24 * 60 * 60 * 1000, // 24 Hours
     });
 
@@ -80,8 +82,8 @@ export class AppController {
 
     response.cookie('token', result.token, {
       httpOnly: true,
-      secure: true,
-      sameSite: 'none',
+      secure: isProduction,
+      sameSite: isProduction ? 'none' : 'lax',
       maxAge: 24 * 60 * 60 * 1000,
     });
 
@@ -92,8 +94,8 @@ export class AppController {
   logout(@Res({ passthrough: true }) response: Response) {
     response.clearCookie('token', {
       httpOnly: true,
-      secure: true,
-      sameSite: 'none',
+      secure: isProduction,
+      sameSite: isProduction ? 'none' : 'lax',
     });
     return { message: 'Logged out successfully' };
   }
@@ -112,7 +114,7 @@ export class AppController {
   @UseGuards(JwtAuthGuard, AdminGuard)
   @Post('account/update')
   updateStoreSettings(@Req() req: any, @Body() dto: UpdateAccountDto) {
-    const vendorId = req.user.userId;
+    const vendorId = req.user.userId as string;
     return this.appService.rpcCall(
       this.appService.userService.updateSettings({ vendorId, ...dto }),
     );
@@ -181,7 +183,7 @@ export class AppController {
   @UseGuards(JwtAuthGuard)
   @Get('cart')
   getCart(@Req() req: any) {
-    const userId = req.user.userId;
+    const userId = req.user.userId as string;
     return this.appService.rpcCall(
       this.appService.cartService.getCart({ userId }),
     );
