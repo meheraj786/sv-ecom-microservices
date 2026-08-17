@@ -12,10 +12,36 @@ export class PrismaService implements OnModuleInit, OnModuleDestroy {
   private writePool: pg.Pool;
   private readPool: pg.Pool;
 
+  private buildConnectionString(raw?: string, fallback?: string): string {
+    const connectionString = raw ?? fallback;
+
+    if (!connectionString) {
+      throw new Error(
+        'Missing PostgreSQL connection string for product service.',
+      );
+    }
+
+    if (connectionString.includes('schema=')) {
+      return connectionString;
+    }
+
+    const separator = connectionString.includes('?') ? '&' : '?';
+    return `${connectionString}${separator}schema=product_schema`;
+  }
+
   constructor() {
+    const writeConnectionString = this.buildConnectionString(
+      process.env.DATABASE_URL,
+      process.env.PRODUCT_SERVICE_WRITE_DB_URL,
+    );
+    const readConnectionString = this.buildConnectionString(
+      process.env.REPLICA_DATABASE_URL,
+      process.env.PRODUCT_SERVICE_READ_DB_URL ?? writeConnectionString,
+    );
+
     // 1. Setup Master/Write Connection (product_write_db)
     this.writePool = new pg.Pool({
-      connectionString: process.env.DATABASE_URL,
+      connectionString: writeConnectionString,
     });
     // Explicitly pass isolated 'product_schema'
     const writeAdapter = new PrismaPg(this.writePool, {
@@ -25,7 +51,7 @@ export class PrismaService implements OnModuleInit, OnModuleDestroy {
 
     // 2. Setup Replica/Read Connection (product_read_db)
     this.readPool = new pg.Pool({
-      connectionString: process.env.REPLICA_DATABASE_URL,
+      connectionString: readConnectionString,
     });
     const readAdapter = new PrismaPg(this.readPool, {
       schema: 'product_schema',
