@@ -235,6 +235,39 @@ export class ProductService {
       }),
     ]);
 
+    if (totalProducts === 0 && products.length === 0 && page === 1) {
+      const [masterTotal, masterProducts] = await Promise.all([
+        this.prisma.write.product.count({ where }),
+        this.prisma.write.product.findMany({
+          where,
+          skip,
+          take: limit,
+          include: {
+            subCategory: {
+              include: {
+                category: true,
+              },
+            },
+          },
+          orderBy: {
+            createdAt: 'desc',
+          },
+        }),
+      ]);
+
+      if (masterTotal > 0) {
+        return {
+          meta: {
+            totalProducts: masterTotal,
+            page,
+            limit,
+            totalPages: Math.ceil(masterTotal / limit),
+          },
+          products: masterProducts,
+        };
+      }
+    }
+
     return {
       meta: {
         totalProducts,
@@ -247,7 +280,7 @@ export class ProductService {
   }
 
   async getProductBySlug(slug: string) {
-    const product = await this.prisma.read.product.findUnique({
+    let product = await this.prisma.read.product.findUnique({
       where: { slug },
       include: {
         subCategory: {
@@ -257,6 +290,19 @@ export class ProductService {
         },
       },
     });
+
+    if (!product) {
+      product = await this.prisma.write.product.findUnique({
+        where: { slug },
+        include: {
+          subCategory: {
+            include: {
+              category: true,
+            },
+          },
+        },
+      });
+    }
 
     if (!product) {
       throw new BadRequestException('Product not found');
