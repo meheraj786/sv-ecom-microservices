@@ -4,17 +4,15 @@ import { CreateCategoryDto } from './dto/create-category.dto';
 import { CreateSubCategoryDto } from './dto/create-subcategory.dto';
 import { CreateProductDto } from './dto/create-product.dto';
 import { GetProductsQueryDto } from './dto/get-products-query.dto';
-import { Prisma } from 'generated/prisma/client';
+import { Prisma } from '@prisma/client';
 import { PaginationQueryDto } from './dto/pagination-query.dto';
-
-// TODO: we can use failover mechanism for read and write
 
 @Injectable()
 export class ProductService {
   constructor(private prisma: PrismaService) {}
 
   async createCategory(dto: CreateCategoryDto) {
-    const existing = await this.prisma.read.category.findUnique({
+    const existing = await this.prisma.write.category.findUnique({
       where: { slug: dto.slug },
     });
     if (existing) {
@@ -45,6 +43,30 @@ export class ProductService {
       }),
     ]);
 
+    if (totalCategories === 0 && categories.length === 0 && page === 1) {
+      const [masterTotal, masterCategories] = await Promise.all([
+        this.prisma.write.category.count(),
+        this.prisma.write.category.findMany({
+          skip,
+          take: limit,
+          include: { subCategories: true },
+          orderBy: { createdAt: 'desc' },
+        }),
+      ]);
+
+      if (masterTotal > 0) {
+        return {
+          meta: {
+            totalCategories: masterTotal,
+            page,
+            limit,
+            totalPages: Math.ceil(masterTotal / limit),
+          },
+          categories: masterCategories,
+        };
+      }
+    }
+
     return {
       meta: {
         totalCategories,
@@ -57,14 +79,14 @@ export class ProductService {
   }
 
   async createSubCategory(dto: CreateSubCategoryDto) {
-    const existing = await this.prisma.read.subCategory.findUnique({
+    const existing = await this.prisma.write.subCategory.findUnique({
       where: { slug: dto.slug },
     });
     if (existing) {
       throw new BadRequestException('Subcategory slug already exists');
     }
 
-    const categoryExists = await this.prisma.read.category.findUnique({
+    const categoryExists = await this.prisma.write.category.findUnique({
       where: { id: dto.categoryId },
     });
     if (!categoryExists) {
@@ -92,6 +114,29 @@ export class ProductService {
       }),
     ]);
 
+    if (totalSubCategories === 0 && subcategories.length === 0 && page === 1) {
+      const [masterTotal, masterSubcategories] = await Promise.all([
+        this.prisma.write.subCategory.count(),
+        this.prisma.write.subCategory.findMany({
+          skip,
+          take: limit,
+          orderBy: { createdAt: 'desc' },
+        }),
+      ]);
+
+      if (masterTotal > 0) {
+        return {
+          meta: {
+            totalSubCategories: masterTotal,
+            page,
+            limit,
+            totalPages: Math.ceil(masterTotal / limit),
+          },
+          subcategories: masterSubcategories,
+        };
+      }
+    }
+
     return {
       meta: {
         totalSubCategories,
@@ -102,22 +147,23 @@ export class ProductService {
       subcategories,
     };
   }
+
   async createProduct(dto: CreateProductDto) {
-    const existingSlug = await this.prisma.read.product.findUnique({
+    const existingSlug = await this.prisma.write.product.findUnique({
       where: { slug: dto.slug },
     });
     if (existingSlug) {
       throw new BadRequestException('Product slug already exists');
     }
 
-    const existingSku = await this.prisma.read.product.findUnique({
+    const existingSku = await this.prisma.write.product.findUnique({
       where: { sku: dto.sku },
     });
     if (existingSku) {
       throw new BadRequestException('Product SKU already exists');
     }
 
-    const categoryExists = await this.prisma.read.category.findUnique({
+    const categoryExists = await this.prisma.write.category.findUnique({
       where: { id: dto.categoryId },
     });
     if (!categoryExists) {
@@ -125,7 +171,7 @@ export class ProductService {
     }
 
     if (dto.subCategoryId) {
-      const subCategoryExists = await this.prisma.read.subCategory.findUnique({
+      const subCategoryExists = await this.prisma.write.subCategory.findUnique({
         where: { id: dto.subCategoryId },
       });
       if (!subCategoryExists) {
