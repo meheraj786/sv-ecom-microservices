@@ -10,6 +10,16 @@ interface CartItem {
   price: number;
 }
 
+interface BillingInfo {
+  fullName: string;
+  email: string;
+  phone: string;
+  address: string;
+  city: string;
+  zipCode: string;
+  country: string;
+}
+
 @Injectable()
 export class OrderService {
   private readonly cartBaseUrl =
@@ -54,7 +64,7 @@ export class OrderService {
     return (await response.json()) as T;
   }
 
-  async createOrder(userId: string) {
+  async createOrder(userId: string, billing: BillingInfo) {
     const cartResponse = await this.httpRequest<{ items: CartItem[] }>(
       this.cartBaseUrl,
       `/cart?userId=${encodeURIComponent(userId)}`,
@@ -119,9 +129,11 @@ export class OrderService {
       return newOrder;
     });
 
+    // Emit order_created event containing shipping/billing details to RabbitMQ!
     this.rmqClient.emit('order_created', {
       orderId: order.id,
       userId,
+      billing, // <--- Emitted to both User Service CRM and Inventory Service!
       items: orderItemsToCreate.map((item) => ({
         productId: item.productId,
         quantity: item.quantity,

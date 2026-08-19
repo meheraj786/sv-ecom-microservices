@@ -1,17 +1,17 @@
-import { Body, Controller, Get, Post, Query } from '@nestjs/common';
+import { Body, Controller, Get, Param, Post, Query } from '@nestjs/common';
 import { OrderService } from './order.service';
 import { PaginationQueryDto } from './dto/pagination-query.dto';
 
-@Controller()
+@Controller('order')
 export class OrderController {
   constructor(private orderService: OrderService) {}
 
-  @Post('order')
-  createOrder(@Body() dto: { userId: string }) {
-    return this.orderService.createOrder(dto.userId);
+  @Post()
+  createOrder(@Query('userId') userId: string, @Body() billing: any) {
+    return this.orderService.createOrder(userId, billing);
   }
 
-  @Get('order')
+  @Get()
   getOrders(
     @Query('userId') userId: string,
     @Query() query: PaginationQueryDto,
