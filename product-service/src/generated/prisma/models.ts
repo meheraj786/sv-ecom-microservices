@@ -11,4 +11,6 @@
 export type * from './models/Category.js'
 export type * from './models/SubCategory.js'
 export type * from './models/Product.js'
+export type * from './models/ProductVariant.js'
+export type * from './models/Review.js'
 export type * from './commonInputTypes.js'

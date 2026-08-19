@@ -32,3 +32,13 @@ export type SubCategory = Prisma.SubCategoryModel
  * 
  */
 export type Product = Prisma.ProductModel
+/**
+ * Model ProductVariant
+ * 
+ */
+export type ProductVariant = Prisma.ProductVariantModel
+/**
+ * Model Review
+ * 
+ */
+export type Review = Prisma.ReviewModel
