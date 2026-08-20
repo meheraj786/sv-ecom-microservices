@@ -39,6 +39,26 @@ export class AppService {
         undefined,
         query,
       ),
+    getCategoryById: (data: { id: string }) =>
+      this.httpRequest(
+        'product',
+        `/product/category/${encodeURIComponent(data.id)}`,
+        'GET',
+      ),
+    updateCategory: (data: any) =>
+      this.httpRequest(
+        'product',
+        `/product/category/${encodeURIComponent(data.id)}`,
+        'PUT',
+        data,
+      ),
+    deleteCategory: (data: { id: string }) =>
+      this.httpRequest(
+        'product',
+        `/product/category/${encodeURIComponent(data.id)}`,
+        'DELETE',
+      ),
+
     createSubCategory: (data: any) =>
       this.httpRequest('product', '/product/subcategory', 'POST', data),
     getSubCategories: (query: any) =>
@@ -49,11 +69,37 @@ export class AppService {
         undefined,
         query,
       ),
+    getSubCategoryById: (data: { id: string }) =>
+      this.httpRequest(
+        'product',
+        `/product/subcategory/${encodeURIComponent(data.id)}`,
+        'GET',
+      ),
+    updateSubCategory: (data: any) =>
+      this.httpRequest(
+        'product',
+        `/product/subcategory/${encodeURIComponent(data.id)}`,
+        'PUT',
+        data,
+      ),
+    deleteSubCategory: (data: { id: string }) =>
+      this.httpRequest(
+        'product',
+        `/product/subcategory/${encodeURIComponent(data.id)}`,
+        'DELETE',
+      ),
+
     createProduct: (data: any) =>
       this.httpRequest('product', '/product', 'POST', data),
     getProducts: (query: any) =>
       this.httpRequest('product', '/product', 'GET', undefined, query),
-    getProductBySlug: (data: any) =>
+    deleteProduct: (data: { id: string }) =>
+      this.httpRequest(
+        'product',
+        `/product/${encodeURIComponent(data.id)}`,
+        'DELETE',
+      ),
+    getProductBySlug: (data: { slug: string }) =>
       this.httpRequest(
         'product',
         `/product/${encodeURIComponent(data.slug)}`,
@@ -99,7 +145,7 @@ export class AppService {
   private async httpRequest<T>(
     service: ServiceName,
     path: string,
-    method: 'GET' | 'POST' | 'DELETE' = 'GET',
+    method: 'GET' | 'POST' | 'PUT' | 'DELETE' = 'GET',
     body?: any,
     query?: Record<string, QueryValue>,
   ): Promise<T> {

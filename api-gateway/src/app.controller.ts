@@ -155,6 +155,7 @@ export class AppController {
     );
   }
 
+  // FIX: Delete category route missing chilo
   @UseGuards(JwtAuthGuard, AdminGuard)
   @Delete('product/category/:id')
   deleteCategory(@Param('id') id: string) {
@@ -196,6 +197,7 @@ export class AppController {
     );
   }
 
+  // FIX: Delete subcategory route missing chilo
   @UseGuards(JwtAuthGuard, AdminGuard)
   @Delete('product/subcategory/:id')
   deleteSubCategory(@Param('id') id: string) {
@@ -219,6 +221,7 @@ export class AppController {
     );
   }
 
+  // FIX: Delete product route missing chilo
   @UseGuards(JwtAuthGuard, AdminGuard)
   @Delete('product/:id')
   deleteProduct(@Param('id') id: string) {
@@ -233,6 +236,7 @@ export class AppController {
       this.appService.productService.getProductBySlug({ slug }),
     );
   }
+
   // =================================-------------------
   // 4. SHOPPING CART ENDPOINTS (Automatic userId injection)
   // =================================-------------------
