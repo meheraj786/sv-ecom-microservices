@@ -1,4 +1,12 @@
-import { Body, Controller, Get, Param, Post, Query } from '@nestjs/common';
+import {
+  Body,
+  Controller,
+  Delete,
+  Get,
+  Param,
+  Post,
+  Query,
+} from '@nestjs/common';
 import { ProductService } from './product.service';
 import { CreateCategoryDto } from './dto/create-category.dto';
 import { CreateSubCategoryDto } from './dto/create-subcategory.dto';
@@ -13,6 +21,11 @@ export class ProductController {
   @Post('product/category')
   createCategory(@Body() dto: CreateCategoryDto) {
     return this.productService.createCategory(dto);
+  }
+
+  @Delete('product/category/:id')
+  deleteCategories(@Param('id') id: string) {
+    return this.productService.deleteCategories(id);
   }
 
   @Get('product/categories')
@@ -44,4 +57,15 @@ export class ProductController {
   getProductBySlug(@Param('slug') slug: string) {
     return this.productService.getProductBySlug(slug);
   }
+
+  @Delete('product/:id')
+  deleteProducts(@Param('id') id: string) {
+    return this.productService.deleteProducts(id);
+  }
+
+  @Delete('product/subcategory/:id')
+  deleteSubCategories(@Param('id') id: string) {
+    return this.productService.deleteSubCategories(id);
+  }
+  
 }

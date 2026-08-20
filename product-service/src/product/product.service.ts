@@ -4,8 +4,9 @@ import { CreateCategoryDto } from './dto/create-category.dto';
 import { CreateSubCategoryDto } from './dto/create-subcategory.dto';
 import { CreateProductDto } from './dto/create-product.dto';
 import { GetProductsQueryDto } from './dto/get-products-query.dto';
-import { Prisma } from '@prisma/client';
+
 import { PaginationQueryDto } from './dto/pagination-query.dto';
+import { Prisma } from 'src/generated/prisma/client';
 
 @Injectable()
 export class ProductService {
@@ -179,8 +180,14 @@ export class ProductService {
       }
     }
 
+    const { subCategoryId, price, ...productData } = dto;
+
     return this.prisma.write.product.create({
-      data: dto,
+      data: {
+        ...productData,
+        basePrice: price,
+        subCategoryId: subCategoryId || null,
+      },
     });
   }
 
@@ -359,5 +366,17 @@ export class ProductService {
     }
 
     return product;
+  }
+  // delete category
+  async deleteCategories(id: string): Promise<void> {
+    await this.prisma.write.category.delete({ where: { id } });
+  }
+
+  async deleteSubCategories(id: string): Promise<void> {
+    await this.prisma.write.subCategory.delete({ where: { id } });
+  }
+
+  async deleteProducts(id: string): Promise<void> {
+    await this.prisma.write.product.delete({ where: { id } });
   }
 }
