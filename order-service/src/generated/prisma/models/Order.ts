@@ -28,16 +28,20 @@ export type AggregateOrder = {
 
 export type OrderAvgAggregateOutputType = {
   totalAmount: number | null
+  discountAmount: number | null
 }
 
 export type OrderSumAggregateOutputType = {
   totalAmount: number | null
+  discountAmount: number | null
 }
 
 export type OrderMinAggregateOutputType = {
   id: string | null
   userId: string | null
   totalAmount: number | null
+  discountAmount: number | null
+  couponCode: string | null
   status: string | null
   createdAt: Date | null
   updatedAt: Date | null
@@ -47,6 +51,8 @@ export type OrderMaxAggregateOutputType = {
   id: string | null
   userId: string | null
   totalAmount: number | null
+  discountAmount: number | null
+  couponCode: string | null
   status: string | null
   createdAt: Date | null
   updatedAt: Date | null
@@ -56,6 +62,8 @@ export type OrderCountAggregateOutputType = {
   id: number
   userId: number
   totalAmount: number
+  discountAmount: number
+  couponCode: number
   status: number
   createdAt: number
   updatedAt: number
@@ -65,16 +73,20 @@ export type OrderCountAggregateOutputType = {
 
 export type OrderAvgAggregateInputType = {
   totalAmount?: true
+  discountAmount?: true
 }
 
 export type OrderSumAggregateInputType = {
   totalAmount?: true
+  discountAmount?: true
 }
 
 export type OrderMinAggregateInputType = {
   id?: true
   userId?: true
   totalAmount?: true
+  discountAmount?: true
+  couponCode?: true
   status?: true
   createdAt?: true
   updatedAt?: true
@@ -84,6 +96,8 @@ export type OrderMaxAggregateInputType = {
   id?: true
   userId?: true
   totalAmount?: true
+  discountAmount?: true
+  couponCode?: true
   status?: true
   createdAt?: true
   updatedAt?: true
@@ -93,6 +107,8 @@ export type OrderCountAggregateInputType = {
   id?: true
   userId?: true
   totalAmount?: true
+  discountAmount?: true
+  couponCode?: true
   status?: true
   createdAt?: true
   updatedAt?: true
@@ -189,6 +205,8 @@ export type OrderGroupByOutputType = {
   id: string
   userId: string
   totalAmount: number
+  discountAmount: number
+  couponCode: string | null
   status: string
   createdAt: Date
   updatedAt: Date
@@ -221,6 +239,8 @@ export type OrderWhereInput = {
   id?: Prisma.StringFilter<"Order"> | string
   userId?: Prisma.StringFilter<"Order"> | string
   totalAmount?: Prisma.FloatFilter<"Order"> | number
+  discountAmount?: Prisma.FloatFilter<"Order"> | number
+  couponCode?: Prisma.StringNullableFilter<"Order"> | string | null
   status?: Prisma.StringFilter<"Order"> | string
   createdAt?: Prisma.DateTimeFilter<"Order"> | Date | string
   updatedAt?: Prisma.DateTimeFilter<"Order"> | Date | string
@@ -231,6 +251,8 @@ export type OrderOrderByWithRelationInput = {
   id?: Prisma.SortOrder
   userId?: Prisma.SortOrder
   totalAmount?: Prisma.SortOrder
+  discountAmount?: Prisma.SortOrder
+  couponCode?: Prisma.SortOrderInput | Prisma.SortOrder
   status?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
   updatedAt?: Prisma.SortOrder
@@ -244,6 +266,8 @@ export type OrderWhereUniqueInput = Prisma.AtLeast<{
   NOT?: Prisma.OrderWhereInput | Prisma.OrderWhereInput[]
   userId?: Prisma.StringFilter<"Order"> | string
   totalAmount?: Prisma.FloatFilter<"Order"> | number
+  discountAmount?: Prisma.FloatFilter<"Order"> | number
+  couponCode?: Prisma.StringNullableFilter<"Order"> | string | null
   status?: Prisma.StringFilter<"Order"> | string
   createdAt?: Prisma.DateTimeFilter<"Order"> | Date | string
   updatedAt?: Prisma.DateTimeFilter<"Order"> | Date | string
@@ -254,6 +278,8 @@ export type OrderOrderByWithAggregationInput = {
   id?: Prisma.SortOrder
   userId?: Prisma.SortOrder
   totalAmount?: Prisma.SortOrder
+  discountAmount?: Prisma.SortOrder
+  couponCode?: Prisma.SortOrderInput | Prisma.SortOrder
   status?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
   updatedAt?: Prisma.SortOrder
@@ -271,6 +297,8 @@ export type OrderScalarWhereWithAggregatesInput = {
   id?: Prisma.StringWithAggregatesFilter<"Order"> | string
   userId?: Prisma.StringWithAggregatesFilter<"Order"> | string
   totalAmount?: Prisma.FloatWithAggregatesFilter<"Order"> | number
+  discountAmount?: Prisma.FloatWithAggregatesFilter<"Order"> | number
+  couponCode?: Prisma.StringNullableWithAggregatesFilter<"Order"> | string | null
   status?: Prisma.StringWithAggregatesFilter<"Order"> | string
   createdAt?: Prisma.DateTimeWithAggregatesFilter<"Order"> | Date | string
   updatedAt?: Prisma.DateTimeWithAggregatesFilter<"Order"> | Date | string
@@ -280,6 +308,8 @@ export type OrderCreateInput = {
   id?: string
   userId: string
   totalAmount: number
+  discountAmount?: number
+  couponCode?: string | null
   status?: string
   createdAt?: Date | string
   updatedAt?: Date | string
@@ -290,6 +320,8 @@ export type OrderUncheckedCreateInput = {
   id?: string
   userId: string
   totalAmount: number
+  discountAmount?: number
+  couponCode?: string | null
   status?: string
   createdAt?: Date | string
   updatedAt?: Date | string
@@ -300,6 +332,8 @@ export type OrderUpdateInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
   userId?: Prisma.StringFieldUpdateOperationsInput | string
   totalAmount?: Prisma.FloatFieldUpdateOperationsInput | number
+  discountAmount?: Prisma.FloatFieldUpdateOperationsInput | number
+  couponCode?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   status?: Prisma.StringFieldUpdateOperationsInput | string
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
@@ -310,6 +344,8 @@ export type OrderUncheckedUpdateInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
   userId?: Prisma.StringFieldUpdateOperationsInput | string
   totalAmount?: Prisma.FloatFieldUpdateOperationsInput | number
+  discountAmount?: Prisma.FloatFieldUpdateOperationsInput | number
+  couponCode?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   status?: Prisma.StringFieldUpdateOperationsInput | string
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
@@ -320,6 +356,8 @@ export type OrderCreateManyInput = {
   id?: string
   userId: string
   totalAmount: number
+  discountAmount?: number
+  couponCode?: string | null
   status?: string
   createdAt?: Date | string
   updatedAt?: Date | string
@@ -329,6 +367,8 @@ export type OrderUpdateManyMutationInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
   userId?: Prisma.StringFieldUpdateOperationsInput | string
   totalAmount?: Prisma.FloatFieldUpdateOperationsInput | number
+  discountAmount?: Prisma.FloatFieldUpdateOperationsInput | number
+  couponCode?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   status?: Prisma.StringFieldUpdateOperationsInput | string
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
@@ -338,6 +378,8 @@ export type OrderUncheckedUpdateManyInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
   userId?: Prisma.StringFieldUpdateOperationsInput | string
   totalAmount?: Prisma.FloatFieldUpdateOperationsInput | number
+  discountAmount?: Prisma.FloatFieldUpdateOperationsInput | number
+  couponCode?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   status?: Prisma.StringFieldUpdateOperationsInput | string
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
@@ -347,6 +389,8 @@ export type OrderCountOrderByAggregateInput = {
   id?: Prisma.SortOrder
   userId?: Prisma.SortOrder
   totalAmount?: Prisma.SortOrder
+  discountAmount?: Prisma.SortOrder
+  couponCode?: Prisma.SortOrder
   status?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
   updatedAt?: Prisma.SortOrder
@@ -354,12 +398,15 @@ export type OrderCountOrderByAggregateInput = {
 
 export type OrderAvgOrderByAggregateInput = {
   totalAmount?: Prisma.SortOrder
+  discountAmount?: Prisma.SortOrder
 }
 
 export type OrderMaxOrderByAggregateInput = {
   id?: Prisma.SortOrder
   userId?: Prisma.SortOrder
   totalAmount?: Prisma.SortOrder
+  discountAmount?: Prisma.SortOrder
+  couponCode?: Prisma.SortOrder
   status?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
   updatedAt?: Prisma.SortOrder
@@ -369,6 +416,8 @@ export type OrderMinOrderByAggregateInput = {
   id?: Prisma.SortOrder
   userId?: Prisma.SortOrder
   totalAmount?: Prisma.SortOrder
+  discountAmount?: Prisma.SortOrder
+  couponCode?: Prisma.SortOrder
   status?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
   updatedAt?: Prisma.SortOrder
@@ -376,6 +425,7 @@ export type OrderMinOrderByAggregateInput = {
 
 export type OrderSumOrderByAggregateInput = {
   totalAmount?: Prisma.SortOrder
+  discountAmount?: Prisma.SortOrder
 }
 
 export type OrderScalarRelationFilter = {
@@ -393,6 +443,10 @@ export type FloatFieldUpdateOperationsInput = {
   decrement?: number
   multiply?: number
   divide?: number
+}
+
+export type NullableStringFieldUpdateOperationsInput = {
+  set?: string | null
 }
 
 export type DateTimeFieldUpdateOperationsInput = {
@@ -417,6 +471,8 @@ export type OrderCreateWithoutItemsInput = {
   id?: string
   userId: string
   totalAmount: number
+  discountAmount?: number
+  couponCode?: string | null
   status?: string
   createdAt?: Date | string
   updatedAt?: Date | string
@@ -426,6 +482,8 @@ export type OrderUncheckedCreateWithoutItemsInput = {
   id?: string
   userId: string
   totalAmount: number
+  discountAmount?: number
+  couponCode?: string | null
   status?: string
   createdAt?: Date | string
   updatedAt?: Date | string
@@ -451,6 +509,8 @@ export type OrderUpdateWithoutItemsInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
   userId?: Prisma.StringFieldUpdateOperationsInput | string
   totalAmount?: Prisma.FloatFieldUpdateOperationsInput | number
+  discountAmount?: Prisma.FloatFieldUpdateOperationsInput | number
+  couponCode?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   status?: Prisma.StringFieldUpdateOperationsInput | string
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
@@ -460,6 +520,8 @@ export type OrderUncheckedUpdateWithoutItemsInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
   userId?: Prisma.StringFieldUpdateOperationsInput | string
   totalAmount?: Prisma.FloatFieldUpdateOperationsInput | number
+  discountAmount?: Prisma.FloatFieldUpdateOperationsInput | number
+  couponCode?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   status?: Prisma.StringFieldUpdateOperationsInput | string
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
@@ -500,6 +562,8 @@ export type OrderSelect<ExtArgs extends runtime.Types.Extensions.InternalArgs = 
   id?: boolean
   userId?: boolean
   totalAmount?: boolean
+  discountAmount?: boolean
+  couponCode?: boolean
   status?: boolean
   createdAt?: boolean
   updatedAt?: boolean
@@ -511,6 +575,8 @@ export type OrderSelectCreateManyAndReturn<ExtArgs extends runtime.Types.Extensi
   id?: boolean
   userId?: boolean
   totalAmount?: boolean
+  discountAmount?: boolean
+  couponCode?: boolean
   status?: boolean
   createdAt?: boolean
   updatedAt?: boolean
@@ -520,6 +586,8 @@ export type OrderSelectUpdateManyAndReturn<ExtArgs extends runtime.Types.Extensi
   id?: boolean
   userId?: boolean
   totalAmount?: boolean
+  discountAmount?: boolean
+  couponCode?: boolean
   status?: boolean
   createdAt?: boolean
   updatedAt?: boolean
@@ -529,12 +597,14 @@ export type OrderSelectScalar = {
   id?: boolean
   userId?: boolean
   totalAmount?: boolean
+  discountAmount?: boolean
+  couponCode?: boolean
   status?: boolean
   createdAt?: boolean
   updatedAt?: boolean
 }
 
-export type OrderOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "userId" | "totalAmount" | "status" | "createdAt" | "updatedAt", ExtArgs["result"]["order"]>
+export type OrderOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "userId" | "totalAmount" | "discountAmount" | "couponCode" | "status" | "createdAt" | "updatedAt", ExtArgs["result"]["order"]>
 export type OrderInclude<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   items?: boolean | Prisma.Order$itemsArgs<ExtArgs>
   _count?: boolean | Prisma.OrderCountOutputTypeDefaultArgs<ExtArgs>
@@ -551,6 +621,8 @@ export type $OrderPayload<ExtArgs extends runtime.Types.Extensions.InternalArgs 
     id: string
     userId: string
     totalAmount: number
+    discountAmount: number
+    couponCode: string | null
     status: string
     createdAt: Date
     updatedAt: Date
@@ -981,6 +1053,8 @@ export interface OrderFieldRefs {
   readonly id: Prisma.FieldRef<"Order", 'String'>
   readonly userId: Prisma.FieldRef<"Order", 'String'>
   readonly totalAmount: Prisma.FieldRef<"Order", 'Float'>
+  readonly discountAmount: Prisma.FieldRef<"Order", 'Float'>
+  readonly couponCode: Prisma.FieldRef<"Order", 'String'>
   readonly status: Prisma.FieldRef<"Order", 'String'>
   readonly createdAt: Prisma.FieldRef<"Order", 'DateTime'>
   readonly updatedAt: Prisma.FieldRef<"Order", 'DateTime'>

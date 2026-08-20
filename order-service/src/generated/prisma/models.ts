@@ -9,5 +9,6 @@
  * 🟢 You can import this file directly.
  */
 export type * from './models/Order.js'
+export type * from './models/Coupon.js'
 export type * from './models/OrderItem.js'
 export type * from './commonInputTypes.js'
