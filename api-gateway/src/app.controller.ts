@@ -140,40 +140,6 @@ export class AppController {
     );
   }
 
-  @UseGuards(JwtAuthGuard, AdminGuard)
-  @Post('product/subcategory')
-  createSubCategory(@Body() dto: CreateSubCategoryDto) {
-    return this.appService.rpcCall(
-      this.appService.productService.createSubCategory(dto),
-    );
-  }
-
-  @Get('product/subcategories')
-  getSubCategories(@Query() query: PaginationQueryDto) {
-    return this.appService.rpcCall(
-      this.appService.productService.getSubCategories(query),
-    );
-  }
-
-  // =================================-------------------
-  // 3. PRODUCT CATALOG ENDPOINTS (With filters and pagination)
-  // =================================-------------------
-
-  @UseGuards(JwtAuthGuard, AdminGuard)
-  @Post('product/category')
-  createCategory(@Body() dto: CreateCategoryDto) {
-    return this.appService.rpcCall(
-      this.appService.productService.createCategory(dto),
-    );
-  }
-
-  @Get('product/categories')
-  getCategories(@Query() query: PaginationQueryDto) {
-    return this.appService.rpcCall(
-      this.appService.productService.getCategories(query),
-    );
-  }
-
   @Get('product/category/:id')
   getCategoryById(@Param('id') id: string) {
     return this.appService.rpcCall(
