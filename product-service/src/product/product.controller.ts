@@ -15,53 +15,51 @@ import { CreateProductDto } from './dto/create-product.dto';
 import { GetProductsQueryDto } from './dto/get-products-query.dto';
 import { PaginationQueryDto } from './dto/pagination-query.dto';
 
-@Controller()
+@Controller('product')
 export class ProductController {
-  constructor(private productService: ProductService) {}
+  constructor(private readonly productService: ProductService) {}
 
-
-
-  @Post('product/category')
+  @Post('category')
   createCategory(@Body() dto: CreateCategoryDto) {
     return this.productService.createCategory(dto);
   }
 
-  @Get('product/categories')
+  @Get('categories')
   getCategories(@Query() query: PaginationQueryDto) {
     return this.productService.getCategories(query);
   }
 
-  // FIX: Single category fetch endpoint
-  @Get('product/category/:id')
+  @Get('category/:id')
   getCategoryById(@Param('id') id: string) {
     return this.productService.getCategoryById(id);
   }
 
-  // FIX: Update Category
-  @Put('product/category/:id')
+  @Put('category/:id')
   updateCategory(@Param('id') id: string, @Body() dto: CreateCategoryDto) {
     return this.productService.updateCategory(id, dto);
   }
 
-  @Delete('product/category/:id')
+  @Delete('category/:id')
   deleteCategories(@Param('id') id: string) {
     return this.productService.deleteCategories(id);
   }
 
-  // --- SUBCATEGORIES ---
-
-  @Post('product/subcategory')
+  @Post('subcategory')
   createSubCategory(@Body() dto: CreateSubCategoryDto) {
     return this.productService.createSubCategory(dto);
   }
 
-  @Get('product/subcategories')
+  @Get('subcategories')
   getSubCategories(@Query() query: PaginationQueryDto) {
     return this.productService.getSubCategories(query);
   }
 
-  // FIX: Update SubCategory
-  @Put('product/subcategory/:id')
+  @Get('subcategory/:id')
+  getSubCategoryById(@Param('id') id: string) {
+    return this.productService.getSubCategoryById(id);
+  }
+
+  @Put('subcategory/:id')
   updateSubCategory(
     @Param('id') id: string,
     @Body() dto: CreateSubCategoryDto,
@@ -69,27 +67,27 @@ export class ProductController {
     return this.productService.updateSubCategory(id, dto);
   }
 
-  @Delete('product/subcategory/:id')
+  @Delete('subcategory/:id')
   deleteSubCategories(@Param('id') id: string) {
     return this.productService.deleteSubCategories(id);
   }
 
-  @Post('product')
+  @Post()
   createProduct(@Body() dto: CreateProductDto) {
     return this.productService.createProduct(dto);
   }
 
-  @Get('product')
+  @Get()
   getProducts(@Query() query: GetProductsQueryDto) {
     return this.productService.getProducts(query);
   }
 
-  @Delete('product/:id')
+  @Delete(':id')
   deleteProducts(@Param('id') id: string) {
     return this.productService.deleteProducts(id);
   }
 
-  @Get('product/:slug')
+  @Get(':slug')
   getProductBySlug(@Param('slug') slug: string) {
     return this.productService.getProductBySlug(slug);
   }

@@ -9,6 +9,7 @@ import {
   Res,
   Req,
   UseGuards,
+  Put,
 } from '@nestjs/common';
 import type { Response } from 'express';
 import { AppService } from './app.service';
@@ -56,8 +57,8 @@ export class AppController {
     // Set HTTP-Only Cookie securely based on Environment
     response.cookie('token', result.token, {
       httpOnly: true,
-      secure: isProduction, 
-      sameSite: isProduction ? 'none' : 'lax', 
+      secure: isProduction,
+      sameSite: isProduction ? 'none' : 'lax',
       maxAge: 24 * 60 * 60 * 1000, // 24 Hours
     });
 
@@ -154,6 +155,89 @@ export class AppController {
     );
   }
 
+  // =================================-------------------
+  // 3. PRODUCT CATALOG ENDPOINTS (With filters and pagination)
+  // =================================-------------------
+
+  @UseGuards(JwtAuthGuard, AdminGuard)
+  @Post('product/category')
+  createCategory(@Body() dto: CreateCategoryDto) {
+    return this.appService.rpcCall(
+      this.appService.productService.createCategory(dto),
+    );
+  }
+
+  @Get('product/categories')
+  getCategories(@Query() query: PaginationQueryDto) {
+    return this.appService.rpcCall(
+      this.appService.productService.getCategories(query),
+    );
+  }
+
+  @Get('product/category/:id')
+  getCategoryById(@Param('id') id: string) {
+    return this.appService.rpcCall(
+      this.appService.productService.getCategoryById({ id }),
+    );
+  }
+
+  @UseGuards(JwtAuthGuard, AdminGuard)
+  @Put('product/category/:id')
+  updateCategory(@Param('id') id: string, @Body() dto: CreateCategoryDto) {
+    return this.appService.rpcCall(
+      this.appService.productService.updateCategory({ id, ...dto }),
+    );
+  }
+
+  @UseGuards(JwtAuthGuard, AdminGuard)
+  @Delete('product/category/:id')
+  deleteCategory(@Param('id') id: string) {
+    return this.appService.rpcCall(
+      this.appService.productService.deleteCategory({ id }),
+    );
+  }
+
+  @UseGuards(JwtAuthGuard, AdminGuard)
+  @Post('product/subcategory')
+  createSubCategory(@Body() dto: CreateSubCategoryDto) {
+    return this.appService.rpcCall(
+      this.appService.productService.createSubCategory(dto),
+    );
+  }
+
+  @Get('product/subcategories')
+  getSubCategories(@Query() query: PaginationQueryDto) {
+    return this.appService.rpcCall(
+      this.appService.productService.getSubCategories(query),
+    );
+  }
+
+  @Get('product/subcategory/:id')
+  getSubCategoryById(@Param('id') id: string) {
+    return this.appService.rpcCall(
+      this.appService.productService.getSubCategoryById({ id }),
+    );
+  }
+
+  @UseGuards(JwtAuthGuard, AdminGuard)
+  @Put('product/subcategory/:id')
+  updateSubCategory(
+    @Param('id') id: string,
+    @Body() dto: CreateSubCategoryDto,
+  ) {
+    return this.appService.rpcCall(
+      this.appService.productService.updateSubCategory({ id, ...dto }),
+    );
+  }
+
+  @UseGuards(JwtAuthGuard, AdminGuard)
+  @Delete('product/subcategory/:id')
+  deleteSubCategory(@Param('id') id: string) {
+    return this.appService.rpcCall(
+      this.appService.productService.deleteSubCategory({ id }),
+    );
+  }
+
   @UseGuards(JwtAuthGuard, AdminGuard)
   @Post('product')
   createProduct(@Body() dto: CreateProductDto) {
@@ -169,13 +253,20 @@ export class AppController {
     );
   }
 
+  @UseGuards(JwtAuthGuard, AdminGuard)
+  @Delete('product/:id')
+  deleteProduct(@Param('id') id: string) {
+    return this.appService.rpcCall(
+      this.appService.productService.deleteProduct({ id }),
+    );
+  }
+
   @Get('product/:slug')
   getProductBySlug(@Param('slug') slug: string) {
     return this.appService.rpcCall(
       this.appService.productService.getProductBySlug({ slug }),
     );
   }
-
   // =================================-------------------
   // 4. SHOPPING CART ENDPOINTS (Automatic userId injection)
   // =================================-------------------
