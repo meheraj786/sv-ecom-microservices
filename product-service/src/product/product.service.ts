@@ -189,7 +189,9 @@ export class ProductService {
     const limit = query.limit || 10;
     const skip = (page - 1) * limit;
 
-    const where: Prisma.ProductWhereInput = {};
+    const where: Prisma.ProductWhereInput = {
+      isActive: true,
+    };
 
     if (query.categoryId) {
       where.categoryId = query.categoryId;
@@ -199,13 +201,25 @@ export class ProductService {
       where.subCategoryId = query.subCategoryId;
     }
 
+    if (query.isNew !== undefined) {
+      where.isNew = query.isNew;
+    }
+
+    if (query.isBestSeller !== undefined) {
+      where.isBestSeller = query.isBestSeller;
+    }
+
+    if (query.isFeatured !== undefined) {
+      where.isFeatured = query.isFeatured;
+    }
+
     if (query.minPrice !== undefined || query.maxPrice !== undefined) {
-      where.price = {};
+      where.basePrice = {};
       if (query.minPrice !== undefined) {
-        where.price.gte = query.minPrice;
+        where.basePrice.gte = query.minPrice;
       }
       if (query.maxPrice !== undefined) {
-        where.price.lte = query.maxPrice;
+        where.basePrice.lte = query.maxPrice;
       }
     }
 
@@ -214,6 +228,42 @@ export class ProductService {
         { name: { contains: query.search, mode: 'insensitive' } },
         { description: { contains: query.search, mode: 'insensitive' } },
       ];
+    }
+
+    if (query.color || query.size || query.inStock !== undefined) {
+      const variantFilter: Prisma.ProductVariantWhereInput = {};
+
+      if (query.color) {
+        variantFilter.color = { equals: query.color, mode: 'insensitive' };
+      }
+
+      if (query.size) {
+        variantFilter.size = { equals: query.size, mode: 'insensitive' };
+      }
+
+      if (query.inStock === true) {
+        variantFilter.quantityRemaining = { gt: 0 };
+      }
+
+      where.variants = {
+        some: variantFilter,
+      };
+    }
+
+    let orderBy: Prisma.ProductOrderByWithRelationInput = { createdAt: 'desc' };
+
+    if (query.sortBy) {
+      if (query.sortBy === 'price-low') {
+        orderBy = { basePrice: 'asc' };
+      } else if (query.sortBy === 'price-high') {
+        orderBy = { basePrice: 'desc' };
+      } else if (query.sortBy === 'rating-high') {
+        orderBy = { averageRating: 'desc' };
+      } else if (query.sortBy === 'reviews-count') {
+        orderBy = { reviews: { _count: 'desc' } };
+      } else if (query.sortBy === 'newest') {
+        orderBy = { createdAt: 'desc' };
+      }
     }
 
     const [totalProducts, products] = await Promise.all([
@@ -228,10 +278,10 @@ export class ProductService {
               category: true,
             },
           },
+          variants: true,
+          reviews: true,
         },
-        orderBy: {
-          createdAt: 'desc',
-        },
+        orderBy,
       }),
     ]);
 
@@ -248,10 +298,10 @@ export class ProductService {
                 category: true,
               },
             },
+            variants: true,
+            reviews: true,
           },
-          orderBy: {
-            createdAt: 'desc',
-          },
+          orderBy,
         }),
       ]);
 
