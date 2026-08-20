@@ -1,4 +1,8 @@
-import { Injectable, BadRequestException } from '@nestjs/common';
+import {
+  Injectable,
+  BadRequestException,
+  NotFoundException,
+} from '@nestjs/common';
 import { PrismaService } from '../prisma/prisma.service';
 import { CreateCategoryDto } from './dto/create-category.dto';
 import { CreateSubCategoryDto } from './dto/create-subcategory.dto';
@@ -79,6 +83,46 @@ export class ProductService {
     };
   }
 
+  async getCategoryById(id: string) {
+    let category = await this.prisma.read.category.findUnique({
+      where: { id },
+      include: { subCategories: true },
+    });
+
+    if (!category) {
+      category = await this.prisma.write.category.findUnique({
+        where: { id },
+        include: { subCategories: true },
+      });
+    }
+
+    if (!category) {
+      throw new NotFoundException('Category not found');
+    }
+
+    return category;
+  }
+
+  async updateCategory(id: string, dto: CreateCategoryDto) {
+    await this.getCategoryById(id);
+
+    const existingSlug = await this.prisma.write.category.findFirst({
+      where: {
+        slug: dto.slug,
+        NOT: { id },
+      },
+    });
+
+    if (existingSlug) {
+      throw new BadRequestException('Category slug already exists');
+    }
+
+    return this.prisma.write.category.update({
+      where: { id },
+      data: dto,
+    });
+  }
+
   async createSubCategory(dto: CreateSubCategoryDto) {
     const existing = await this.prisma.write.subCategory.findUnique({
       where: { slug: dto.slug },
@@ -147,6 +191,44 @@ export class ProductService {
       },
       subcategories,
     };
+  }
+
+  async getSubCategoryById(id: string) {
+    let subCategory = await this.prisma.read.subCategory.findUnique({
+      where: { id },
+    });
+
+    if (!subCategory) {
+      subCategory = await this.prisma.write.subCategory.findUnique({
+        where: { id },
+      });
+    }
+
+    if (!subCategory) {
+      throw new NotFoundException('SubCategory not found');
+    }
+
+    return subCategory;
+  }
+
+  async updateSubCategory(id: string, dto: CreateSubCategoryDto) {
+    await this.getSubCategoryById(id);
+
+    const existingSlug = await this.prisma.write.subCategory.findFirst({
+      where: {
+        slug: dto.slug,
+        NOT: { id },
+      },
+    });
+
+    if (existingSlug) {
+      throw new BadRequestException('SubCategory slug already exists');
+    }
+
+    return this.prisma.write.subCategory.update({
+      where: { id },
+      data: dto,
+    });
   }
 
   async createProduct(dto: CreateProductDto) {
@@ -367,7 +449,7 @@ export class ProductService {
 
     return product;
   }
-  // delete category
+
   async deleteCategories(id: string): Promise<void> {
     await this.prisma.write.category.delete({ where: { id } });
   }

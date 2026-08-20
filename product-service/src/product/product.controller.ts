@@ -5,6 +5,7 @@ import {
   Get,
   Param,
   Post,
+  Put,
   Query,
 } from '@nestjs/common';
 import { ProductService } from './product.service';
@@ -18,9 +19,28 @@ import { PaginationQueryDto } from './dto/pagination-query.dto';
 export class ProductController {
   constructor(private productService: ProductService) {}
 
+
+
   @Post('product/category')
   createCategory(@Body() dto: CreateCategoryDto) {
     return this.productService.createCategory(dto);
+  }
+
+  @Get('product/categories')
+  getCategories(@Query() query: PaginationQueryDto) {
+    return this.productService.getCategories(query);
+  }
+
+  // FIX: Single category fetch endpoint
+  @Get('product/category/:id')
+  getCategoryById(@Param('id') id: string) {
+    return this.productService.getCategoryById(id);
+  }
+
+  // FIX: Update Category
+  @Put('product/category/:id')
+  updateCategory(@Param('id') id: string, @Body() dto: CreateCategoryDto) {
+    return this.productService.updateCategory(id, dto);
   }
 
   @Delete('product/category/:id')
@@ -28,10 +48,7 @@ export class ProductController {
     return this.productService.deleteCategories(id);
   }
 
-  @Get('product/categories')
-  getCategories(@Query() query: PaginationQueryDto) {
-    return this.productService.getCategories(query);
-  }
+  // --- SUBCATEGORIES ---
 
   @Post('product/subcategory')
   createSubCategory(@Body() dto: CreateSubCategoryDto) {
@@ -41,6 +58,20 @@ export class ProductController {
   @Get('product/subcategories')
   getSubCategories(@Query() query: PaginationQueryDto) {
     return this.productService.getSubCategories(query);
+  }
+
+  // FIX: Update SubCategory
+  @Put('product/subcategory/:id')
+  updateSubCategory(
+    @Param('id') id: string,
+    @Body() dto: CreateSubCategoryDto,
+  ) {
+    return this.productService.updateSubCategory(id, dto);
+  }
+
+  @Delete('product/subcategory/:id')
+  deleteSubCategories(@Param('id') id: string) {
+    return this.productService.deleteSubCategories(id);
   }
 
   @Post('product')
@@ -53,19 +84,13 @@ export class ProductController {
     return this.productService.getProducts(query);
   }
 
-  @Get('product/:slug')
-  getProductBySlug(@Param('slug') slug: string) {
-    return this.productService.getProductBySlug(slug);
-  }
-
   @Delete('product/:id')
   deleteProducts(@Param('id') id: string) {
     return this.productService.deleteProducts(id);
   }
 
-  @Delete('product/subcategory/:id')
-  deleteSubCategories(@Param('id') id: string) {
-    return this.productService.deleteSubCategories(id);
+  @Get('product/:slug')
+  getProductBySlug(@Param('slug') slug: string) {
+    return this.productService.getProductBySlug(slug);
   }
-  
 }
