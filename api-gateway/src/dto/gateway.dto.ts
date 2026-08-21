@@ -9,6 +9,12 @@ import {
   Min,
   IsHexColor,
   IsArray,
+  IsBoolean,
+  IsEnum,
+  IsDateString,
+  Max,
+  ValidateIf,
+  ArrayMinSize,
 } from 'class-validator';
 import { Type } from 'class-transformer';
 
@@ -189,4 +195,142 @@ export class AddToCartDto {
   @IsNumber()
   @Min(0)
   price: number;
+}
+
+// --- COUPON DTOS ---
+export enum CouponDiscountType {
+  PERCENTAGE = 'PERCENTAGE',
+  FIXED = 'FIXED',
+}
+
+export enum CouponScope {
+  ALL = 'ALL',
+  PRODUCTS = 'PRODUCTS',
+  CATEGORIES = 'CATEGORIES',
+}
+
+export class CreateCouponDto {
+  @IsString()
+  @IsNotEmpty()
+  code: string;
+
+  @IsEnum(CouponDiscountType)
+  discountType: CouponDiscountType;
+
+  @IsNumber()
+  @Min(0.01)
+  discountValue: number;
+
+  @IsOptional()
+  @IsNumber()
+  @Min(0)
+  minOrderValue?: number;
+
+  @IsOptional()
+  @IsNumber()
+  @Min(0)
+  maxDiscount?: number;
+
+  @IsOptional()
+  @IsDateString()
+  startsAt?: string;
+
+  @IsDateString()
+  expiresAt: string;
+
+  @IsOptional()
+  @IsNumber()
+  @Min(1)
+  usageLimit?: number;
+
+  @IsOptional()
+  @IsNumber()
+  @Min(1)
+  perUserLimit?: number;
+
+  @IsOptional()
+  @IsEnum(CouponScope)
+  scope?: CouponScope;
+
+  @IsOptional()
+  @IsArray()
+  @IsString({ each: true })
+  productIds?: string[];
+
+  @IsOptional()
+  @IsArray()
+  @IsString({ each: true })
+  categoryIds?: string[];
+
+  @IsOptional()
+  @IsBoolean()
+  isActive?: boolean;
+}
+
+export class UpdateCouponDto {
+  @IsOptional()
+  @IsString()
+  @IsNotEmpty()
+  code?: string;
+
+  @IsOptional()
+  @IsEnum(CouponDiscountType)
+  discountType?: CouponDiscountType;
+
+  @IsOptional()
+  @IsNumber()
+  @Min(0.01)
+  discountValue?: number;
+
+  @IsOptional()
+  @IsNumber()
+  @Min(0)
+  minOrderValue?: number;
+
+  @IsOptional()
+  @IsNumber()
+  @Min(0)
+  maxDiscount?: number;
+
+  @IsOptional()
+  @IsDateString()
+  startsAt?: string;
+
+  @IsOptional()
+  @IsDateString()
+  expiresAt?: string;
+
+  @IsOptional()
+  @IsNumber()
+  @Min(1)
+  usageLimit?: number;
+
+  @IsOptional()
+  @IsNumber()
+  @Min(1)
+  perUserLimit?: number;
+
+  @IsOptional()
+  @IsEnum(CouponScope)
+  scope?: CouponScope;
+
+  @IsOptional()
+  @IsArray()
+  @IsString({ each: true })
+  productIds?: string[];
+
+  @IsOptional()
+  @IsArray()
+  @IsString({ each: true })
+  categoryIds?: string[];
+
+  @IsOptional()
+  @IsBoolean()
+  isActive?: boolean;
+}
+
+export class ValidateCouponDto {
+  @IsString()
+  @IsNotEmpty()
+  code: string;
 }

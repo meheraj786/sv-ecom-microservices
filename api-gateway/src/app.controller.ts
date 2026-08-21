@@ -26,6 +26,9 @@ import {
   GetProductsQueryDto,
   PaginationQueryDto,
   AddToCartDto,
+  ValidateCouponDto,
+  UpdateCouponDto,
+  CreateCouponDto,
 } from './dto/gateway.dto';
 
 const isProduction = process.env.NODE_ENV === 'production';
@@ -54,12 +57,11 @@ export class AppController {
       this.appService.userService.loginUser(dto),
     );
 
-    // Set HTTP-Only Cookie securely based on Environment
     response.cookie('token', result.token, {
       httpOnly: true,
       secure: isProduction,
       sameSite: isProduction ? 'none' : 'lax',
-      maxAge: 24 * 60 * 60 * 1000, // 24 Hours
+      maxAge: 24 * 60 * 60 * 1000,
     });
 
     return { message: result.message, user: result.user };
@@ -122,7 +124,7 @@ export class AppController {
   }
 
   // =================================-------------------
-  // 3. PRODUCT CATALOG ENDPOINTS (With filters and pagination)
+  // 3. PRODUCT CATALOG ENDPOINTS
   // =================================-------------------
 
   @UseGuards(JwtAuthGuard, AdminGuard)
@@ -155,7 +157,6 @@ export class AppController {
     );
   }
 
-  // FIX: Delete category route missing chilo
   @UseGuards(JwtAuthGuard, AdminGuard)
   @Delete('product/category/:id')
   deleteCategory(@Param('id') id: string) {
@@ -197,7 +198,6 @@ export class AppController {
     );
   }
 
-  // FIX: Delete subcategory route missing chilo
   @UseGuards(JwtAuthGuard, AdminGuard)
   @Delete('product/subcategory/:id')
   deleteSubCategory(@Param('id') id: string) {
@@ -221,7 +221,6 @@ export class AppController {
     );
   }
 
-  // FIX: Delete product route missing chilo
   @UseGuards(JwtAuthGuard, AdminGuard)
   @Delete('product/:id')
   deleteProduct(@Param('id') id: string) {
@@ -238,7 +237,7 @@ export class AppController {
   }
 
   // =================================-------------------
-  // 4. SHOPPING CART ENDPOINTS (Automatic userId injection)
+  // 4. SHOPPING CART ENDPOINTS
   // =================================-------------------
 
   @UseGuards(JwtAuthGuard)
@@ -296,6 +295,62 @@ export class AppController {
     const userId = req.user.userId;
     return this.appService.rpcCall(
       this.appService.orderService.getOrders({ userId, ...query }),
+    );
+  }
+
+  // =================================-------------------
+  // 6. COUPON ENDPOINTS (Admin)
+  // =================================-------------------
+
+  @UseGuards(JwtAuthGuard, AdminGuard)
+  @Post('order/coupon')
+  createCoupon(@Body() dto: CreateCouponDto) {
+    return this.appService.rpcCall(
+      this.appService.orderService.createCoupon(dto),
+    );
+  }
+
+  @UseGuards(JwtAuthGuard, AdminGuard)
+  @Put('order/coupon/:id')
+  updateCoupon(@Param('id') id: string, @Body() dto: UpdateCouponDto) {
+    return this.appService.rpcCall(
+      this.appService.orderService.updateCoupon({ id, ...dto }),
+    );
+  }
+
+  @UseGuards(JwtAuthGuard)
+  @Post('order/coupon/validate')
+  validateCoupon(@Req() req: any, @Body() dto: ValidateCouponDto) {
+    const userId = req.user.userId;
+    return this.appService.rpcCall(
+      this.appService.orderService.validateCouponForUser({
+        userId,
+        code: dto.code,
+      }),
+    );
+  }
+
+  @UseGuards(JwtAuthGuard, AdminGuard)
+  @Get('order/coupon')
+  getCoupons(@Query() query: PaginationQueryDto) {
+    return this.appService.rpcCall(
+      this.appService.orderService.getCoupons(query),
+    );
+  }
+
+  @UseGuards(JwtAuthGuard, AdminGuard)
+  @Get('order/coupon/:id')
+  getCouponById(@Param('id') id: string) {
+    return this.appService.rpcCall(
+      this.appService.orderService.getCouponById({ id }),
+    );
+  }
+
+  @UseGuards(JwtAuthGuard, AdminGuard)
+  @Delete('order/coupon/:id')
+  deleteCoupon(@Param('id') id: string) {
+    return this.appService.rpcCall(
+      this.appService.orderService.deleteCoupon({ id }),
     );
   }
 }

@@ -136,6 +136,43 @@ export class AppService {
         ...(data.page ? { page: data.page } : {}),
         ...(data.limit ? { limit: data.limit } : {}),
       }),
+
+    createCoupon: (data: any) =>
+      this.httpRequest('order', '/order/coupon', 'POST', data),
+
+    getCoupons: (query: any) =>
+      this.httpRequest('order', '/order/coupon', 'GET', undefined, query),
+
+    getCouponById: (data: { id: string }) =>
+      this.httpRequest(
+        'order',
+        `/order/coupon/${encodeURIComponent(data.id)}`,
+        'GET',
+      ),
+
+    updateCoupon: (data: any) =>
+      this.httpRequest(
+        'order',
+        `/order/coupon/${encodeURIComponent(data.id)}`,
+        'PUT',
+        data,
+      ),
+
+    deleteCoupon: (data: { id: string }) =>
+      this.httpRequest(
+        'order',
+        `/order/coupon/${encodeURIComponent(data.id)}`,
+        'DELETE',
+      ),
+
+    validateCouponForUser: (data: { userId: string; code: string }) =>
+      this.httpRequest(
+        'order',
+        '/order/coupon/validate',
+        'POST',
+        { code: data.code },
+        { userId: data.userId },
+      ),
   };
 
   async rpcCall<T>(value: Promise<T> | T): Promise<T> {
