@@ -31,6 +31,7 @@ model SubCategory {
   createdAt  DateTime  @default(now())
   updatedAt  DateTime  @updatedAt
 
+  @@index([categoryId])
   @@map("subcategories")
 }
 
@@ -39,24 +40,27 @@ model Product {
   name           String
   slug           String           @unique
   description    String?
-  basePrice      Float // Default price if no variant is selected
-  discountPrice  Float? // Optional discount price
-  sku            String           @unique // Base SKU
-  images         String[] 
+  basePrice      Float
+  discountPrice  Float?
+  sku            String           @unique
+  images         String[]
   isNew          Boolean          @default(false)
   isBestSeller   Boolean          @default(false)
   isFeatured     Boolean          @default(false)
   isActive       Boolean          @default(true)
-  averageRating  Float            @default(0.0) 
-  specifications Json? 
+  averageRating  Float            @default(0.0)
+  specifications Json?
   categoryId     String
   subCategoryId  String?
   subCategory    SubCategory?     @relation(fields: [subCategoryId], references: [id], onDelete: SetNull)
-  variants       ProductVariant[] // Relation to product variants
-  reviews        Review[] // Relation to product reviews
+  variants       ProductVariant[]
+  reviews        Review[]
   createdAt      DateTime         @default(now())
   updatedAt      DateTime         @updatedAt
 
+  @@index([categoryId])
+  @@index([subCategoryId])
+  @@index([isActive])
   @@map("products")
 }
 
@@ -64,15 +68,17 @@ model ProductVariant {
   id                String   @id @default(cuid())
   productId         String
   product           Product  @relation(fields: [productId], references: [id], onDelete: Cascade)
-  sku               String   @unique // Variant specific SKU (e.g., LMN-WT-RED-S)
-  color             String? // E.g., "Crimson Red", "Midnight Black"
-  size              String? // E.g., "S", "M", "L", "10", "42"
-  price             Float? 
-  images            String[] 
+  sku               String   @unique
+  color             String?
+  size              String?
+  price             Float?
+  images            String[]
   quantityRemaining Int      @default(0)
   createdAt         DateTime @default(now())
   updatedAt         DateTime @updatedAt
 
+  @@index([productId])
+  @@index([quantityRemaining])
   @@map("product_variants")
 }
 
@@ -80,13 +86,15 @@ model Review {
   id        String   @id @default(cuid())
   productId String
   product   Product  @relation(fields: [productId], references: [id], onDelete: Cascade)
-  userId    String 
-  userName  String 
-  rating    Int 
+  userId    String
+  userName  String
+  rating    Int
   comment   String?
-  images    String[] 
+  images    String[]
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 
+  @@index([productId])
+  @@index([userId])
   @@map("reviews")
 }

@@ -45,12 +45,27 @@ export { Prisma }
  */
 export type Order = Prisma.OrderModel
 /**
+ * Model OrderItem
+ * 
+ */
+export type OrderItem = Prisma.OrderItemModel
+/**
  * Model Coupon
  * 
  */
 export type Coupon = Prisma.CouponModel
 /**
- * Model OrderItem
+ * Model CouponProduct
  * 
  */
-export type OrderItem = Prisma.OrderItemModel
+export type CouponProduct = Prisma.CouponProductModel
+/**
+ * Model CouponCategory
+ * 
+ */
+export type CouponCategory = Prisma.CouponCategoryModel
+/**
+ * Model CouponUsage
+ * 
+ */
+export type CouponUsage = Prisma.CouponUsageModel

@@ -1,13 +1,14 @@
 import {
   Body,
   Controller,
+  Delete,
   Get,
   Param,
   Post,
   Put,
-  Delete,
   Query,
 } from '@nestjs/common';
+
 import { OrderService } from './order.service';
 import { PaginationQueryDto } from './dto/pagination-query.dto';
 import { CreateCouponDto } from './dto/create-coupon.dto';
@@ -16,7 +17,7 @@ import { ValidateCouponDto } from './dto/validate-coupon.dto';
 
 @Controller('order')
 export class OrderController {
-  constructor(private orderService: OrderService) {}
+  constructor(private readonly orderService: OrderService) {}
 
   @Post()
   createOrder(
@@ -39,13 +40,13 @@ export class OrderController {
     return this.orderService.getOrders(userId, query);
   }
 
-  // --- COUPON VALIDATION ---
   @Post('coupon/validate')
-  validateCoupon(@Body() dto: ValidateCouponDto) {
-    return this.orderService.validateCoupon(dto.code, dto.subtotal);
+  validateCoupon(
+    @Query('userId') userId: string,
+    @Body() dto: ValidateCouponDto,
+  ) {
+    return this.orderService.validateCouponForUser(userId, dto.code);
   }
-
-  // --- COUPON CRUD ENDPOINTS ---
 
   @Post('coupon')
   createCoupon(@Body() dto: CreateCouponDto) {

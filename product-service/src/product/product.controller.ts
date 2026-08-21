@@ -8,6 +8,7 @@ import {
   Put,
   Query,
 } from '@nestjs/common';
+
 import { ProductService } from './product.service';
 import { CreateCategoryDto } from './dto/create-category.dto';
 import { CreateSubCategoryDto } from './dto/create-subcategory.dto';
@@ -70,6 +71,11 @@ export class ProductController {
   @Delete('subcategory/:id')
   deleteSubCategories(@Param('id') id: string) {
     return this.productService.deleteSubCategories(id);
+  }
+
+  @Post('coupon-eligibility')
+  getCouponEligibility(@Body('productIds') productIds: string[]) {
+    return this.productService.getCouponEligibility(productIds);
   }
 
   @Post()
