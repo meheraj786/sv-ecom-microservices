@@ -4,6 +4,8 @@ import {
   IsOptional,
   IsNumber,
   Min,
+  IsArray,
+  ArrayMinSize,
 } from 'class-validator';
 
 export class CreateProductDto {
@@ -27,11 +29,13 @@ export class CreateProductDto {
   @IsNotEmpty({ message: 'Product SKU is required' })
   sku: string;
 
-  @IsString()
-  @IsNotEmpty({ message: 'CategoryId is required' })
-  categoryId: string;
+  @IsArray()
+  @ArrayMinSize(1, { message: 'At least one category is required' })
+  @IsString({ each: true })
+  categoryIds: string[];
 
-  @IsString()
+  @IsArray()
   @IsOptional()
-  subCategoryId?: string;
+  @IsString({ each: true })
+  subCategoryIds?: string[];
 }

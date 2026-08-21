@@ -26,9 +26,13 @@ interface BillingInfo {
   country: string;
 }
 
+interface ProductCategoryItem {
+  categoryId: string;
+}
+
 interface ProductEligibility {
   id: string;
-  categoryId: string;
+  categories: ProductCategoryItem[];
 }
 
 interface CouponValidationResult {
@@ -119,7 +123,7 @@ export class OrderService {
 
     return this.httpRequest<ProductEligibility[]>(
       this.productBaseUrl,
-      '/products/coupon-eligibility',
+      '/product/coupon-eligibility',
       'POST',
       {
         productIds,
@@ -224,7 +228,11 @@ export class OrderService {
 
     if (coupon.scope === 'CATEGORIES') {
       for (const product of products) {
-        if (couponCategoryIds.has(product.categoryId)) {
+        const isEligible = product.categories?.some((cat) =>
+          couponCategoryIds.has(cat.categoryId),
+        );
+
+        if (isEligible) {
           eligibleProductIds.add(product.id);
         }
       }

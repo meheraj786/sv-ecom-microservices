@@ -260,31 +260,60 @@ export class ProductService {
       throw new BadRequestException('Product SKU already exists');
     }
 
-    const categoryExists = await this.prisma.write.category.findUnique({
-      where: { id: dto.categoryId },
+    const categoriesCount = await this.prisma.write.category.count({
+      where: {
+        id: {
+          in: dto.categoryIds,
+        },
+      },
     });
 
-    if (!categoryExists) {
-      throw new BadRequestException('Parent Category does not exist');
+    if (categoriesCount !== dto.categoryIds.length) {
+      throw new BadRequestException('One or more categories do not exist');
     }
 
-    if (dto.subCategoryId) {
-      const subCategoryExists = await this.prisma.write.subCategory.findUnique({
-        where: { id: dto.subCategoryId },
+    if (dto.subCategoryIds && dto.subCategoryIds.length > 0) {
+      const subCategoriesCount = await this.prisma.write.subCategory.count({
+        where: {
+          id: {
+            in: dto.subCategoryIds,
+          },
+        },
       });
 
-      if (!subCategoryExists) {
-        throw new BadRequestException('Optional SubCategory does not exist');
+      if (subCategoriesCount !== dto.subCategoryIds.length) {
+        throw new BadRequestException('One or more subcategories do not exist');
       }
     }
 
-    const { subCategoryId, price, ...productData } = dto;
+    const { categoryIds, subCategoryIds, price, ...productData } = dto;
 
     return this.prisma.write.product.create({
       data: {
         ...productData,
         basePrice: price,
-        subCategoryId: subCategoryId || null,
+        categories: {
+          create: categoryIds.map((categoryId) => ({ categoryId })),
+        },
+        subCategories: subCategoryIds?.length
+          ? {
+              create: subCategoryIds.map((subCategoryId) => ({
+                subCategoryId,
+              })),
+            }
+          : undefined,
+      },
+      include: {
+        categories: {
+          include: {
+            category: true,
+          },
+        },
+        subCategories: {
+          include: {
+            subCategory: true,
+          },
+        },
       },
     });
   }
@@ -299,11 +328,19 @@ export class ProductService {
     };
 
     if (query.categoryId) {
-      where.categoryId = query.categoryId;
+      where.categories = {
+        some: {
+          categoryId: query.categoryId,
+        },
+      };
     }
 
     if (query.subCategoryId) {
-      where.subCategoryId = query.subCategoryId;
+      where.subCategories = {
+        some: {
+          subCategoryId: query.subCategoryId,
+        },
+      };
     }
 
     if (query.isNew !== undefined) {
@@ -405,6 +442,21 @@ export class ProductService {
       }
     }
 
+    const include = {
+      categories: {
+        include: {
+          category: true,
+        },
+      },
+      subCategories: {
+        include: {
+          subCategory: true,
+        },
+      },
+      variants: true,
+      reviews: true,
+    };
+
     const [totalProducts, products] = await Promise.all([
       this.prisma.read.product.count({
         where,
@@ -413,15 +465,7 @@ export class ProductService {
         where,
         skip,
         take: limit,
-        include: {
-          subCategory: {
-            include: {
-              category: true,
-            },
-          },
-          variants: true,
-          reviews: true,
-        },
+        include,
         orderBy,
       }),
     ]);
@@ -435,15 +479,7 @@ export class ProductService {
           where,
           skip,
           take: limit,
-          include: {
-            subCategory: {
-              include: {
-                category: true,
-              },
-            },
-            variants: true,
-            reviews: true,
-          },
+          include,
           orderBy,
         }),
       ]);
@@ -473,27 +509,30 @@ export class ProductService {
   }
 
   async getProductBySlug(slug: string) {
-    let product = await this.prisma.read.product.findUnique({
-      where: { slug },
-      include: {
-        subCategory: {
-          include: {
-            category: true,
-          },
+    const include = {
+      categories: {
+        include: {
+          category: true,
         },
       },
+      subCategories: {
+        include: {
+          subCategory: true,
+        },
+      },
+      variants: true,
+      reviews: true,
+    };
+
+    let product = await this.prisma.read.product.findUnique({
+      where: { slug },
+      include,
     });
 
     if (!product) {
       product = await this.prisma.write.product.findUnique({
         where: { slug },
-        include: {
-          subCategory: {
-            include: {
-              category: true,
-            },
-          },
-        },
+        include,
       });
     }
 
@@ -509,6 +548,15 @@ export class ProductService {
       return [];
     }
 
+    const select = {
+      id: true,
+      categories: {
+        select: {
+          categoryId: true,
+        },
+      },
+    };
+
     const products = await this.prisma.read.product.findMany({
       where: {
         id: {
@@ -516,10 +564,7 @@ export class ProductService {
         },
         isActive: true,
       },
-      select: {
-        id: true,
-        categoryId: true,
-      },
+      select,
     });
 
     if (products.length === 0) {
@@ -530,10 +575,7 @@ export class ProductService {
           },
           isActive: true,
         },
-        select: {
-          id: true,
-          categoryId: true,
-        },
+        select,
       });
 
       return masterProducts;
