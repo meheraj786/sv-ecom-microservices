@@ -1,6 +1,6 @@
 import { Injectable } from '@nestjs/common';
 
-type ServiceName = 'user' | 'product' | 'cart' | 'order';
+type ServiceName = 'user' | 'product' | 'cart' | 'order' | 'inventory';
 
 type QueryValue = string | number | boolean | undefined | null;
 
@@ -11,6 +11,7 @@ export class AppService {
     product: process.env.PRODUCT_SERVICE_URL ?? 'http://localhost:3002',
     cart: process.env.CART_SERVICE_URL ?? 'http://localhost:3003',
     order: process.env.ORDER_SERVICE_URL ?? 'http://localhost:3005',
+    inventory: process.env.INVENTORY_SERVICE_URL ?? 'http://localhost:3004',
   };
 
   public userService = {
@@ -127,6 +128,13 @@ export class AppService {
       this.httpRequest('cart', '/cart', 'DELETE', { userId: data.userId }),
   };
 
+  public inventoryService = {
+    addBatch: (data: any) =>
+      this.httpRequest('inventory', '/inventory/batch', 'POST', data),
+    calculateFifoPrice: (data: any) =>
+      this.httpRequest('inventory', '/inventory/fifo-price', 'POST', data),
+  };
+
   public orderService = {
     createOrder: (data: any) =>
       this.httpRequest('order', '/order', 'POST', data),
@@ -172,6 +180,33 @@ export class AppService {
         'POST',
         { code: data.code },
         { userId: data.userId },
+      ),
+
+    createDivision: (data: any) =>
+      this.httpRequest('order', '/division', 'POST', data),
+
+    getAllDivisions: () => this.httpRequest('order', '/division', 'GET'),
+
+    getDivisionById: (data: { id: string }) =>
+      this.httpRequest(
+        'order',
+        `/division/${encodeURIComponent(data.id)}`,
+        'GET',
+      ),
+
+    updateDivision: (data: any) =>
+      this.httpRequest(
+        'order',
+        `/division/${encodeURIComponent(data.id)}`,
+        'PUT',
+        data,
+      ),
+
+    deleteDivision: (data: { id: string }) =>
+      this.httpRequest(
+        'order',
+        `/division/${encodeURIComponent(data.id)}`,
+        'DELETE',
       ),
   };
 

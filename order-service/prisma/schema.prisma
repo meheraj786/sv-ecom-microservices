@@ -102,3 +102,13 @@ model CouponUsage {
   @@index([userId])
   @@map("coupon_usages")
 }
+
+model Division {
+  id              String   @id @default(cuid())
+  name            String
+  deliveryCharge Float
+  createdAt       DateTime @default(now())
+  updatedAt       DateTime @updatedAt
+
+  @@map("divisions")
+}

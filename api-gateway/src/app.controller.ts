@@ -29,6 +29,8 @@ import {
   ValidateCouponDto,
   UpdateCouponDto,
   CreateCouponDto,
+  CreateDivisionDto,
+  UpdateDivisionDto,
 } from './dto/gateway.dto';
 
 const isProduction = process.env.NODE_ENV === 'production';
@@ -36,10 +38,6 @@ const isProduction = process.env.NODE_ENV === 'production';
 @Controller()
 export class AppController {
   constructor(private appService: AppService) {}
-
-  // =================================-------------------
-  // 1. USER & AUTHENTICATION ENDPOINTS (Sets Cookies)
-  // =================================-------------------
 
   @Post('auth/register')
   registerUser(@Body() dto: RegisterUserDto) {
@@ -103,10 +101,6 @@ export class AppController {
     return { message: 'Logged out successfully' };
   }
 
-  // =================================-------------------
-  // 2. STOREFRONT CMS SETTINGS
-  // =================================-------------------
-
   @Get('account/:vendorId')
   getStoreSettings(@Param('vendorId') vendorId: string) {
     return this.appService.rpcCall(
@@ -122,10 +116,6 @@ export class AppController {
       this.appService.userService.updateSettings({ vendorId, ...dto }),
     );
   }
-
-  // =================================-------------------
-  // 3. PRODUCT CATALOG ENDPOINTS
-  // =================================-------------------
 
   @UseGuards(JwtAuthGuard, AdminGuard)
   @Post('product/category')
@@ -236,10 +226,6 @@ export class AppController {
     );
   }
 
-  // =================================-------------------
-  // 4. SHOPPING CART ENDPOINTS
-  // =================================-------------------
-
   @UseGuards(JwtAuthGuard)
   @Get('cart')
   getCart(@Req() req: any) {
@@ -276,10 +262,6 @@ export class AppController {
     );
   }
 
-  // =================================-------------------
-  // 5. ORDER CHECKOUT & PURCHASES
-  // =================================-------------------
-
   @UseGuards(JwtAuthGuard)
   @Post('order')
   createOrder(@Req() req: any) {
@@ -298,9 +280,13 @@ export class AppController {
     );
   }
 
-  // =================================-------------------
-  // 6. COUPON ENDPOINTS (Admin)
-  // =================================-------------------
+  @UseGuards(JwtAuthGuard, AdminGuard)
+  @Post('inventory/batch')
+  addInventoryBatch(@Body() dto: any) {
+    return this.appService.rpcCall(
+      this.appService.inventoryService.addBatch(dto),
+    );
+  }
 
   @UseGuards(JwtAuthGuard, AdminGuard)
   @Post('order/coupon')
@@ -351,6 +337,44 @@ export class AppController {
   deleteCoupon(@Param('id') id: string) {
     return this.appService.rpcCall(
       this.appService.orderService.deleteCoupon({ id }),
+    );
+  }
+
+  @UseGuards(JwtAuthGuard, AdminGuard)
+  @Post('order/division')
+  createDivision(@Body() dto: CreateDivisionDto) {
+    return this.appService.rpcCall(
+      this.appService.orderService.createDivision(dto),
+    );
+  }
+
+  @Get('order/divisions')
+  getAllDivisions() {
+    return this.appService.rpcCall(
+      this.appService.orderService.getAllDivisions(),
+    );
+  }
+
+  @Get('order/division/:id')
+  getDivisionById(@Param('id') id: string) {
+    return this.appService.rpcCall(
+      this.appService.orderService.getDivisionById({ id }),
+    );
+  }
+
+  @UseGuards(JwtAuthGuard, AdminGuard)
+  @Put('order/division/:id')
+  updateDivision(@Param('id') id: string, @Body() dto: UpdateDivisionDto) {
+    return this.appService.rpcCall(
+      this.appService.orderService.updateDivision({ id, ...dto }),
+    );
+  }
+
+  @UseGuards(JwtAuthGuard, AdminGuard)
+  @Delete('order/division/:id')
+  deleteDivision(@Param('id') id: string) {
+    return this.appService.rpcCall(
+      this.appService.orderService.deleteDivision({ id }),
     );
   }
 }
