@@ -7,6 +7,7 @@ import {
   IsArray,
   ArrayMinSize,
 } from 'class-validator';
+import { Type } from 'class-transformer';
 
 export class CreateProductDto {
   @IsString()
@@ -21,6 +22,7 @@ export class CreateProductDto {
   @IsOptional()
   description?: string;
 
+  @Type(() => Number)
   @IsNumber({}, { message: 'Price must be a valid number' })
   @Min(0, { message: 'Price cannot be negative' })
   price: number;
@@ -38,4 +40,13 @@ export class CreateProductDto {
   @IsOptional()
   @IsString({ each: true })
   subCategoryIds?: string[];
+
+  @IsOptional()
+  @IsString()
+  image?: string;
+
+  @IsOptional()
+  @IsArray()
+  @IsString({ each: true })
+  images?: string[];
 }

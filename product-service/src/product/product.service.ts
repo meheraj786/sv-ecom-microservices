@@ -286,12 +286,22 @@ export class ProductService {
       }
     }
 
-    const { categoryIds, subCategoryIds, price, ...productData } = dto;
+    const {
+      categoryIds,
+      subCategoryIds,
+      price,
+      image,
+      images,
+      ...productData
+    } = dto;
+
+    const productImages = images || (image ? [image] : []);
 
     return this.prisma.write.product.create({
       data: {
         ...productData,
-        basePrice: price,
+        basePrice: Number(price),
+        images: productImages,
         categories: {
           create: categoryIds.map((categoryId) => ({ categoryId })),
         },
