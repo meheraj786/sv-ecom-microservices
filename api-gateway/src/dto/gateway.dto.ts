@@ -12,13 +12,10 @@ import {
   IsBoolean,
   IsEnum,
   IsDateString,
-  Max,
-  ValidateIf,
   ArrayMinSize,
 } from 'class-validator';
 import { Type } from 'class-transformer';
 
-// --- AUTH DTOS ---
 export class RegisterUserDto {
   @IsEmail()
   @IsNotEmpty()
@@ -64,7 +61,6 @@ export class LoginDto {
   password: string;
 }
 
-// --- CMS ACCOUNT DTOS ---
 export class UpdateAccountDto {
   @IsString()
   @IsOptional()
@@ -86,7 +82,6 @@ export class UpdateAccountDto {
   featuredCategoryIds?: string[];
 }
 
-// --- CATEGORY & PRODUCT CATALOG DTOS ---
 export class CreateCategoryDto {
   @IsString()
   @IsNotEmpty()
@@ -95,6 +90,10 @@ export class CreateCategoryDto {
   @IsString()
   @IsNotEmpty()
   slug: string;
+
+  @IsOptional()
+  @IsString()
+  image?: string;
 }
 
 export class CreateSubCategoryDto {
@@ -109,39 +108,54 @@ export class CreateSubCategoryDto {
   @IsString()
   @IsNotEmpty()
   categoryId: string;
+
+  @IsOptional()
+  @IsString()
+  image?: string;
 }
 
 export class CreateProductDto {
   @IsString()
-  @IsNotEmpty()
+  @IsNotEmpty({ message: 'Product name is required' })
   name: string;
 
   @IsString()
-  @IsNotEmpty()
+  @IsNotEmpty({ message: 'Product slug is required' })
   slug: string;
 
   @IsString()
   @IsOptional()
   description?: string;
 
-  @IsNumber()
-  @Min(0)
+  @Type(() => Number)
+  @IsNumber({}, { message: 'Price must be a valid number' })
+  @Min(0, { message: 'Price cannot be negative' })
   price: number;
 
   @IsString()
-  @IsNotEmpty()
+  @IsNotEmpty({ message: 'Product SKU is required' })
   sku: string;
 
-  @IsString()
-  @IsNotEmpty()
-  categoryId: string;
+  @IsArray()
+  @ArrayMinSize(1, { message: 'At least one category is required' })
+  @IsString({ each: true })
+  categoryIds: string[];
 
-  @IsString()
+  @IsArray()
   @IsOptional()
-  subCategoryId?: string;
+  @IsString({ each: true })
+  subCategoryIds?: string[];
+
+  @IsOptional()
+  @IsString()
+  image?: string;
+
+  @IsOptional()
+  @IsArray()
+  @IsString({ each: true })
+  images?: string[];
 }
 
-// --- PAGINATION & QUERY DTOS ---
 export class PaginationQueryDto {
   @IsOptional()
   @Type(() => Number)
@@ -182,7 +196,6 @@ export class GetProductsQueryDto extends PaginationQueryDto {
   search?: string;
 }
 
-// --- CART DTOS ---
 export class AddToCartDto {
   @IsString()
   @IsNotEmpty()
@@ -197,7 +210,6 @@ export class AddToCartDto {
   price: number;
 }
 
-// --- COUPON DTOS ---
 export enum CouponDiscountType {
   PERCENTAGE = 'PERCENTAGE',
   FIXED = 'FIXED',

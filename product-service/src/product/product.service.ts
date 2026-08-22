@@ -518,7 +518,7 @@ export class ProductService {
     };
   }
 
-  async getProductBySlug(slug: string) {
+  async getProductBySlug(identifier: string) {
     const include = {
       categories: {
         include: {
@@ -534,20 +534,40 @@ export class ProductService {
       reviews: true,
     };
 
-    let product = await this.prisma.read.product.findUnique({
-      where: { slug },
+    const whereCondition: Prisma.ProductWhereInput = {
+      OR: [
+        {
+          slug: {
+            equals: identifier,
+            mode: 'insensitive',
+          },
+        },
+        {
+          id: identifier,
+        },
+        {
+          name: {
+            equals: identifier,
+            mode: 'insensitive',
+          },
+        },
+      ],
+    };
+
+    let product = await this.prisma.read.product.findFirst({
+      where: whereCondition,
       include,
     });
 
     if (!product) {
-      product = await this.prisma.write.product.findUnique({
-        where: { slug },
+      product = await this.prisma.write.product.findFirst({
+        where: whereCondition,
         include,
       });
     }
 
     if (!product) {
-      throw new BadRequestException('Product not found');
+      throw new NotFoundException('Product not found');
     }
 
     return product;
