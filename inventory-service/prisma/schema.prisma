@@ -1,7 +1,7 @@
 generator client {
   provider     = "prisma-client"
-  output       = "../src/generated/prisma" 
-  moduleFormat = "cjs" 
+  output       = "../src/generated/prisma"
+  moduleFormat = "cjs"
 }
 
 datasource db {
@@ -11,7 +11,6 @@ datasource db {
 model Stock {
   id                String  @id @default(cuid())
   variantId         String
-
   purchasePrice     Float
   sellingPrice      Float
   quantityReceived  Int
@@ -19,8 +18,8 @@ model Stock {
   batchNumber       String?
   note              String?
 
-  createdAt         DateTime @default(now())
-  updatedAt         DateTime @updatedAt
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
 
   @@index([variantId])
   @@index([createdAt])

@@ -8,11 +8,12 @@ import {
   Put,
   Query,
 } from '@nestjs/common';
-
 import { ProductService } from './product.service';
 import { CreateCategoryDto } from './dto/create-category.dto';
 import { CreateSubCategoryDto } from './dto/create-subcategory.dto';
 import { CreateProductDto } from './dto/create-product.dto';
+import { UpdateProductDto } from './dto/update-product.dto';
+import { CreateVariantDto, UpdateVariantDto } from './dto/create-variant.dto';
 import { GetProductsQueryDto } from './dto/get-products-query.dto';
 import { PaginationQueryDto } from './dto/pagination-query.dto';
 
@@ -88,9 +89,39 @@ export class ProductController {
     return this.productService.getProducts(query);
   }
 
+  @Put('variant/:id')
+  updateVariant(@Param('id') id: string, @Body() dto: UpdateVariantDto) {
+    return this.productService.updateVariant(id, dto);
+  }
+
+  @Delete('variant/:id')
+  deleteVariant(@Param('id') id: string) {
+    return this.productService.deleteVariant(id);
+  }
+
+  @Post(':id/variant')
+  createVariant(@Param('id') id: string, @Body() dto: CreateVariantDto) {
+    return this.productService.createVariant(id, dto);
+  }
+
+  @Get(':id/variants')
+  getVariantsByProduct(@Param('id') id: string) {
+    return this.productService.getVariantsByProduct(id);
+  }
+
+  @Get('id/:id')
+  getProductById(@Param('id') id: string) {
+    return this.productService.getProductById(id);
+  }
+
+  @Put(':id')
+  updateProduct(@Param('id') id: string, @Body() dto: UpdateProductDto) {
+    return this.productService.updateProduct(id, dto);
+  }
+
   @Delete(':id')
   deleteProducts(@Param('id') id: string) {
-    return this.productService.deleteProducts(id);
+    return this.productService.deleteProduct(id);
   }
 
   @Get(':slug')

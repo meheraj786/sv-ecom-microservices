@@ -57,12 +57,6 @@ export class GetProductsQueryDto extends PaginationQueryDto {
   size?: string;
 
   @IsOptional()
-  @Transform(({ value }) => value === 'true' || value === true)
-  @IsBoolean()
-  inStock?: boolean;
-
-  @IsOptional()
   @IsString()
-  sortBy?:
-    'newest' | 'price-low' | 'price-high' | 'rating-high' | 'reviews-count';
+  sortBy?: 'newest' | 'price-low' | 'price-high' | 'rating-high';
 }

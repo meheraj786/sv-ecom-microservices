@@ -37,29 +37,27 @@ model SubCategory {
 }
 
 model Product {
-  id           String           @id @default(cuid())
-  name         String
-  slug         String           @unique
-  description  String?
-  isActive     Boolean          @default(true)
-  isNew        Boolean          @default(false)
-  isBestSeller Boolean          @default(false)
-  isFeatured   Boolean          @default(false)
+  id            String   @id @default(cuid())
+  name          String
+  slug          String   @unique
+  sku           String?  @unique
+  baseImage     String?
+  images        String[]
+  description   String?
+  isActive      Boolean  @default(true)
+  isNew         Boolean  @default(false)
+  isBestSeller  Boolean  @default(false)
+  isFeatured    Boolean  @default(false)
+  basePrice     Float?
+  discountPrice Float?
+  averageRating Float    @default(0.0)
 
-  // Backward-compatible fields
-  basePrice      Float?
-  discountPrice  Float?
-  sku            String?          @unique
-  images         String[]
-  averageRating  Float            @default(0.0)
-  specifications Json?
-
-  categories     ProductCategory[]
-  subCategories  ProductSubCategory[]
-  variants       ProductVariant[]
-  reviews        Review[]
-  createdAt      DateTime         @default(now())
-  updatedAt      DateTime         @updatedAt
+  categories    ProductCategory[]
+  subCategories ProductSubCategory[]
+  variants      ProductVariant[]
+  reviews       Review[]
+  createdAt     DateTime             @default(now())
+  updatedAt     DateTime             @updatedAt
 
   @@index([isActive])
   @@map("products")
@@ -90,23 +88,59 @@ model ProductSubCategory {
 }
 
 model ProductVariant {
-  id          String   @id @default(cuid())
-  productId   String
-  product     Product  @relation(fields: [productId], references: [id], onDelete: Cascade)
+  id        String  @id @default(cuid())
+  productId String
+  product   Product @relation(fields: [productId], references: [id], onDelete: Cascade)
 
-  sku         String   @unique
-  attributes  Json
-  images      String[]
-  isActive    Boolean  @default(true)
+  sku      String   @unique
+  price    Float?
+  images   String[]
+  isActive Boolean  @default(true)
 
-  // Legacy/compat fields (kept optional for backward compatibility)
-  color             String?
-  size              String?
-  price             Float?
-  quantityRemaining Int?     @default(0)
+  // Fashion & Apparel
+  color    String?
+  size     String?
+  fabric   String?
+  material String?
+  fit      String?
+  sleeve   String?
+  neckType String?
+  pattern  String?
 
-  createdAt   DateTime @default(now())
-  updatedAt   DateTime @updatedAt
+  // Footwear
+  shoeSize String?
+
+  // Electronics
+  ram          String?
+  storage      String?
+  processor    String?
+  screenSize   String?
+  connectivity String?
+
+  // Beauty & Skincare
+  volume    String?
+  shade     String?
+  skinType  String?
+  fragrance String?
+
+  // Food & Grocery
+  weight      String?
+  flavor      String?
+  packageType String?
+
+  // Jewelry, Furniture, Books
+  materialPurity String?
+  strap          String?
+  dimensions     String?
+  format         String?
+
+  // Universal
+  packQuantity String?
+  condition    String?
+  warranty     String?
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
 
   @@index([productId])
   @@map("product_variants")

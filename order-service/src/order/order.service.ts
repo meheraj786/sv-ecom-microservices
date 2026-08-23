@@ -12,8 +12,9 @@ import { UpdateCouponDto } from './dto/update-coupon.dto';
 
 interface CartItem {
   productId: string;
+  variantId: string;
   quantity: number;
-  price: number;
+  price?: number;
 }
 
 interface BillingInfo {
@@ -80,7 +81,6 @@ export class OrderService {
 
     if (!response.ok) {
       const text = await response.text();
-
       throw new Error(
         `HTTP ${method} ${url.toString()} failed with status ${response.status}: ${text}`,
       );
@@ -125,9 +125,7 @@ export class OrderService {
       this.productBaseUrl,
       '/product/coupon-eligibility',
       'POST',
-      {
-        productIds,
-      },
+      { productIds },
     );
   }
 
@@ -157,7 +155,7 @@ export class OrderService {
   async validateCoupon(
     code: string,
     userId: string,
-    cartItems: CartItem[],
+    cartItems: { productId: string; quantity: number; price: number }[],
     subtotal: number,
   ): Promise<CouponValidationResult> {
     const normalizedCode = code.trim().toUpperCase();
@@ -199,13 +197,11 @@ export class OrderService {
     }
 
     const productIds = cartItems.map((item) => item.productId);
-
     const products = await this.getProductEligibility(productIds);
 
     const couponProductIds = new Set(
       coupon.products.map((item) => item.productId),
     );
-
     const couponCategoryIds = new Set(
       coupon.categories.map((item) => item.categoryId),
     );
@@ -216,33 +212,22 @@ export class OrderService {
       for (const product of products) {
         eligibleProductIds.add(product.id);
       }
-    }
-
-    if (coupon.scope === 'PRODUCTS') {
+    } else if (coupon.scope === 'PRODUCTS') {
       for (const product of products) {
         if (couponProductIds.has(product.id)) {
           eligibleProductIds.add(product.id);
         }
       }
-    }
-
-    if (coupon.scope === 'CATEGORIES') {
+    } else if (coupon.scope === 'CATEGORIES') {
       for (const product of products) {
         const isEligible = product.categories?.some((cat) =>
           couponCategoryIds.has(cat.categoryId),
         );
-
         if (isEligible) {
           eligibleProductIds.add(product.id);
         }
       }
-    }
-
-    if (
-      coupon.scope !== 'ALL' &&
-      coupon.scope !== 'PRODUCTS' &&
-      coupon.scope !== 'CATEGORIES'
-    ) {
+    } else {
       throw new BadRequestException('Invalid coupon scope');
     }
 
@@ -250,7 +235,6 @@ export class OrderService {
       if (!eligibleProductIds.has(item.productId)) {
         return total;
       }
-
       return total + item.price * item.quantity;
     }, 0);
 
@@ -292,25 +276,27 @@ export class OrderService {
     }
 
     let subtotal = 0;
-
     const orderItemsToCreate: {
       productId: string;
+      variantId: string;
       quantity: number;
       price: number;
     }[] = [];
 
     for (const item of cartItems) {
+      const targetVariantId = item.variantId || item.productId;
+
       const fifoCheck = await this.httpRequest<{
         totalPrice: number;
         isAvailable: boolean;
       }>(this.inventoryBaseUrl, '/inventory/fifo-price', 'POST', {
-        productId: item.productId,
+        variantId: targetVariantId,
         quantity: item.quantity,
       });
 
       if (!fifoCheck.isAvailable) {
         throw new BadRequestException(
-          `Product ${item.productId} does not have enough stock available.`,
+          `Variant ${targetVariantId} does not have enough stock available.`,
         );
       }
 
@@ -318,6 +304,7 @@ export class OrderService {
 
       orderItemsToCreate.push({
         productId: item.productId,
+        variantId: targetVariantId,
         quantity: item.quantity,
         price: fifoCheck.totalPrice / item.quantity,
       });
@@ -339,12 +326,8 @@ export class OrderService {
       normalizedCouponCode = couponCode.trim().toUpperCase();
 
       const coupon = await this.prisma.coupon.findUnique({
-        where: {
-          code: normalizedCouponCode,
-        },
-        select: {
-          id: true,
-        },
+        where: { code: normalizedCouponCode },
+        select: { id: true },
       });
 
       if (!coupon) {
@@ -362,9 +345,7 @@ export class OrderService {
     const order = await this.prisma.$transaction(async (tx) => {
       if (couponId) {
         const coupon = await tx.coupon.findUnique({
-          where: {
-            id: couponId,
-          },
+          where: { id: couponId },
         });
 
         if (!coupon || !coupon.isActive) {
@@ -372,15 +353,12 @@ export class OrderService {
         }
 
         const now = new Date();
-
         if (coupon.startsAt && coupon.startsAt > now) {
           throw new BadRequestException('Coupon is not active yet');
         }
-
         if (coupon.expiresAt <= now) {
           throw new BadRequestException('Coupon has expired');
         }
-
         if (
           coupon.usageLimit !== null &&
           coupon.usedCount >= coupon.usageLimit
@@ -390,10 +368,7 @@ export class OrderService {
 
         if (coupon.perUserLimit) {
           const userUsageCount = await tx.couponUsage.count({
-            where: {
-              couponId,
-              userId,
-            },
+            where: { couponId, userId },
           });
 
           if (userUsageCount >= coupon.perUserLimit) {
@@ -404,14 +379,8 @@ export class OrderService {
         }
 
         await tx.coupon.update({
-          where: {
-            id: couponId,
-          },
-          data: {
-            usedCount: {
-              increment: 1,
-            },
-          },
+          where: { id: couponId },
+          data: { usedCount: { increment: 1 } },
         });
       }
 
@@ -429,6 +398,7 @@ export class OrderService {
         data: orderItemsToCreate.map((item) => ({
           orderId: newOrder.id,
           productId: item.productId,
+          variantId: item.variantId,
           quantity: item.quantity,
           price: item.price,
         })),
@@ -452,7 +422,7 @@ export class OrderService {
       userId,
       billing,
       items: orderItemsToCreate.map((item) => ({
-        productId: item.productId,
+        variantId: item.variantId,
         quantity: item.quantity,
       })),
     });
@@ -461,9 +431,7 @@ export class OrderService {
       this.cartBaseUrl,
       '/cart',
       'DELETE',
-      {
-        userId,
-      },
+      { userId },
     );
 
     return {
@@ -483,23 +451,13 @@ export class OrderService {
     const skip = (page - 1) * limit;
 
     const [total, orders] = await Promise.all([
-      this.prisma.order.count({
-        where: {
-          userId,
-        },
-      }),
+      this.prisma.order.count({ where: { userId } }),
       this.prisma.order.findMany({
-        where: {
-          userId,
-        },
+        where: { userId },
         skip,
         take: limit,
-        include: {
-          items: true,
-        },
-        orderBy: {
-          createdAt: 'desc',
-        },
+        include: { items: true },
+        orderBy: { createdAt: 'desc' },
       }),
     ]);
 
@@ -517,12 +475,7 @@ export class OrderService {
   async createCoupon(dto: CreateCouponDto) {
     const code = dto.code.trim().toUpperCase();
 
-    const existing = await this.prisma.coupon.findUnique({
-      where: {
-        code,
-      },
-    });
-
+    const existing = await this.prisma.coupon.findUnique({ where: { code } });
     if (existing) {
       throw new BadRequestException('Coupon code already exists');
     }
@@ -532,7 +485,6 @@ export class OrderService {
     }
 
     const scope = dto.scope ?? 'ALL';
-
     if (!['ALL', 'PRODUCTS', 'CATEGORIES'].includes(scope)) {
       throw new BadRequestException('Invalid coupon scope');
     }
@@ -545,16 +497,17 @@ export class OrderService {
       throw new BadRequestException('Percentage discount cannot exceed 100');
     }
 
-    if (dto.maxDiscount !== undefined && dto.maxDiscount !== null) {
-      if (dto.maxDiscount <= 0) {
-        throw new BadRequestException(
-          'Maximum discount must be greater than zero',
-        );
-      }
+    if (
+      dto.maxDiscount !== undefined &&
+      dto.maxDiscount !== null &&
+      dto.maxDiscount <= 0
+    ) {
+      throw new BadRequestException(
+        'Maximum discount must be greater than zero',
+      );
     }
 
     const minOrderValue = dto.minOrderValue ?? 0;
-
     if (minOrderValue < 0) {
       throw new BadRequestException('Minimum order value cannot be negative');
     }
@@ -576,7 +529,6 @@ export class OrderService {
 
     const productIds =
       scope === 'PRODUCTS' ? [...new Set(dto.productIds || [])] : [];
-
     const categoryIds =
       scope === 'CATEGORIES' ? [...new Set(dto.categoryIds || [])] : [];
 
@@ -601,20 +553,13 @@ export class OrderService {
         perUserLimit: dto.perUserLimit ?? null,
         scope,
         isActive: dto.isActive ?? true,
-
         products: {
-          create: productIds.map((productId) => ({
-            productId,
-          })),
+          create: productIds.map((productId) => ({ productId })),
         },
-
         categories: {
-          create: categoryIds.map((categoryId) => ({
-            categoryId,
-          })),
+          create: categoryIds.map((categoryId) => ({ categoryId })),
         },
       },
-
       include: {
         products: true,
         categories: true,
@@ -635,15 +580,9 @@ export class OrderService {
         include: {
           products: true,
           categories: true,
-          _count: {
-            select: {
-              usages: true,
-            },
-          },
+          _count: { select: { usages: true } },
         },
-        orderBy: {
-          createdAt: 'desc',
-        },
+        orderBy: { createdAt: 'desc' },
       }),
     ]);
 
@@ -660,50 +599,26 @@ export class OrderService {
 
   async getCouponById(id: string) {
     const coupon = await this.prisma.coupon.findUnique({
-      where: {
-        id,
-      },
+      where: { id },
       include: {
         products: true,
         categories: true,
-        _count: {
-          select: {
-            usages: true,
-          },
-        },
+        _count: { select: { usages: true } },
       },
     });
 
-    if (!coupon) {
-      throw new NotFoundException('Coupon not found');
-    }
-
+    if (!coupon) throw new NotFoundException('Coupon not found');
     return coupon;
   }
 
   async updateCoupon(id: string, dto: UpdateCouponDto) {
-    const coupon = await this.prisma.coupon.findUnique({
-      where: {
-        id,
-      },
-    });
-
-    if (!coupon) {
-      throw new NotFoundException('Coupon not found');
-    }
+    const coupon = await this.prisma.coupon.findUnique({ where: { id } });
+    if (!coupon) throw new NotFoundException('Coupon not found');
 
     const code = dto.code ? dto.code.trim().toUpperCase() : undefined;
-
     if (code && code !== coupon.code) {
-      const existing = await this.prisma.coupon.findUnique({
-        where: {
-          code,
-        },
-      });
-
-      if (existing) {
-        throw new BadRequestException('Coupon code already exists');
-      }
+      const existing = await this.prisma.coupon.findUnique({ where: { code } });
+      if (existing) throw new BadRequestException('Coupon code already exists');
     }
 
     if (
@@ -732,10 +647,8 @@ export class OrderService {
     }
 
     const scope = dto.scope ?? coupon.scope;
-
     const productIds =
       scope === 'PRODUCTS' ? [...new Set(dto.productIds || [])] : [];
-
     const categoryIds =
       scope === 'CATEGORIES' ? [...new Set(dto.categoryIds || [])] : [];
 
@@ -757,9 +670,7 @@ export class OrderService {
 
     return this.prisma.$transaction(async (tx) => {
       const updatedCoupon = await tx.coupon.update({
-        where: {
-          id,
-        },
+        where: { id },
         data: {
           code,
           discountType: dto.discountType,
@@ -777,11 +688,7 @@ export class OrderService {
       });
 
       if (dto.scope !== undefined || dto.productIds !== undefined) {
-        await tx.couponProduct.deleteMany({
-          where: {
-            couponId: id,
-          },
-        });
+        await tx.couponProduct.deleteMany({ where: { couponId: id } });
 
         if (scope === 'PRODUCTS') {
           await tx.couponProduct.createMany({
@@ -795,11 +702,7 @@ export class OrderService {
       }
 
       if (dto.scope !== undefined || dto.categoryIds !== undefined) {
-        await tx.couponCategory.deleteMany({
-          where: {
-            couponId: id,
-          },
-        });
+        await tx.couponCategory.deleteMany({ where: { couponId: id } });
 
         if (scope === 'CATEGORIES') {
           await tx.couponCategory.createMany({
@@ -813,9 +716,7 @@ export class OrderService {
       }
 
       return tx.coupon.findUnique({
-        where: {
-          id: updatedCoupon.id,
-        },
+        where: { id: updatedCoupon.id },
         include: {
           products: true,
           categories: true,
@@ -825,25 +726,11 @@ export class OrderService {
   }
 
   async deleteCoupon(id: string) {
-    const coupon = await this.prisma.coupon.findUnique({
-      where: {
-        id,
-      },
-    });
+    const coupon = await this.prisma.coupon.findUnique({ where: { id } });
+    if (!coupon) throw new NotFoundException('Coupon not found');
 
-    if (!coupon) {
-      throw new NotFoundException('Coupon not found');
-    }
-
-    await this.prisma.coupon.delete({
-      where: {
-        id,
-      },
-    });
-
-    return {
-      message: 'Coupon deleted successfully',
-    };
+    await this.prisma.coupon.delete({ where: { id } });
+    return { message: 'Coupon deleted successfully' };
   }
 
   async validateCouponForUser(userId: string, code: string) {
@@ -854,32 +741,35 @@ export class OrderService {
     );
 
     const cartItems = cartResponse.items || [];
-
     if (cartItems.length === 0) {
       throw new BadRequestException('Your cart is empty');
     }
 
     let subtotal = 0;
-
-    const itemsWithPrice: CartItem[] = [];
+    const itemsWithPrice: {
+      productId: string;
+      quantity: number;
+      price: number;
+    }[] = [];
 
     for (const item of cartItems) {
+      const targetVariantId = item.variantId || item.productId;
+
       const fifoCheck = await this.httpRequest<{
         totalPrice: number;
         isAvailable: boolean;
       }>(this.inventoryBaseUrl, '/inventory/fifo-price', 'POST', {
-        productId: item.productId,
+        variantId: targetVariantId,
         quantity: item.quantity,
       });
 
       if (!fifoCheck.isAvailable) {
         throw new BadRequestException(
-          `Product ${item.productId} does not have enough stock available.`,
+          `Variant ${targetVariantId} does not have enough stock available.`,
         );
       }
 
       const itemPrice = fifoCheck.totalPrice / item.quantity;
-
       subtotal += fifoCheck.totalPrice;
 
       itemsWithPrice.push({

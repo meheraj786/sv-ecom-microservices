@@ -42,6 +42,8 @@ export type ProductMinAggregateOutputType = {
   id: string | null
   name: string | null
   slug: string | null
+  sku: string | null
+  baseImage: string | null
   description: string | null
   isActive: boolean | null
   isNew: boolean | null
@@ -49,7 +51,6 @@ export type ProductMinAggregateOutputType = {
   isFeatured: boolean | null
   basePrice: number | null
   discountPrice: number | null
-  sku: string | null
   averageRating: number | null
   createdAt: Date | null
   updatedAt: Date | null
@@ -59,6 +60,8 @@ export type ProductMaxAggregateOutputType = {
   id: string | null
   name: string | null
   slug: string | null
+  sku: string | null
+  baseImage: string | null
   description: string | null
   isActive: boolean | null
   isNew: boolean | null
@@ -66,7 +69,6 @@ export type ProductMaxAggregateOutputType = {
   isFeatured: boolean | null
   basePrice: number | null
   discountPrice: number | null
-  sku: string | null
   averageRating: number | null
   createdAt: Date | null
   updatedAt: Date | null
@@ -76,6 +78,9 @@ export type ProductCountAggregateOutputType = {
   id: number
   name: number
   slug: number
+  sku: number
+  baseImage: number
+  images: number
   description: number
   isActive: number
   isNew: number
@@ -83,10 +88,7 @@ export type ProductCountAggregateOutputType = {
   isFeatured: number
   basePrice: number
   discountPrice: number
-  sku: number
-  images: number
   averageRating: number
-  specifications: number
   createdAt: number
   updatedAt: number
   _all: number
@@ -109,6 +111,8 @@ export type ProductMinAggregateInputType = {
   id?: true
   name?: true
   slug?: true
+  sku?: true
+  baseImage?: true
   description?: true
   isActive?: true
   isNew?: true
@@ -116,7 +120,6 @@ export type ProductMinAggregateInputType = {
   isFeatured?: true
   basePrice?: true
   discountPrice?: true
-  sku?: true
   averageRating?: true
   createdAt?: true
   updatedAt?: true
@@ -126,6 +129,8 @@ export type ProductMaxAggregateInputType = {
   id?: true
   name?: true
   slug?: true
+  sku?: true
+  baseImage?: true
   description?: true
   isActive?: true
   isNew?: true
@@ -133,7 +138,6 @@ export type ProductMaxAggregateInputType = {
   isFeatured?: true
   basePrice?: true
   discountPrice?: true
-  sku?: true
   averageRating?: true
   createdAt?: true
   updatedAt?: true
@@ -143,6 +147,9 @@ export type ProductCountAggregateInputType = {
   id?: true
   name?: true
   slug?: true
+  sku?: true
+  baseImage?: true
+  images?: true
   description?: true
   isActive?: true
   isNew?: true
@@ -150,10 +157,7 @@ export type ProductCountAggregateInputType = {
   isFeatured?: true
   basePrice?: true
   discountPrice?: true
-  sku?: true
-  images?: true
   averageRating?: true
-  specifications?: true
   createdAt?: true
   updatedAt?: true
   _all?: true
@@ -249,6 +253,9 @@ export type ProductGroupByOutputType = {
   id: string
   name: string
   slug: string
+  sku: string | null
+  baseImage: string | null
+  images: string[]
   description: string | null
   isActive: boolean
   isNew: boolean
@@ -256,10 +263,7 @@ export type ProductGroupByOutputType = {
   isFeatured: boolean
   basePrice: number | null
   discountPrice: number | null
-  sku: string | null
-  images: string[]
   averageRating: number
-  specifications: runtime.JsonValue | null
   createdAt: Date
   updatedAt: Date
   _count: ProductCountAggregateOutputType | null
@@ -291,6 +295,9 @@ export type ProductWhereInput = {
   id?: Prisma.StringFilter<"Product"> | string
   name?: Prisma.StringFilter<"Product"> | string
   slug?: Prisma.StringFilter<"Product"> | string
+  sku?: Prisma.StringNullableFilter<"Product"> | string | null
+  baseImage?: Prisma.StringNullableFilter<"Product"> | string | null
+  images?: Prisma.StringNullableListFilter<"Product">
   description?: Prisma.StringNullableFilter<"Product"> | string | null
   isActive?: Prisma.BoolFilter<"Product"> | boolean
   isNew?: Prisma.BoolFilter<"Product"> | boolean
@@ -298,10 +305,7 @@ export type ProductWhereInput = {
   isFeatured?: Prisma.BoolFilter<"Product"> | boolean
   basePrice?: Prisma.FloatNullableFilter<"Product"> | number | null
   discountPrice?: Prisma.FloatNullableFilter<"Product"> | number | null
-  sku?: Prisma.StringNullableFilter<"Product"> | string | null
-  images?: Prisma.StringNullableListFilter<"Product">
   averageRating?: Prisma.FloatFilter<"Product"> | number
-  specifications?: Prisma.JsonNullableFilter<"Product">
   createdAt?: Prisma.DateTimeFilter<"Product"> | Date | string
   updatedAt?: Prisma.DateTimeFilter<"Product"> | Date | string
   categories?: Prisma.ProductCategoryListRelationFilter
@@ -314,6 +318,9 @@ export type ProductOrderByWithRelationInput = {
   id?: Prisma.SortOrder
   name?: Prisma.SortOrder
   slug?: Prisma.SortOrder
+  sku?: Prisma.SortOrderInput | Prisma.SortOrder
+  baseImage?: Prisma.SortOrderInput | Prisma.SortOrder
+  images?: Prisma.SortOrder
   description?: Prisma.SortOrderInput | Prisma.SortOrder
   isActive?: Prisma.SortOrder
   isNew?: Prisma.SortOrder
@@ -321,10 +328,7 @@ export type ProductOrderByWithRelationInput = {
   isFeatured?: Prisma.SortOrder
   basePrice?: Prisma.SortOrderInput | Prisma.SortOrder
   discountPrice?: Prisma.SortOrderInput | Prisma.SortOrder
-  sku?: Prisma.SortOrderInput | Prisma.SortOrder
-  images?: Prisma.SortOrder
   averageRating?: Prisma.SortOrder
-  specifications?: Prisma.SortOrderInput | Prisma.SortOrder
   createdAt?: Prisma.SortOrder
   updatedAt?: Prisma.SortOrder
   categories?: Prisma.ProductCategoryOrderByRelationAggregateInput
@@ -341,6 +345,8 @@ export type ProductWhereUniqueInput = Prisma.AtLeast<{
   OR?: Prisma.ProductWhereInput[]
   NOT?: Prisma.ProductWhereInput | Prisma.ProductWhereInput[]
   name?: Prisma.StringFilter<"Product"> | string
+  baseImage?: Prisma.StringNullableFilter<"Product"> | string | null
+  images?: Prisma.StringNullableListFilter<"Product">
   description?: Prisma.StringNullableFilter<"Product"> | string | null
   isActive?: Prisma.BoolFilter<"Product"> | boolean
   isNew?: Prisma.BoolFilter<"Product"> | boolean
@@ -348,9 +354,7 @@ export type ProductWhereUniqueInput = Prisma.AtLeast<{
   isFeatured?: Prisma.BoolFilter<"Product"> | boolean
   basePrice?: Prisma.FloatNullableFilter<"Product"> | number | null
   discountPrice?: Prisma.FloatNullableFilter<"Product"> | number | null
-  images?: Prisma.StringNullableListFilter<"Product">
   averageRating?: Prisma.FloatFilter<"Product"> | number
-  specifications?: Prisma.JsonNullableFilter<"Product">
   createdAt?: Prisma.DateTimeFilter<"Product"> | Date | string
   updatedAt?: Prisma.DateTimeFilter<"Product"> | Date | string
   categories?: Prisma.ProductCategoryListRelationFilter
@@ -363,6 +367,9 @@ export type ProductOrderByWithAggregationInput = {
   id?: Prisma.SortOrder
   name?: Prisma.SortOrder
   slug?: Prisma.SortOrder
+  sku?: Prisma.SortOrderInput | Prisma.SortOrder
+  baseImage?: Prisma.SortOrderInput | Prisma.SortOrder
+  images?: Prisma.SortOrder
   description?: Prisma.SortOrderInput | Prisma.SortOrder
   isActive?: Prisma.SortOrder
   isNew?: Prisma.SortOrder
@@ -370,10 +377,7 @@ export type ProductOrderByWithAggregationInput = {
   isFeatured?: Prisma.SortOrder
   basePrice?: Prisma.SortOrderInput | Prisma.SortOrder
   discountPrice?: Prisma.SortOrderInput | Prisma.SortOrder
-  sku?: Prisma.SortOrderInput | Prisma.SortOrder
-  images?: Prisma.SortOrder
   averageRating?: Prisma.SortOrder
-  specifications?: Prisma.SortOrderInput | Prisma.SortOrder
   createdAt?: Prisma.SortOrder
   updatedAt?: Prisma.SortOrder
   _count?: Prisma.ProductCountOrderByAggregateInput
@@ -390,6 +394,9 @@ export type ProductScalarWhereWithAggregatesInput = {
   id?: Prisma.StringWithAggregatesFilter<"Product"> | string
   name?: Prisma.StringWithAggregatesFilter<"Product"> | string
   slug?: Prisma.StringWithAggregatesFilter<"Product"> | string
+  sku?: Prisma.StringNullableWithAggregatesFilter<"Product"> | string | null
+  baseImage?: Prisma.StringNullableWithAggregatesFilter<"Product"> | string | null
+  images?: Prisma.StringNullableListFilter<"Product">
   description?: Prisma.StringNullableWithAggregatesFilter<"Product"> | string | null
   isActive?: Prisma.BoolWithAggregatesFilter<"Product"> | boolean
   isNew?: Prisma.BoolWithAggregatesFilter<"Product"> | boolean
@@ -397,10 +404,7 @@ export type ProductScalarWhereWithAggregatesInput = {
   isFeatured?: Prisma.BoolWithAggregatesFilter<"Product"> | boolean
   basePrice?: Prisma.FloatNullableWithAggregatesFilter<"Product"> | number | null
   discountPrice?: Prisma.FloatNullableWithAggregatesFilter<"Product"> | number | null
-  sku?: Prisma.StringNullableWithAggregatesFilter<"Product"> | string | null
-  images?: Prisma.StringNullableListFilter<"Product">
   averageRating?: Prisma.FloatWithAggregatesFilter<"Product"> | number
-  specifications?: Prisma.JsonNullableWithAggregatesFilter<"Product">
   createdAt?: Prisma.DateTimeWithAggregatesFilter<"Product"> | Date | string
   updatedAt?: Prisma.DateTimeWithAggregatesFilter<"Product"> | Date | string
 }
@@ -409,6 +413,9 @@ export type ProductCreateInput = {
   id?: string
   name: string
   slug: string
+  sku?: string | null
+  baseImage?: string | null
+  images?: Prisma.ProductCreateimagesInput | string[]
   description?: string | null
   isActive?: boolean
   isNew?: boolean
@@ -416,10 +423,7 @@ export type ProductCreateInput = {
   isFeatured?: boolean
   basePrice?: number | null
   discountPrice?: number | null
-  sku?: string | null
-  images?: Prisma.ProductCreateimagesInput | string[]
   averageRating?: number
-  specifications?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
   createdAt?: Date | string
   updatedAt?: Date | string
   categories?: Prisma.ProductCategoryCreateNestedManyWithoutProductInput
@@ -432,6 +436,9 @@ export type ProductUncheckedCreateInput = {
   id?: string
   name: string
   slug: string
+  sku?: string | null
+  baseImage?: string | null
+  images?: Prisma.ProductCreateimagesInput | string[]
   description?: string | null
   isActive?: boolean
   isNew?: boolean
@@ -439,10 +446,7 @@ export type ProductUncheckedCreateInput = {
   isFeatured?: boolean
   basePrice?: number | null
   discountPrice?: number | null
-  sku?: string | null
-  images?: Prisma.ProductCreateimagesInput | string[]
   averageRating?: number
-  specifications?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
   createdAt?: Date | string
   updatedAt?: Date | string
   categories?: Prisma.ProductCategoryUncheckedCreateNestedManyWithoutProductInput
@@ -455,6 +459,9 @@ export type ProductUpdateInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
   name?: Prisma.StringFieldUpdateOperationsInput | string
   slug?: Prisma.StringFieldUpdateOperationsInput | string
+  sku?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  baseImage?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  images?: Prisma.ProductUpdateimagesInput | string[]
   description?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   isActive?: Prisma.BoolFieldUpdateOperationsInput | boolean
   isNew?: Prisma.BoolFieldUpdateOperationsInput | boolean
@@ -462,10 +469,7 @@ export type ProductUpdateInput = {
   isFeatured?: Prisma.BoolFieldUpdateOperationsInput | boolean
   basePrice?: Prisma.NullableFloatFieldUpdateOperationsInput | number | null
   discountPrice?: Prisma.NullableFloatFieldUpdateOperationsInput | number | null
-  sku?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  images?: Prisma.ProductUpdateimagesInput | string[]
   averageRating?: Prisma.FloatFieldUpdateOperationsInput | number
-  specifications?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   categories?: Prisma.ProductCategoryUpdateManyWithoutProductNestedInput
@@ -478,6 +482,9 @@ export type ProductUncheckedUpdateInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
   name?: Prisma.StringFieldUpdateOperationsInput | string
   slug?: Prisma.StringFieldUpdateOperationsInput | string
+  sku?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  baseImage?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  images?: Prisma.ProductUpdateimagesInput | string[]
   description?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   isActive?: Prisma.BoolFieldUpdateOperationsInput | boolean
   isNew?: Prisma.BoolFieldUpdateOperationsInput | boolean
@@ -485,10 +492,7 @@ export type ProductUncheckedUpdateInput = {
   isFeatured?: Prisma.BoolFieldUpdateOperationsInput | boolean
   basePrice?: Prisma.NullableFloatFieldUpdateOperationsInput | number | null
   discountPrice?: Prisma.NullableFloatFieldUpdateOperationsInput | number | null
-  sku?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  images?: Prisma.ProductUpdateimagesInput | string[]
   averageRating?: Prisma.FloatFieldUpdateOperationsInput | number
-  specifications?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   categories?: Prisma.ProductCategoryUncheckedUpdateManyWithoutProductNestedInput
@@ -501,6 +505,9 @@ export type ProductCreateManyInput = {
   id?: string
   name: string
   slug: string
+  sku?: string | null
+  baseImage?: string | null
+  images?: Prisma.ProductCreateimagesInput | string[]
   description?: string | null
   isActive?: boolean
   isNew?: boolean
@@ -508,10 +515,7 @@ export type ProductCreateManyInput = {
   isFeatured?: boolean
   basePrice?: number | null
   discountPrice?: number | null
-  sku?: string | null
-  images?: Prisma.ProductCreateimagesInput | string[]
   averageRating?: number
-  specifications?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
   createdAt?: Date | string
   updatedAt?: Date | string
 }
@@ -520,6 +524,9 @@ export type ProductUpdateManyMutationInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
   name?: Prisma.StringFieldUpdateOperationsInput | string
   slug?: Prisma.StringFieldUpdateOperationsInput | string
+  sku?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  baseImage?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  images?: Prisma.ProductUpdateimagesInput | string[]
   description?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   isActive?: Prisma.BoolFieldUpdateOperationsInput | boolean
   isNew?: Prisma.BoolFieldUpdateOperationsInput | boolean
@@ -527,10 +534,7 @@ export type ProductUpdateManyMutationInput = {
   isFeatured?: Prisma.BoolFieldUpdateOperationsInput | boolean
   basePrice?: Prisma.NullableFloatFieldUpdateOperationsInput | number | null
   discountPrice?: Prisma.NullableFloatFieldUpdateOperationsInput | number | null
-  sku?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  images?: Prisma.ProductUpdateimagesInput | string[]
   averageRating?: Prisma.FloatFieldUpdateOperationsInput | number
-  specifications?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
 }
@@ -539,6 +543,9 @@ export type ProductUncheckedUpdateManyInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
   name?: Prisma.StringFieldUpdateOperationsInput | string
   slug?: Prisma.StringFieldUpdateOperationsInput | string
+  sku?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  baseImage?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  images?: Prisma.ProductUpdateimagesInput | string[]
   description?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   isActive?: Prisma.BoolFieldUpdateOperationsInput | boolean
   isNew?: Prisma.BoolFieldUpdateOperationsInput | boolean
@@ -546,10 +553,7 @@ export type ProductUncheckedUpdateManyInput = {
   isFeatured?: Prisma.BoolFieldUpdateOperationsInput | boolean
   basePrice?: Prisma.NullableFloatFieldUpdateOperationsInput | number | null
   discountPrice?: Prisma.NullableFloatFieldUpdateOperationsInput | number | null
-  sku?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  images?: Prisma.ProductUpdateimagesInput | string[]
   averageRating?: Prisma.FloatFieldUpdateOperationsInput | number
-  specifications?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
 }
@@ -566,6 +570,9 @@ export type ProductCountOrderByAggregateInput = {
   id?: Prisma.SortOrder
   name?: Prisma.SortOrder
   slug?: Prisma.SortOrder
+  sku?: Prisma.SortOrder
+  baseImage?: Prisma.SortOrder
+  images?: Prisma.SortOrder
   description?: Prisma.SortOrder
   isActive?: Prisma.SortOrder
   isNew?: Prisma.SortOrder
@@ -573,10 +580,7 @@ export type ProductCountOrderByAggregateInput = {
   isFeatured?: Prisma.SortOrder
   basePrice?: Prisma.SortOrder
   discountPrice?: Prisma.SortOrder
-  sku?: Prisma.SortOrder
-  images?: Prisma.SortOrder
   averageRating?: Prisma.SortOrder
-  specifications?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
   updatedAt?: Prisma.SortOrder
 }
@@ -591,6 +595,8 @@ export type ProductMaxOrderByAggregateInput = {
   id?: Prisma.SortOrder
   name?: Prisma.SortOrder
   slug?: Prisma.SortOrder
+  sku?: Prisma.SortOrder
+  baseImage?: Prisma.SortOrder
   description?: Prisma.SortOrder
   isActive?: Prisma.SortOrder
   isNew?: Prisma.SortOrder
@@ -598,7 +604,6 @@ export type ProductMaxOrderByAggregateInput = {
   isFeatured?: Prisma.SortOrder
   basePrice?: Prisma.SortOrder
   discountPrice?: Prisma.SortOrder
-  sku?: Prisma.SortOrder
   averageRating?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
   updatedAt?: Prisma.SortOrder
@@ -608,6 +613,8 @@ export type ProductMinOrderByAggregateInput = {
   id?: Prisma.SortOrder
   name?: Prisma.SortOrder
   slug?: Prisma.SortOrder
+  sku?: Prisma.SortOrder
+  baseImage?: Prisma.SortOrder
   description?: Prisma.SortOrder
   isActive?: Prisma.SortOrder
   isNew?: Prisma.SortOrder
@@ -615,7 +622,6 @@ export type ProductMinOrderByAggregateInput = {
   isFeatured?: Prisma.SortOrder
   basePrice?: Prisma.SortOrder
   discountPrice?: Prisma.SortOrder
-  sku?: Prisma.SortOrder
   averageRating?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
   updatedAt?: Prisma.SortOrder
@@ -636,6 +642,11 @@ export type ProductCreateimagesInput = {
   set: string[]
 }
 
+export type ProductUpdateimagesInput = {
+  set?: string[]
+  push?: string | string[]
+}
+
 export type BoolFieldUpdateOperationsInput = {
   set?: boolean
 }
@@ -646,11 +657,6 @@ export type NullableFloatFieldUpdateOperationsInput = {
   decrement?: number
   multiply?: number
   divide?: number
-}
-
-export type ProductUpdateimagesInput = {
-  set?: string[]
-  push?: string | string[]
 }
 
 export type FloatFieldUpdateOperationsInput = {
@@ -721,6 +727,9 @@ export type ProductCreateWithoutCategoriesInput = {
   id?: string
   name: string
   slug: string
+  sku?: string | null
+  baseImage?: string | null
+  images?: Prisma.ProductCreateimagesInput | string[]
   description?: string | null
   isActive?: boolean
   isNew?: boolean
@@ -728,10 +737,7 @@ export type ProductCreateWithoutCategoriesInput = {
   isFeatured?: boolean
   basePrice?: number | null
   discountPrice?: number | null
-  sku?: string | null
-  images?: Prisma.ProductCreateimagesInput | string[]
   averageRating?: number
-  specifications?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
   createdAt?: Date | string
   updatedAt?: Date | string
   subCategories?: Prisma.ProductSubCategoryCreateNestedManyWithoutProductInput
@@ -743,6 +749,9 @@ export type ProductUncheckedCreateWithoutCategoriesInput = {
   id?: string
   name: string
   slug: string
+  sku?: string | null
+  baseImage?: string | null
+  images?: Prisma.ProductCreateimagesInput | string[]
   description?: string | null
   isActive?: boolean
   isNew?: boolean
@@ -750,10 +759,7 @@ export type ProductUncheckedCreateWithoutCategoriesInput = {
   isFeatured?: boolean
   basePrice?: number | null
   discountPrice?: number | null
-  sku?: string | null
-  images?: Prisma.ProductCreateimagesInput | string[]
   averageRating?: number
-  specifications?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
   createdAt?: Date | string
   updatedAt?: Date | string
   subCategories?: Prisma.ProductSubCategoryUncheckedCreateNestedManyWithoutProductInput
@@ -781,6 +787,9 @@ export type ProductUpdateWithoutCategoriesInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
   name?: Prisma.StringFieldUpdateOperationsInput | string
   slug?: Prisma.StringFieldUpdateOperationsInput | string
+  sku?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  baseImage?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  images?: Prisma.ProductUpdateimagesInput | string[]
   description?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   isActive?: Prisma.BoolFieldUpdateOperationsInput | boolean
   isNew?: Prisma.BoolFieldUpdateOperationsInput | boolean
@@ -788,10 +797,7 @@ export type ProductUpdateWithoutCategoriesInput = {
   isFeatured?: Prisma.BoolFieldUpdateOperationsInput | boolean
   basePrice?: Prisma.NullableFloatFieldUpdateOperationsInput | number | null
   discountPrice?: Prisma.NullableFloatFieldUpdateOperationsInput | number | null
-  sku?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  images?: Prisma.ProductUpdateimagesInput | string[]
   averageRating?: Prisma.FloatFieldUpdateOperationsInput | number
-  specifications?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   subCategories?: Prisma.ProductSubCategoryUpdateManyWithoutProductNestedInput
@@ -803,6 +809,9 @@ export type ProductUncheckedUpdateWithoutCategoriesInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
   name?: Prisma.StringFieldUpdateOperationsInput | string
   slug?: Prisma.StringFieldUpdateOperationsInput | string
+  sku?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  baseImage?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  images?: Prisma.ProductUpdateimagesInput | string[]
   description?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   isActive?: Prisma.BoolFieldUpdateOperationsInput | boolean
   isNew?: Prisma.BoolFieldUpdateOperationsInput | boolean
@@ -810,10 +819,7 @@ export type ProductUncheckedUpdateWithoutCategoriesInput = {
   isFeatured?: Prisma.BoolFieldUpdateOperationsInput | boolean
   basePrice?: Prisma.NullableFloatFieldUpdateOperationsInput | number | null
   discountPrice?: Prisma.NullableFloatFieldUpdateOperationsInput | number | null
-  sku?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  images?: Prisma.ProductUpdateimagesInput | string[]
   averageRating?: Prisma.FloatFieldUpdateOperationsInput | number
-  specifications?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   subCategories?: Prisma.ProductSubCategoryUncheckedUpdateManyWithoutProductNestedInput
@@ -825,6 +831,9 @@ export type ProductCreateWithoutSubCategoriesInput = {
   id?: string
   name: string
   slug: string
+  sku?: string | null
+  baseImage?: string | null
+  images?: Prisma.ProductCreateimagesInput | string[]
   description?: string | null
   isActive?: boolean
   isNew?: boolean
@@ -832,10 +841,7 @@ export type ProductCreateWithoutSubCategoriesInput = {
   isFeatured?: boolean
   basePrice?: number | null
   discountPrice?: number | null
-  sku?: string | null
-  images?: Prisma.ProductCreateimagesInput | string[]
   averageRating?: number
-  specifications?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
   createdAt?: Date | string
   updatedAt?: Date | string
   categories?: Prisma.ProductCategoryCreateNestedManyWithoutProductInput
@@ -847,6 +853,9 @@ export type ProductUncheckedCreateWithoutSubCategoriesInput = {
   id?: string
   name: string
   slug: string
+  sku?: string | null
+  baseImage?: string | null
+  images?: Prisma.ProductCreateimagesInput | string[]
   description?: string | null
   isActive?: boolean
   isNew?: boolean
@@ -854,10 +863,7 @@ export type ProductUncheckedCreateWithoutSubCategoriesInput = {
   isFeatured?: boolean
   basePrice?: number | null
   discountPrice?: number | null
-  sku?: string | null
-  images?: Prisma.ProductCreateimagesInput | string[]
   averageRating?: number
-  specifications?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
   createdAt?: Date | string
   updatedAt?: Date | string
   categories?: Prisma.ProductCategoryUncheckedCreateNestedManyWithoutProductInput
@@ -885,6 +891,9 @@ export type ProductUpdateWithoutSubCategoriesInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
   name?: Prisma.StringFieldUpdateOperationsInput | string
   slug?: Prisma.StringFieldUpdateOperationsInput | string
+  sku?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  baseImage?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  images?: Prisma.ProductUpdateimagesInput | string[]
   description?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   isActive?: Prisma.BoolFieldUpdateOperationsInput | boolean
   isNew?: Prisma.BoolFieldUpdateOperationsInput | boolean
@@ -892,10 +901,7 @@ export type ProductUpdateWithoutSubCategoriesInput = {
   isFeatured?: Prisma.BoolFieldUpdateOperationsInput | boolean
   basePrice?: Prisma.NullableFloatFieldUpdateOperationsInput | number | null
   discountPrice?: Prisma.NullableFloatFieldUpdateOperationsInput | number | null
-  sku?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  images?: Prisma.ProductUpdateimagesInput | string[]
   averageRating?: Prisma.FloatFieldUpdateOperationsInput | number
-  specifications?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   categories?: Prisma.ProductCategoryUpdateManyWithoutProductNestedInput
@@ -907,6 +913,9 @@ export type ProductUncheckedUpdateWithoutSubCategoriesInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
   name?: Prisma.StringFieldUpdateOperationsInput | string
   slug?: Prisma.StringFieldUpdateOperationsInput | string
+  sku?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  baseImage?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  images?: Prisma.ProductUpdateimagesInput | string[]
   description?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   isActive?: Prisma.BoolFieldUpdateOperationsInput | boolean
   isNew?: Prisma.BoolFieldUpdateOperationsInput | boolean
@@ -914,10 +923,7 @@ export type ProductUncheckedUpdateWithoutSubCategoriesInput = {
   isFeatured?: Prisma.BoolFieldUpdateOperationsInput | boolean
   basePrice?: Prisma.NullableFloatFieldUpdateOperationsInput | number | null
   discountPrice?: Prisma.NullableFloatFieldUpdateOperationsInput | number | null
-  sku?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  images?: Prisma.ProductUpdateimagesInput | string[]
   averageRating?: Prisma.FloatFieldUpdateOperationsInput | number
-  specifications?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   categories?: Prisma.ProductCategoryUncheckedUpdateManyWithoutProductNestedInput
@@ -929,6 +935,9 @@ export type ProductCreateWithoutVariantsInput = {
   id?: string
   name: string
   slug: string
+  sku?: string | null
+  baseImage?: string | null
+  images?: Prisma.ProductCreateimagesInput | string[]
   description?: string | null
   isActive?: boolean
   isNew?: boolean
@@ -936,10 +945,7 @@ export type ProductCreateWithoutVariantsInput = {
   isFeatured?: boolean
   basePrice?: number | null
   discountPrice?: number | null
-  sku?: string | null
-  images?: Prisma.ProductCreateimagesInput | string[]
   averageRating?: number
-  specifications?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
   createdAt?: Date | string
   updatedAt?: Date | string
   categories?: Prisma.ProductCategoryCreateNestedManyWithoutProductInput
@@ -951,6 +957,9 @@ export type ProductUncheckedCreateWithoutVariantsInput = {
   id?: string
   name: string
   slug: string
+  sku?: string | null
+  baseImage?: string | null
+  images?: Prisma.ProductCreateimagesInput | string[]
   description?: string | null
   isActive?: boolean
   isNew?: boolean
@@ -958,10 +967,7 @@ export type ProductUncheckedCreateWithoutVariantsInput = {
   isFeatured?: boolean
   basePrice?: number | null
   discountPrice?: number | null
-  sku?: string | null
-  images?: Prisma.ProductCreateimagesInput | string[]
   averageRating?: number
-  specifications?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
   createdAt?: Date | string
   updatedAt?: Date | string
   categories?: Prisma.ProductCategoryUncheckedCreateNestedManyWithoutProductInput
@@ -989,6 +995,9 @@ export type ProductUpdateWithoutVariantsInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
   name?: Prisma.StringFieldUpdateOperationsInput | string
   slug?: Prisma.StringFieldUpdateOperationsInput | string
+  sku?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  baseImage?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  images?: Prisma.ProductUpdateimagesInput | string[]
   description?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   isActive?: Prisma.BoolFieldUpdateOperationsInput | boolean
   isNew?: Prisma.BoolFieldUpdateOperationsInput | boolean
@@ -996,10 +1005,7 @@ export type ProductUpdateWithoutVariantsInput = {
   isFeatured?: Prisma.BoolFieldUpdateOperationsInput | boolean
   basePrice?: Prisma.NullableFloatFieldUpdateOperationsInput | number | null
   discountPrice?: Prisma.NullableFloatFieldUpdateOperationsInput | number | null
-  sku?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  images?: Prisma.ProductUpdateimagesInput | string[]
   averageRating?: Prisma.FloatFieldUpdateOperationsInput | number
-  specifications?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   categories?: Prisma.ProductCategoryUpdateManyWithoutProductNestedInput
@@ -1011,6 +1017,9 @@ export type ProductUncheckedUpdateWithoutVariantsInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
   name?: Prisma.StringFieldUpdateOperationsInput | string
   slug?: Prisma.StringFieldUpdateOperationsInput | string
+  sku?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  baseImage?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  images?: Prisma.ProductUpdateimagesInput | string[]
   description?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   isActive?: Prisma.BoolFieldUpdateOperationsInput | boolean
   isNew?: Prisma.BoolFieldUpdateOperationsInput | boolean
@@ -1018,10 +1027,7 @@ export type ProductUncheckedUpdateWithoutVariantsInput = {
   isFeatured?: Prisma.BoolFieldUpdateOperationsInput | boolean
   basePrice?: Prisma.NullableFloatFieldUpdateOperationsInput | number | null
   discountPrice?: Prisma.NullableFloatFieldUpdateOperationsInput | number | null
-  sku?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  images?: Prisma.ProductUpdateimagesInput | string[]
   averageRating?: Prisma.FloatFieldUpdateOperationsInput | number
-  specifications?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   categories?: Prisma.ProductCategoryUncheckedUpdateManyWithoutProductNestedInput
@@ -1033,6 +1039,9 @@ export type ProductCreateWithoutReviewsInput = {
   id?: string
   name: string
   slug: string
+  sku?: string | null
+  baseImage?: string | null
+  images?: Prisma.ProductCreateimagesInput | string[]
   description?: string | null
   isActive?: boolean
   isNew?: boolean
@@ -1040,10 +1049,7 @@ export type ProductCreateWithoutReviewsInput = {
   isFeatured?: boolean
   basePrice?: number | null
   discountPrice?: number | null
-  sku?: string | null
-  images?: Prisma.ProductCreateimagesInput | string[]
   averageRating?: number
-  specifications?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
   createdAt?: Date | string
   updatedAt?: Date | string
   categories?: Prisma.ProductCategoryCreateNestedManyWithoutProductInput
@@ -1055,6 +1061,9 @@ export type ProductUncheckedCreateWithoutReviewsInput = {
   id?: string
   name: string
   slug: string
+  sku?: string | null
+  baseImage?: string | null
+  images?: Prisma.ProductCreateimagesInput | string[]
   description?: string | null
   isActive?: boolean
   isNew?: boolean
@@ -1062,10 +1071,7 @@ export type ProductUncheckedCreateWithoutReviewsInput = {
   isFeatured?: boolean
   basePrice?: number | null
   discountPrice?: number | null
-  sku?: string | null
-  images?: Prisma.ProductCreateimagesInput | string[]
   averageRating?: number
-  specifications?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
   createdAt?: Date | string
   updatedAt?: Date | string
   categories?: Prisma.ProductCategoryUncheckedCreateNestedManyWithoutProductInput
@@ -1093,6 +1099,9 @@ export type ProductUpdateWithoutReviewsInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
   name?: Prisma.StringFieldUpdateOperationsInput | string
   slug?: Prisma.StringFieldUpdateOperationsInput | string
+  sku?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  baseImage?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  images?: Prisma.ProductUpdateimagesInput | string[]
   description?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   isActive?: Prisma.BoolFieldUpdateOperationsInput | boolean
   isNew?: Prisma.BoolFieldUpdateOperationsInput | boolean
@@ -1100,10 +1109,7 @@ export type ProductUpdateWithoutReviewsInput = {
   isFeatured?: Prisma.BoolFieldUpdateOperationsInput | boolean
   basePrice?: Prisma.NullableFloatFieldUpdateOperationsInput | number | null
   discountPrice?: Prisma.NullableFloatFieldUpdateOperationsInput | number | null
-  sku?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  images?: Prisma.ProductUpdateimagesInput | string[]
   averageRating?: Prisma.FloatFieldUpdateOperationsInput | number
-  specifications?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   categories?: Prisma.ProductCategoryUpdateManyWithoutProductNestedInput
@@ -1115,6 +1121,9 @@ export type ProductUncheckedUpdateWithoutReviewsInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
   name?: Prisma.StringFieldUpdateOperationsInput | string
   slug?: Prisma.StringFieldUpdateOperationsInput | string
+  sku?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  baseImage?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  images?: Prisma.ProductUpdateimagesInput | string[]
   description?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   isActive?: Prisma.BoolFieldUpdateOperationsInput | boolean
   isNew?: Prisma.BoolFieldUpdateOperationsInput | boolean
@@ -1122,10 +1131,7 @@ export type ProductUncheckedUpdateWithoutReviewsInput = {
   isFeatured?: Prisma.BoolFieldUpdateOperationsInput | boolean
   basePrice?: Prisma.NullableFloatFieldUpdateOperationsInput | number | null
   discountPrice?: Prisma.NullableFloatFieldUpdateOperationsInput | number | null
-  sku?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  images?: Prisma.ProductUpdateimagesInput | string[]
   averageRating?: Prisma.FloatFieldUpdateOperationsInput | number
-  specifications?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   categories?: Prisma.ProductCategoryUncheckedUpdateManyWithoutProductNestedInput
@@ -1195,6 +1201,9 @@ export type ProductSelect<ExtArgs extends runtime.Types.Extensions.InternalArgs 
   id?: boolean
   name?: boolean
   slug?: boolean
+  sku?: boolean
+  baseImage?: boolean
+  images?: boolean
   description?: boolean
   isActive?: boolean
   isNew?: boolean
@@ -1202,10 +1211,7 @@ export type ProductSelect<ExtArgs extends runtime.Types.Extensions.InternalArgs 
   isFeatured?: boolean
   basePrice?: boolean
   discountPrice?: boolean
-  sku?: boolean
-  images?: boolean
   averageRating?: boolean
-  specifications?: boolean
   createdAt?: boolean
   updatedAt?: boolean
   categories?: boolean | Prisma.Product$categoriesArgs<ExtArgs>
@@ -1219,6 +1225,9 @@ export type ProductSelectCreateManyAndReturn<ExtArgs extends runtime.Types.Exten
   id?: boolean
   name?: boolean
   slug?: boolean
+  sku?: boolean
+  baseImage?: boolean
+  images?: boolean
   description?: boolean
   isActive?: boolean
   isNew?: boolean
@@ -1226,10 +1235,7 @@ export type ProductSelectCreateManyAndReturn<ExtArgs extends runtime.Types.Exten
   isFeatured?: boolean
   basePrice?: boolean
   discountPrice?: boolean
-  sku?: boolean
-  images?: boolean
   averageRating?: boolean
-  specifications?: boolean
   createdAt?: boolean
   updatedAt?: boolean
 }, ExtArgs["result"]["product"]>
@@ -1238,6 +1244,9 @@ export type ProductSelectUpdateManyAndReturn<ExtArgs extends runtime.Types.Exten
   id?: boolean
   name?: boolean
   slug?: boolean
+  sku?: boolean
+  baseImage?: boolean
+  images?: boolean
   description?: boolean
   isActive?: boolean
   isNew?: boolean
@@ -1245,10 +1254,7 @@ export type ProductSelectUpdateManyAndReturn<ExtArgs extends runtime.Types.Exten
   isFeatured?: boolean
   basePrice?: boolean
   discountPrice?: boolean
-  sku?: boolean
-  images?: boolean
   averageRating?: boolean
-  specifications?: boolean
   createdAt?: boolean
   updatedAt?: boolean
 }, ExtArgs["result"]["product"]>
@@ -1257,6 +1263,9 @@ export type ProductSelectScalar = {
   id?: boolean
   name?: boolean
   slug?: boolean
+  sku?: boolean
+  baseImage?: boolean
+  images?: boolean
   description?: boolean
   isActive?: boolean
   isNew?: boolean
@@ -1264,15 +1273,12 @@ export type ProductSelectScalar = {
   isFeatured?: boolean
   basePrice?: boolean
   discountPrice?: boolean
-  sku?: boolean
-  images?: boolean
   averageRating?: boolean
-  specifications?: boolean
   createdAt?: boolean
   updatedAt?: boolean
 }
 
-export type ProductOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "name" | "slug" | "description" | "isActive" | "isNew" | "isBestSeller" | "isFeatured" | "basePrice" | "discountPrice" | "sku" | "images" | "averageRating" | "specifications" | "createdAt" | "updatedAt", ExtArgs["result"]["product"]>
+export type ProductOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "name" | "slug" | "sku" | "baseImage" | "images" | "description" | "isActive" | "isNew" | "isBestSeller" | "isFeatured" | "basePrice" | "discountPrice" | "averageRating" | "createdAt" | "updatedAt", ExtArgs["result"]["product"]>
 export type ProductInclude<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   categories?: boolean | Prisma.Product$categoriesArgs<ExtArgs>
   subCategories?: boolean | Prisma.Product$subCategoriesArgs<ExtArgs>
@@ -1295,6 +1301,9 @@ export type $ProductPayload<ExtArgs extends runtime.Types.Extensions.InternalArg
     id: string
     name: string
     slug: string
+    sku: string | null
+    baseImage: string | null
+    images: string[]
     description: string | null
     isActive: boolean
     isNew: boolean
@@ -1302,10 +1311,7 @@ export type $ProductPayload<ExtArgs extends runtime.Types.Extensions.InternalArg
     isFeatured: boolean
     basePrice: number | null
     discountPrice: number | null
-    sku: string | null
-    images: string[]
     averageRating: number
-    specifications: runtime.JsonValue | null
     createdAt: Date
     updatedAt: Date
   }, ExtArgs["result"]["product"]>
@@ -1738,6 +1744,9 @@ export interface ProductFieldRefs {
   readonly id: Prisma.FieldRef<"Product", 'String'>
   readonly name: Prisma.FieldRef<"Product", 'String'>
   readonly slug: Prisma.FieldRef<"Product", 'String'>
+  readonly sku: Prisma.FieldRef<"Product", 'String'>
+  readonly baseImage: Prisma.FieldRef<"Product", 'String'>
+  readonly images: Prisma.FieldRef<"Product", 'String[]'>
   readonly description: Prisma.FieldRef<"Product", 'String'>
   readonly isActive: Prisma.FieldRef<"Product", 'Boolean'>
   readonly isNew: Prisma.FieldRef<"Product", 'Boolean'>
@@ -1745,10 +1754,7 @@ export interface ProductFieldRefs {
   readonly isFeatured: Prisma.FieldRef<"Product", 'Boolean'>
   readonly basePrice: Prisma.FieldRef<"Product", 'Float'>
   readonly discountPrice: Prisma.FieldRef<"Product", 'Float'>
-  readonly sku: Prisma.FieldRef<"Product", 'String'>
-  readonly images: Prisma.FieldRef<"Product", 'String[]'>
   readonly averageRating: Prisma.FieldRef<"Product", 'Float'>
-  readonly specifications: Prisma.FieldRef<"Product", 'Json'>
   readonly createdAt: Prisma.FieldRef<"Product", 'DateTime'>
   readonly updatedAt: Prisma.FieldRef<"Product", 'DateTime'>
 }

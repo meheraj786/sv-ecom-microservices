@@ -3,11 +3,14 @@ import {
   IsNotEmpty,
   IsOptional,
   IsNumber,
-  Min,
   IsArray,
   ArrayMinSize,
+  IsBoolean,
+  Min,
+  ValidateNested,
 } from 'class-validator';
 import { Type } from 'class-transformer';
+import { CreateVariantDto } from './create-variant.dto';
 
 export class CreateProductDto {
   @IsString()
@@ -20,14 +23,32 @@ export class CreateProductDto {
 
   @IsString()
   @IsOptional()
+  sku?: string;
+
+  @IsString()
+  @IsOptional()
+  baseImage?: string;
+
+  @IsArray()
+  @IsOptional()
+  @IsString({ each: true })
+  images?: string[];
+
+  @IsString()
+  @IsOptional()
   description?: string;
 
   @Type(() => Number)
-  price: number;
+  @IsNumber()
+  @Min(0)
+  @IsOptional()
+  basePrice?: number;
 
-  @IsString()
-  @IsNotEmpty({ message: 'Product SKU is required' })
-  sku: string;
+  @Type(() => Number)
+  @IsNumber()
+  @Min(0)
+  @IsOptional()
+  discountPrice?: number;
 
   @IsArray()
   @ArrayMinSize(1, { message: 'At least one category is required' })
@@ -39,12 +60,25 @@ export class CreateProductDto {
   @IsString({ each: true })
   subCategoryIds?: string[];
 
+  @IsBoolean()
   @IsOptional()
-  @IsString()
-  image?: string;
+  isNew?: boolean;
 
+  @IsBoolean()
   @IsOptional()
+  isFeatured?: boolean;
+
+  @IsBoolean()
+  @IsOptional()
+  isBestSeller?: boolean;
+
+  @IsBoolean()
+  @IsOptional()
+  isActive?: boolean;
+
   @IsArray()
-  @IsString({ each: true })
-  images?: string[];
+  @IsOptional()
+  @ValidateNested({ each: true })
+  @Type(() => CreateVariantDto)
+  variants?: CreateVariantDto[];
 }

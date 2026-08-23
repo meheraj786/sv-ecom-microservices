@@ -23,9 +23,15 @@ import {
   CreateCategoryDto,
   CreateSubCategoryDto,
   CreateProductDto,
+  UpdateProductDto,
+  CreateVariantDto,
+  UpdateVariantDto,
   GetProductsQueryDto,
   PaginationQueryDto,
   AddToCartDto,
+  UpdateCartQuantityDto,
+  AddBatchDto,
+  GetStocksQueryDto,
   ValidateCouponDto,
   UpdateCouponDto,
   CreateCouponDto,
@@ -39,6 +45,7 @@ const isProduction = process.env.NODE_ENV === 'production';
 export class AppController {
   constructor(private appService: AppService) {}
 
+  // ================= AUTH & USER =================
   @Post('auth/register')
   registerUser(@Body() dto: RegisterUserDto) {
     return this.appService.rpcCall(
@@ -117,6 +124,7 @@ export class AppController {
     );
   }
 
+  // ================= CATEGORIES =================
   @UseGuards(JwtAuthGuard, AdminGuard)
   @Post('product/category')
   createCategory(@Body() dto: CreateCategoryDto) {
@@ -155,6 +163,7 @@ export class AppController {
     );
   }
 
+  // ================= SUB-CATEGORIES =================
   @UseGuards(JwtAuthGuard, AdminGuard)
   @Post('product/subcategory')
   createSubCategory(@Body() dto: CreateSubCategoryDto) {
@@ -196,6 +205,7 @@ export class AppController {
     );
   }
 
+  // ================= PRODUCTS & VARIANTS =================
   @UseGuards(JwtAuthGuard, AdminGuard)
   @Post('product')
   createProduct(@Body() dto: CreateProductDto) {
@@ -211,11 +221,10 @@ export class AppController {
     );
   }
 
-  @UseGuards(JwtAuthGuard, AdminGuard)
-  @Delete('product/:id')
-  deleteProduct(@Param('id') id: string) {
+  @Get('product/id/:id')
+  getProductById(@Param('id') id: string) {
     return this.appService.rpcCall(
-      this.appService.productService.deleteProduct({ id }),
+      this.appService.productService.getProductById({ id }),
     );
   }
 
@@ -226,6 +235,54 @@ export class AppController {
     );
   }
 
+  @UseGuards(JwtAuthGuard, AdminGuard)
+  @Put('product/:id')
+  updateProduct(@Param('id') id: string, @Body() dto: UpdateProductDto) {
+    return this.appService.rpcCall(
+      this.appService.productService.updateProduct({ id, ...dto }),
+    );
+  }
+
+  @UseGuards(JwtAuthGuard, AdminGuard)
+  @Delete('product/:id')
+  deleteProduct(@Param('id') id: string) {
+    return this.appService.rpcCall(
+      this.appService.productService.deleteProduct({ id }),
+    );
+  }
+
+  @UseGuards(JwtAuthGuard, AdminGuard)
+  @Post('product/:id/variant')
+  createVariant(@Param('id') id: string, @Body() dto: CreateVariantDto) {
+    return this.appService.rpcCall(
+      this.appService.productService.createVariant({ id, ...dto }),
+    );
+  }
+
+  @Get('product/:id/variants')
+  getVariantsByProduct(@Param('id') id: string) {
+    return this.appService.rpcCall(
+      this.appService.productService.getVariantsByProduct({ id }),
+    );
+  }
+
+  @UseGuards(JwtAuthGuard, AdminGuard)
+  @Put('product/variant/:id')
+  updateVariant(@Param('id') id: string, @Body() dto: UpdateVariantDto) {
+    return this.appService.rpcCall(
+      this.appService.productService.updateVariant({ id, ...dto }),
+    );
+  }
+
+  @UseGuards(JwtAuthGuard, AdminGuard)
+  @Delete('product/variant/:id')
+  deleteVariant(@Param('id') id: string) {
+    return this.appService.rpcCall(
+      this.appService.productService.deleteVariant({ id }),
+    );
+  }
+
+  // ================= CART =================
   @UseGuards(JwtAuthGuard)
   @Get('cart')
   getCart(@Req() req: any) {
@@ -239,26 +296,17 @@ export class AppController {
   @Post('cart/add')
   addToCart(@Req() req: any, @Body() dto: AddToCartDto) {
     const userId = req.user.userId;
-
-    // If frontend sent productId (legacy), resolve a variantId by fetching product
-    const resolveVariant = async () => {
-      if (dto.variantId) return dto.variantId;
-      if (dto.productId) {
-        const productResult: any = await this.appService.rpcCall(
-          this.appService.productService.getProductBySlug({ slug: dto.productId }),
-        );
-        const product = productResult;
-        const variantId = product?.variants?.[0]?.id;
-        return variantId || dto.productId;
-      }
-      return undefined;
-    };
-
     return this.appService.rpcCall(
-      (async () => {
-        const variantId = await resolveVariant();
-        return this.appService.cartService.addToCart({ userId, variantId, quantity: dto.quantity, price: dto.price });
-      })(),
+      this.appService.cartService.addToCart({ userId, ...dto }),
+    );
+  }
+
+  @UseGuards(JwtAuthGuard)
+  @Put('cart/update-quantity')
+  updateCartQuantity(@Req() req: any, @Body() dto: UpdateCartQuantityDto) {
+    const userId = req.user.userId;
+    return this.appService.rpcCall(
+      this.appService.cartService.updateQuantity({ userId, ...dto }),
     );
   }
 
@@ -280,12 +328,45 @@ export class AppController {
     );
   }
 
+  // ================= INVENTORY / STOCKS =================
+  @UseGuards(JwtAuthGuard, AdminGuard)
+  @Post('inventory/batch')
+  addInventoryBatch(@Body() dto: AddBatchDto) {
+    return this.appService.rpcCall(
+      this.appService.inventoryService.addBatch(dto),
+    );
+  }
+
+  @UseGuards(JwtAuthGuard, AdminGuard)
+  @Get('inventory/stocks')
+  getStocks(@Query() query: GetStocksQueryDto) {
+    return this.appService.rpcCall(
+      this.appService.inventoryService.getStocks(query),
+    );
+  }
+
+  @Get('inventory/summary/:variantId')
+  getVariantStockSummary(@Param('variantId') variantId: string) {
+    return this.appService.rpcCall(
+      this.appService.inventoryService.getVariantStockSummary({ variantId }),
+    );
+  }
+
+  // ================= ORDERS =================
   @UseGuards(JwtAuthGuard)
   @Post('order')
-  createOrder(@Req() req: any) {
+  createOrder(
+    @Req() req: any,
+    @Query('couponCode') couponCode: string,
+    @Body() billing: any,
+  ) {
     const userId = req.user.userId;
     return this.appService.rpcCall(
-      this.appService.orderService.createOrder({ userId }),
+      this.appService.orderService.createOrder({
+        userId,
+        couponCode,
+        billing,
+      }),
     );
   }
 
@@ -298,51 +379,12 @@ export class AppController {
     );
   }
 
-  @UseGuards(JwtAuthGuard, AdminGuard)
-  @Post('inventory/batch')
-  addInventoryBatch(@Body() dto: any) {
-    // If frontend provided productId, resolve to a variantId
-    const prepare = (async () => {
-      if (dto.variantId) return dto;
-      if (dto.productId) {
-        const productResult: any = await this.appService.rpcCall(
-          this.appService.productService.getProductBySlug({ slug: dto.productId }),
-        );
-        const product = productResult;
-        const variantId = product?.variants?.[0]?.id;
-        return { ...dto, variantId: variantId || dto.productId };
-      }
-      return dto;
-    })();
-
-    return this.appService.rpcCall(prepare.then((resolved) => this.appService.inventoryService.addBatch(resolved)));
-  }
-
+  // ================= COUPONS =================
   @UseGuards(JwtAuthGuard, AdminGuard)
   @Post('order/coupon')
   createCoupon(@Body() dto: CreateCouponDto) {
     return this.appService.rpcCall(
       this.appService.orderService.createCoupon(dto),
-    );
-  }
-
-  @UseGuards(JwtAuthGuard, AdminGuard)
-  @Put('order/coupon/:id')
-  updateCoupon(@Param('id') id: string, @Body() dto: UpdateCouponDto) {
-    return this.appService.rpcCall(
-      this.appService.orderService.updateCoupon({ id, ...dto }),
-    );
-  }
-
-  @UseGuards(JwtAuthGuard)
-  @Post('order/coupon/validate')
-  validateCoupon(@Req() req: any, @Body() dto: ValidateCouponDto) {
-    const userId = req.user.userId;
-    return this.appService.rpcCall(
-      this.appService.orderService.validateCouponForUser({
-        userId,
-        code: dto.code,
-      }),
     );
   }
 
@@ -363,6 +405,14 @@ export class AppController {
   }
 
   @UseGuards(JwtAuthGuard, AdminGuard)
+  @Put('order/coupon/:id')
+  updateCoupon(@Param('id') id: string, @Body() dto: UpdateCouponDto) {
+    return this.appService.rpcCall(
+      this.appService.orderService.updateCoupon({ id, ...dto }),
+    );
+  }
+
+  @UseGuards(JwtAuthGuard, AdminGuard)
   @Delete('order/coupon/:id')
   deleteCoupon(@Param('id') id: string) {
     return this.appService.rpcCall(
@@ -370,6 +420,19 @@ export class AppController {
     );
   }
 
+  @UseGuards(JwtAuthGuard)
+  @Post('order/coupon/validate')
+  validateCoupon(@Req() req: any, @Body() dto: ValidateCouponDto) {
+    const userId = req.user.userId;
+    return this.appService.rpcCall(
+      this.appService.orderService.validateCouponForUser({
+        userId,
+        code: dto.code,
+      }),
+    );
+  }
+
+  // ================= DIVISIONS =================
   @UseGuards(JwtAuthGuard, AdminGuard)
   @Post('order/division')
   createDivision(@Body() dto: CreateDivisionDto) {

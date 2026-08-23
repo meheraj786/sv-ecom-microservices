@@ -1459,6 +1459,9 @@ export const ProductScalarFieldEnum = {
   id: 'id',
   name: 'name',
   slug: 'slug',
+  sku: 'sku',
+  baseImage: 'baseImage',
+  images: 'images',
   description: 'description',
   isActive: 'isActive',
   isNew: 'isNew',
@@ -1466,10 +1469,7 @@ export const ProductScalarFieldEnum = {
   isFeatured: 'isFeatured',
   basePrice: 'basePrice',
   discountPrice: 'discountPrice',
-  sku: 'sku',
-  images: 'images',
   averageRating: 'averageRating',
-  specifications: 'specifications',
   createdAt: 'createdAt',
   updatedAt: 'updatedAt'
 } as const
@@ -1499,13 +1499,37 @@ export const ProductVariantScalarFieldEnum = {
   id: 'id',
   productId: 'productId',
   sku: 'sku',
-  attributes: 'attributes',
+  price: 'price',
   images: 'images',
   isActive: 'isActive',
   color: 'color',
   size: 'size',
-  price: 'price',
-  quantityRemaining: 'quantityRemaining',
+  fabric: 'fabric',
+  material: 'material',
+  fit: 'fit',
+  sleeve: 'sleeve',
+  neckType: 'neckType',
+  pattern: 'pattern',
+  shoeSize: 'shoeSize',
+  ram: 'ram',
+  storage: 'storage',
+  processor: 'processor',
+  screenSize: 'screenSize',
+  connectivity: 'connectivity',
+  volume: 'volume',
+  shade: 'shade',
+  skinType: 'skinType',
+  fragrance: 'fragrance',
+  weight: 'weight',
+  flavor: 'flavor',
+  packageType: 'packageType',
+  materialPurity: 'materialPurity',
+  strap: 'strap',
+  dimensions: 'dimensions',
+  format: 'format',
+  packQuantity: 'packQuantity',
+  condition: 'condition',
+  warranty: 'warranty',
   createdAt: 'createdAt',
   updatedAt: 'updatedAt'
 } as const
@@ -1613,21 +1637,6 @@ export const SortOrder = {
 export type SortOrder = (typeof SortOrder)[keyof typeof SortOrder]
 
 
-export const NullableJsonNullValueInput = {
-  DbNull: DbNull,
-  JsonNull: JsonNull
-} as const
-
-export type NullableJsonNullValueInput = (typeof NullableJsonNullValueInput)[keyof typeof NullableJsonNullValueInput]
-
-
-export const JsonNullValueInput = {
-  JsonNull: JsonNull
-} as const
-
-export type JsonNullValueInput = (typeof JsonNullValueInput)[keyof typeof JsonNullValueInput]
-
-
 export const QueryMode = {
   default: 'default',
   insensitive: 'insensitive'
@@ -1642,15 +1651,6 @@ export const NullsOrder = {
 } as const
 
 export type NullsOrder = (typeof NullsOrder)[keyof typeof NullsOrder]
-
-
-export const JsonNullValueFilter = {
-  DbNull: DbNull,
-  JsonNull: JsonNull,
-  AnyNull: AnyNull
-} as const
-
-export type JsonNullValueFilter = (typeof JsonNullValueFilter)[keyof typeof JsonNullValueFilter]
 
 
 
@@ -1705,20 +1705,6 @@ export type FloatFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, '
  * Reference to a field of type 'Float[]'
  */
 export type ListFloatFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'Float[]'>
-    
-
-
-/**
- * Reference to a field of type 'Json'
- */
-export type JsonFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'Json'>
-    
-
-
-/**
- * Reference to a field of type 'QueryMode'
- */
-export type EnumQueryModeFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'QueryMode'>
     
 
 

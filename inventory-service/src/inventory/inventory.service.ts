@@ -1,39 +1,85 @@
 import { Injectable, BadRequestException } from '@nestjs/common';
-import { AddBatchDto } from './dto/add-batch.dto';
 import { PrismaService } from 'src/prisma/prisma.service';
+import { AddBatchDto } from './dto/add-batch.dto';
+import { GetStocksQueryDto } from './dto/get-stocks-query.dto';
 
 @Injectable()
 export class InventoryService {
   constructor(private prisma: PrismaService) {}
 
-  // 1. Add fresh inventory procurement batch
   async addBatch(dto: AddBatchDto) {
-    // Use variant-based Stock model
-    const existing = dto.batchNumber
-      ? await this.prisma.stock.findFirst({ where: { batchNumber: dto.batchNumber } })
-      : null;
-
-    if (existing) {
-      throw new BadRequestException('Batch number already exists');
+    if (dto.batchNumber) {
+      const existing = await this.prisma.stock.findFirst({
+        where: { batchNumber: dto.batchNumber },
+      });
+      if (existing) {
+        throw new BadRequestException('Batch number already exists');
+      }
     }
 
     return this.prisma.stock.create({
       data: {
         variantId: dto.variantId,
-        batchNumber: dto.batchNumber,
+        batchNumber: dto.batchNumber || null,
         purchasePrice: dto.purchasePrice,
         sellingPrice: dto.sellingPrice,
         quantityReceived: dto.quantityReceived,
         quantityRemaining: dto.quantityReceived,
+        note: dto.note || null,
       },
     });
   }
 
-  // 2. FIFO algorithm: Calculate total selling price (gRPC Sync request)
-  async calculateFifoPrice(productId: string, quantity: number) {
+  async getStocks(query: GetStocksQueryDto) {
+    const page = Number(query.page) || 1;
+    const limit = Number(query.limit) || 10;
+    const skip = (page - 1) * limit;
+
+    const where = query.variantId ? { variantId: query.variantId } : {};
+
+    const [totalStocks, stocks] = await Promise.all([
+      this.prisma.stock.count({ where }),
+      this.prisma.stock.findMany({
+        where,
+        skip,
+        take: limit,
+        orderBy: { createdAt: 'desc' },
+      }),
+    ]);
+
+    return {
+      meta: {
+        totalStocks,
+        page,
+        limit,
+        totalPages: Math.ceil(totalStocks / limit),
+      },
+      stocks,
+    };
+  }
+
+  async getVariantStockSummary(variantId: string) {
     const batches = await this.prisma.stock.findMany({
-      where: { variantId: productId, quantityRemaining: { gt: 0 } },
-      orderBy: { createdAt: 'asc' }, // FIFO Order
+      where: { variantId, quantityRemaining: { gt: 0 } },
+      orderBy: { createdAt: 'asc' },
+    });
+
+    const totalStock = batches.reduce((sum, b) => sum + b.quantityRemaining, 0);
+    const currentSellingPrice =
+      batches.length > 0 ? batches[0].sellingPrice : 0;
+
+    return {
+      variantId,
+      totalStock,
+      currentSellingPrice,
+      activeBatchesCount: batches.length,
+    };
+  }
+
+  async calculateFifoPrice(variantId: string, quantity: number) {
+    const batches = await this.prisma.stock.findMany({
+      where: { variantId, quantityRemaining: { gt: 0 } },
+      orderBy: { createdAt: 'asc' },
     });
 
     let totalStockAvailable = 0;
@@ -42,7 +88,13 @@ export class InventoryService {
     }
 
     if (totalStockAvailable < quantity) {
-      return { totalPrice: 0, isAvailable: false };
+      return {
+        variantId,
+        totalPrice: 0,
+        unitPriceAverage: 0,
+        isAvailable: false,
+        availableStock: totalStockAvailable,
+      };
     }
 
     let remainingToCalculate = quantity;
@@ -59,13 +111,18 @@ export class InventoryService {
       remainingToCalculate -= takeFromThisBatch;
     }
 
-    return { totalPrice, isAvailable: true };
+    return {
+      variantId,
+      totalPrice,
+      unitPriceAverage: totalPrice / quantity,
+      isAvailable: true,
+      availableStock: totalStockAvailable,
+    };
   }
 
-  // 3. FIFO actual stock reduction (Asynchronously called via RMQ)
-  async deductFifoStock(productId: string, quantity: number) {
+  async deductFifoStock(variantId: string, quantity: number) {
     const batches = await this.prisma.stock.findMany({
-      where: { variantId: productId, quantityRemaining: { gt: 0 } },
+      where: { variantId, quantityRemaining: { gt: 0 } },
       orderBy: { createdAt: 'asc' },
     });
 
@@ -89,8 +146,6 @@ export class InventoryService {
       remainingToDeduct -= deductFromThisBatch;
     }
 
-    console.log(
-      `Asynchronously deducted ${quantity} units from Product ${productId} using FIFO.`,
-    );
+    return { success: true, deducted: quantity - remainingToDeduct };
   }
 }

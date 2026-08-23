@@ -28,6 +28,7 @@ model OrderItem {
   orderId   String
   order     Order    @relation(fields: [orderId], references: [id], onDelete: Cascade)
   productId String
+  variantId String
   quantity  Int
   price     Float
   createdAt DateTime @default(now())
@@ -35,6 +36,7 @@ model OrderItem {
 
   @@index([orderId])
   @@index([productId])
+  @@index([variantId])
   @@map("order_items")
 }
 
@@ -104,11 +106,11 @@ model CouponUsage {
 }
 
 model Division {
-  id              String   @id @default(cuid())
-  name            String
+  id             String   @id @default(cuid())
+  name           String
   deliveryCharge Float
-  createdAt       DateTime @default(now())
-  updatedAt       DateTime @updatedAt
+  createdAt      DateTime @default(now())
+  updatedAt      DateTime @updatedAt
 
   @@map("divisions")
 }

@@ -1,7 +1,6 @@
 import { Injectable } from '@nestjs/common';
 
 type ServiceName = 'user' | 'product' | 'cart' | 'order' | 'inventory';
-
 type QueryValue = string | number | boolean | undefined | null;
 
 @Injectable()
@@ -10,8 +9,8 @@ export class AppService {
     user: process.env.USER_SERVICE_URL ?? 'http://localhost:3001',
     product: process.env.PRODUCT_SERVICE_URL ?? 'http://localhost:3002',
     cart: process.env.CART_SERVICE_URL ?? 'http://localhost:3003',
-    order: process.env.ORDER_SERVICE_URL ?? 'http://localhost:3005',
     inventory: process.env.INVENTORY_SERVICE_URL ?? 'http://localhost:3004',
+    order: process.env.ORDER_SERVICE_URL ?? 'http://localhost:3005',
   };
 
   public userService = {
@@ -94,17 +93,57 @@ export class AppService {
       this.httpRequest('product', '/product', 'POST', data),
     getProducts: (query: any) =>
       this.httpRequest('product', '/product', 'GET', undefined, query),
-    deleteProduct: (data: { id: string }) =>
+    getProductById: (data: { id: string }) =>
       this.httpRequest(
         'product',
-        `/product/${encodeURIComponent(data.id)}`,
-        'DELETE',
+        `/product/id/${encodeURIComponent(data.id)}`,
+        'GET',
       ),
     getProductBySlug: (data: { slug: string }) =>
       this.httpRequest(
         'product',
         `/product/${encodeURIComponent(data.slug)}`,
         'GET',
+      ),
+    updateProduct: (data: any) =>
+      this.httpRequest(
+        'product',
+        `/product/${encodeURIComponent(data.id)}`,
+        'PUT',
+        data,
+      ),
+    deleteProduct: (data: { id: string }) =>
+      this.httpRequest(
+        'product',
+        `/product/${encodeURIComponent(data.id)}`,
+        'DELETE',
+      ),
+
+    createVariant: (data: any) =>
+      this.httpRequest(
+        'product',
+        `/product/${encodeURIComponent(data.id)}/variant`,
+        'POST',
+        data,
+      ),
+    getVariantsByProduct: (data: { id: string }) =>
+      this.httpRequest(
+        'product',
+        `/product/${encodeURIComponent(data.id)}/variants`,
+        'GET',
+      ),
+    updateVariant: (data: any) =>
+      this.httpRequest(
+        'product',
+        `/product/variant/${encodeURIComponent(data.id)}`,
+        'PUT',
+        data,
+      ),
+    deleteVariant: (data: { id: string }) =>
+      this.httpRequest(
+        'product',
+        `/product/variant/${encodeURIComponent(data.id)}`,
+        'DELETE',
       ),
   };
 
@@ -115,11 +154,14 @@ export class AppService {
       }),
     addToCart: (data: any) =>
       this.httpRequest('cart', '/cart/add', 'POST', data),
+    updateQuantity: (data: any) =>
+      this.httpRequest('cart', '/cart/update-quantity', 'PUT', data),
     removeFromCart: (data: any) =>
       this.httpRequest(
         'cart',
-        `/cart/${encodeURIComponent(data.productId)}`,
+        `/cart/${encodeURIComponent(data.variantId)}`,
         'DELETE',
+        undefined,
         {
           userId: data.userId,
         },
@@ -131,13 +173,30 @@ export class AppService {
   public inventoryService = {
     addBatch: (data: any) =>
       this.httpRequest('inventory', '/inventory/batch', 'POST', data),
+    getStocks: (query: any) =>
+      this.httpRequest(
+        'inventory',
+        '/inventory/stocks',
+        'GET',
+        undefined,
+        query,
+      ),
+    getVariantStockSummary: (data: { variantId: string }) =>
+      this.httpRequest(
+        'inventory',
+        `/inventory/summary/${encodeURIComponent(data.variantId)}`,
+        'GET',
+      ),
     calculateFifoPrice: (data: any) =>
       this.httpRequest('inventory', '/inventory/fifo-price', 'POST', data),
   };
 
   public orderService = {
     createOrder: (data: any) =>
-      this.httpRequest('order', '/order', 'POST', data),
+      this.httpRequest('order', '/order', 'POST', data.billing, {
+        userId: data.userId,
+        couponCode: data.couponCode,
+      }),
     getOrders: (data: any) =>
       this.httpRequest('order', '/order', 'GET', undefined, {
         userId: data.userId,
@@ -147,17 +206,14 @@ export class AppService {
 
     createCoupon: (data: any) =>
       this.httpRequest('order', '/order/coupon', 'POST', data),
-
     getCoupons: (query: any) =>
       this.httpRequest('order', '/order/coupon', 'GET', undefined, query),
-
     getCouponById: (data: { id: string }) =>
       this.httpRequest(
         'order',
         `/order/coupon/${encodeURIComponent(data.id)}`,
         'GET',
       ),
-
     updateCoupon: (data: any) =>
       this.httpRequest(
         'order',
@@ -165,7 +221,6 @@ export class AppService {
         'PUT',
         data,
       ),
-
     deleteCoupon: (data: { id: string }) =>
       this.httpRequest(
         'order',
@@ -183,29 +238,25 @@ export class AppService {
       ),
 
     createDivision: (data: any) =>
-      this.httpRequest('order', '/division', 'POST', data),
-
-    getAllDivisions: () => this.httpRequest('order', '/division', 'GET'),
-
+      this.httpRequest('order', '/order/division', 'POST', data),
+    getAllDivisions: () => this.httpRequest('order', '/order/divisions', 'GET'),
     getDivisionById: (data: { id: string }) =>
       this.httpRequest(
         'order',
-        `/division/${encodeURIComponent(data.id)}`,
+        `/order/division/${encodeURIComponent(data.id)}`,
         'GET',
       ),
-
     updateDivision: (data: any) =>
       this.httpRequest(
         'order',
-        `/division/${encodeURIComponent(data.id)}`,
+        `/order/division/${encodeURIComponent(data.id)}`,
         'PUT',
         data,
       ),
-
     deleteDivision: (data: { id: string }) =>
       this.httpRequest(
         'order',
-        `/division/${encodeURIComponent(data.id)}`,
+        `/order/division/${encodeURIComponent(data.id)}`,
         'DELETE',
       ),
   };

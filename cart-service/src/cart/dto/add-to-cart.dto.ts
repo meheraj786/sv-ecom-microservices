@@ -1,15 +1,40 @@
-import { IsString, IsNotEmpty, IsNumber, Min } from 'class-validator';
+import {
+  IsString,
+  IsNotEmpty,
+  IsNumber,
+  Min,
+  IsOptional,
+} from 'class-validator';
+import { Type } from 'class-transformer';
 
 export class AddToCartDto {
+  @IsString()
+  @IsNotEmpty({ message: 'productId is required' })
+  productId: string;
+
   @IsString()
   @IsNotEmpty({ message: 'variantId is required' })
   variantId: string;
 
+  @Type(() => Number)
   @IsNumber()
   @Min(1, { message: 'Quantity must be at least 1' })
   quantity: number;
 
+  @Type(() => Number)
   @IsNumber()
   @Min(0, { message: 'Price cannot be negative' })
-  price: number;
+  @IsOptional()
+  price?: number;
+}
+
+export class UpdateCartQuantityDto {
+  @IsString()
+  @IsNotEmpty({ message: 'variantId is required' })
+  variantId: string;
+
+  @Type(() => Number)
+  @IsNumber()
+  @Min(1, { message: 'Quantity must be at least 1' })
+  quantity: number;
 }

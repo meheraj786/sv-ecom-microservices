@@ -629,6 +629,14 @@ export type NullableDateTimeFieldUpdateOperationsInput = {
   set?: Date | string | null
 }
 
+export type NullableIntFieldUpdateOperationsInput = {
+  set?: number | null
+  increment?: number
+  decrement?: number
+  multiply?: number
+  divide?: number
+}
+
 export type CouponCreateNestedOneWithoutProductsInput = {
   create?: Prisma.XOR<Prisma.CouponCreateWithoutProductsInput, Prisma.CouponUncheckedCreateWithoutProductsInput>
   connectOrCreate?: Prisma.CouponCreateOrConnectWithoutProductsInput

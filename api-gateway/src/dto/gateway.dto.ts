@@ -14,7 +14,7 @@ import {
   IsDateString,
   ArrayMinSize,
 } from 'class-validator';
-import { Type } from 'class-transformer';
+import { Type, Transform } from 'class-transformer';
 
 export class RegisterUserDto {
   @IsEmail()
@@ -125,16 +125,32 @@ export class CreateProductDto {
 
   @IsString()
   @IsOptional()
+  sku?: string;
+
+  @IsString()
+  @IsOptional()
+  baseImage?: string;
+
+  @IsArray()
+  @IsOptional()
+  @IsString({ each: true })
+  images?: string[];
+
+  @IsString()
+  @IsOptional()
   description?: string;
 
   @Type(() => Number)
-  @IsNumber({}, { message: 'Price must be a valid number' })
-  @Min(0, { message: 'Price cannot be negative' })
-  price: number;
+  @IsNumber()
+  @Min(0)
+  @IsOptional()
+  basePrice?: number;
 
-  @IsString()
-  @IsNotEmpty({ message: 'Product SKU is required' })
-  sku: string;
+  @Type(() => Number)
+  @IsNumber()
+  @Min(0)
+  @IsOptional()
+  discountPrice?: number;
 
   @IsArray()
   @ArrayMinSize(1, { message: 'At least one category is required' })
@@ -146,14 +162,160 @@ export class CreateProductDto {
   @IsString({ each: true })
   subCategoryIds?: string[];
 
+  @IsBoolean()
   @IsOptional()
-  @IsString()
-  image?: string;
+  isNew?: boolean;
 
+  @IsBoolean()
   @IsOptional()
+  isFeatured?: boolean;
+
+  @IsBoolean()
+  @IsOptional()
+  isBestSeller?: boolean;
+
+  @IsBoolean()
+  @IsOptional()
+  isActive?: boolean;
+}
+
+export class UpdateProductDto {
+  @IsString()
+  @IsOptional()
+  name?: string;
+
+  @IsString()
+  @IsOptional()
+  slug?: string;
+
+  @IsString()
+  @IsOptional()
+  sku?: string;
+
+  @IsString()
+  @IsOptional()
+  baseImage?: string;
+
   @IsArray()
+  @IsOptional()
   @IsString({ each: true })
   images?: string[];
+
+  @IsString()
+  @IsOptional()
+  description?: string;
+
+  @Type(() => Number)
+  @IsNumber()
+  @Min(0)
+  @IsOptional()
+  basePrice?: number;
+
+  @Type(() => Number)
+  @IsNumber()
+  @Min(0)
+  @IsOptional()
+  discountPrice?: number;
+
+  @IsArray()
+  @IsOptional()
+  @IsString({ each: true })
+  categoryIds?: string[];
+
+  @IsArray()
+  @IsOptional()
+  @IsString({ each: true })
+  subCategoryIds?: string[];
+
+  @IsBoolean()
+  @IsOptional()
+  isNew?: boolean;
+
+  @IsBoolean()
+  @IsOptional()
+  isFeatured?: boolean;
+
+  @IsBoolean()
+  @IsOptional()
+  isBestSeller?: boolean;
+
+  @IsBoolean()
+  @IsOptional()
+  isActive?: boolean;
+}
+
+export class CreateVariantDto {
+  @IsString()
+  @IsNotEmpty({ message: 'Variant SKU is required' })
+  sku: string;
+
+  @IsString()
+  @IsOptional()
+  color?: string;
+
+  @IsString()
+  @IsOptional()
+  size?: string;
+
+  @IsString()
+  @IsOptional()
+  material?: string;
+
+  @IsString()
+  @IsOptional()
+  storage?: string;
+
+  @Type(() => Number)
+  @IsNumber()
+  @Min(0)
+  @IsOptional()
+  price?: number;
+
+  @IsArray()
+  @IsOptional()
+  @IsString({ each: true })
+  images?: string[];
+
+  @IsBoolean()
+  @IsOptional()
+  isActive?: boolean;
+}
+
+export class UpdateVariantDto {
+  @IsString()
+  @IsOptional()
+  sku?: string;
+
+  @IsString()
+  @IsOptional()
+  color?: string;
+
+  @IsString()
+  @IsOptional()
+  size?: string;
+
+  @IsString()
+  @IsOptional()
+  material?: string;
+
+  @IsString()
+  @IsOptional()
+  storage?: string;
+
+  @Type(() => Number)
+  @IsNumber()
+  @Min(0)
+  @IsOptional()
+  price?: number;
+
+  @IsArray()
+  @IsOptional()
+  @IsString({ each: true })
+  images?: string[];
+
+  @IsBoolean()
+  @IsOptional()
+  isActive?: boolean;
 }
 
 export class PaginationQueryDto {
@@ -194,24 +356,100 @@ export class GetProductsQueryDto extends PaginationQueryDto {
   @IsOptional()
   @IsString()
   search?: string;
+
+  @IsOptional()
+  @Transform(({ value }) => value === 'true' || value === true)
+  @IsBoolean()
+  isNew?: boolean;
+
+  @IsOptional()
+  @Transform(({ value }) => value === 'true' || value === true)
+  @IsBoolean()
+  isBestSeller?: boolean;
+
+  @IsOptional()
+  @Transform(({ value }) => value === 'true' || value === true)
+  @IsBoolean()
+  isFeatured?: boolean;
+
+  @IsOptional()
+  @IsString()
+  color?: string;
+
+  @IsOptional()
+  @IsString()
+  size?: string;
+
+  @IsOptional()
+  @IsString()
+  sortBy?: 'newest' | 'price-low' | 'price-high' | 'rating-high';
 }
 
 export class AddToCartDto {
-  @IsOptional()
   @IsString()
-  productId?: string;
+  @IsNotEmpty({ message: 'productId is required' })
+  productId: string;
 
-  @IsOptional()
   @IsString()
-  variantId?: string;
+  @IsNotEmpty({ message: 'variantId is required' })
+  variantId: string;
 
+  @Type(() => Number)
   @IsNumber()
   @Min(1)
   quantity: number;
 
+  @Type(() => Number)
   @IsNumber()
   @Min(0)
-  price: number;
+  @IsOptional()
+  price?: number;
+}
+
+export class UpdateCartQuantityDto {
+  @IsString()
+  @IsNotEmpty({ message: 'variantId is required' })
+  variantId: string;
+
+  @Type(() => Number)
+  @IsNumber()
+  @Min(1)
+  quantity: number;
+}
+
+export class AddBatchDto {
+  @IsString()
+  @IsNotEmpty({ message: 'variantId is required' })
+  variantId: string;
+
+  @IsString()
+  @IsOptional()
+  batchNumber?: string;
+
+  @Type(() => Number)
+  @IsNumber()
+  @Min(0)
+  purchasePrice: number;
+
+  @Type(() => Number)
+  @IsNumber()
+  @Min(0)
+  sellingPrice: number;
+
+  @Type(() => Number)
+  @IsNumber()
+  @Min(1)
+  quantityReceived: number;
+
+  @IsString()
+  @IsOptional()
+  note?: string;
+}
+
+export class GetStocksQueryDto extends PaginationQueryDto {
+  @IsOptional()
+  @IsString()
+  variantId?: string;
 }
 
 export enum CouponDiscountType {

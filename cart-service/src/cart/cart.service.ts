@@ -1,6 +1,6 @@
 import { Injectable } from '@nestjs/common';
 import { RedisService } from '../redis/redis.service';
-import { AddToCartDto } from './dto/add-to-cart.dto';
+import { AddToCartDto, UpdateCartQuantityDto } from './dto/add-to-cart.dto';
 
 @Injectable()
 export class CartService {
@@ -25,11 +25,30 @@ export class CartService {
 
     if (existingItemIndex > -1) {
       cart[existingItemIndex].quantity += dto.quantity;
+      if (dto.price !== undefined) {
+        cart[existingItemIndex].price = dto.price;
+      }
     } else {
       cart.push(dto);
     }
 
     await this.redis.client.set(key, JSON.stringify(cart), 'EX', 604800);
+    return cart;
+  }
+
+  async updateQuantity(userId: string, dto: UpdateCartQuantityDto) {
+    const key = this.getCartKey(userId);
+    const cart = await this.getCart(userId);
+
+    const itemIndex = cart.findIndex(
+      (item: any) => item.variantId === dto.variantId,
+    );
+
+    if (itemIndex > -1) {
+      cart[itemIndex].quantity = dto.quantity;
+      await this.redis.client.set(key, JSON.stringify(cart), 'EX', 604800);
+    }
+
     return cart;
   }
 

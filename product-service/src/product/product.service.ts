@@ -8,6 +8,8 @@ import { PrismaService } from '../prisma/prisma.service';
 import { CreateCategoryDto } from './dto/create-category.dto';
 import { CreateSubCategoryDto } from './dto/create-subcategory.dto';
 import { CreateProductDto } from './dto/create-product.dto';
+import { UpdateProductDto } from './dto/update-product.dto';
+import { CreateVariantDto, UpdateVariantDto } from './dto/create-variant.dto';
 import { GetProductsQueryDto } from './dto/get-products-query.dto';
 import { PaginationQueryDto } from './dto/pagination-query.dto';
 
@@ -47,34 +49,6 @@ export class ProductService {
         },
       }),
     ]);
-
-    if (totalCategories === 0 && categories.length === 0 && page === 1) {
-      const [masterTotal, masterCategories] = await Promise.all([
-        this.prisma.write.category.count(),
-        this.prisma.write.category.findMany({
-          skip,
-          take: limit,
-          include: {
-            subCategories: true,
-          },
-          orderBy: {
-            createdAt: 'desc',
-          },
-        }),
-      ]);
-
-      if (masterTotal > 0) {
-        return {
-          meta: {
-            totalCategories: masterTotal,
-            page,
-            limit,
-            totalPages: Math.ceil(masterTotal / limit),
-          },
-          categories: masterCategories,
-        };
-      }
-    }
 
     return {
       meta: {
@@ -131,6 +105,12 @@ export class ProductService {
     });
   }
 
+  async deleteCategories(id: string): Promise<void> {
+    await this.prisma.write.category.delete({
+      where: { id },
+    });
+  }
+
   async createSubCategory(dto: CreateSubCategoryDto) {
     const existing = await this.prisma.write.subCategory.findUnique({
       where: { slug: dto.slug },
@@ -168,31 +148,6 @@ export class ProductService {
         },
       }),
     ]);
-
-    if (totalSubCategories === 0 && subcategories.length === 0 && page === 1) {
-      const [masterTotal, masterSubcategories] = await Promise.all([
-        this.prisma.write.subCategory.count(),
-        this.prisma.write.subCategory.findMany({
-          skip,
-          take: limit,
-          orderBy: {
-            createdAt: 'desc',
-          },
-        }),
-      ]);
-
-      if (masterTotal > 0) {
-        return {
-          meta: {
-            totalSubCategories: masterTotal,
-            page,
-            limit,
-            totalPages: Math.ceil(masterTotal / limit),
-          },
-          subcategories: masterSubcategories,
-        };
-      }
-    }
 
     return {
       meta: {
@@ -243,353 +198,10 @@ export class ProductService {
     });
   }
 
-  async createProduct(dto: CreateProductDto) {
-    const existingSlug = await this.prisma.write.product.findUnique({
-      where: { slug: dto.slug },
+  async deleteSubCategories(id: string): Promise<void> {
+    await this.prisma.write.subCategory.delete({
+      where: { id },
     });
-
-    if (existingSlug) {
-      throw new BadRequestException('Product slug already exists');
-    }
-
-
-    const categoriesCount = await this.prisma.write.category.count({
-      where: {
-        id: {
-          in: dto.categoryIds,
-        },
-      },
-    });
-
-    if (categoriesCount !== dto.categoryIds.length) {
-      throw new BadRequestException('One or more categories do not exist');
-    }
-
-    if (dto.subCategoryIds && dto.subCategoryIds.length > 0) {
-      const subCategoriesCount = await this.prisma.write.subCategory.count({
-        where: {
-          id: {
-            in: dto.subCategoryIds,
-          },
-        },
-      });
-
-      if (subCategoriesCount !== dto.subCategoryIds.length) {
-        throw new BadRequestException('One or more subcategories do not exist');
-      }
-    }
-
-    const {
-      categoryIds,
-      subCategoryIds,
-      price,
-      sku,
-      image,
-      images,
-      ...productData
-    } = dto;
-
-    const productImages = images || (image ? [image] : []);
-
-    // Create product first
-    const createdProduct = await this.prisma.write.product.create({
-      data: {
-        ...productData,
-        images: productImages,
-        categories: {
-          create: categoryIds.map((categoryId) => ({ categoryId })),
-        },
-        subCategories: subCategoryIds?.length
-          ? {
-              create: subCategoryIds.map((subCategoryId) => ({
-                subCategoryId,
-              })),
-            }
-          : undefined,
-      },
-      include: {
-        categories: {
-          include: {
-            category: true,
-          },
-        },
-        subCategories: {
-          include: {
-            subCategory: true,
-          },
-        },
-      },
-    });
-
-    // Create a default variant for compatibility if sku/price provided
-    if (sku) {
-      const existingVariant = await this.prisma.write.productVariant.findFirst({
-        where: { sku },
-      });
-
-      if (existingVariant) {
-        throw new BadRequestException('Product SKU already exists');
-      }
-
-      await this.prisma.write.productVariant.create({
-        data: {
-          productId: createdProduct.id,
-          sku,
-          price: price ?? undefined,
-          images: productImages,
-          quantityRemaining: 0,
-          // `attributes` is required by the Prisma model (JSON). Provide an empty object for default variants.
-          attributes: {},
-        },
-      });
-    }
-
-    return createdProduct;
-  }
-
-  async getProducts(query: GetProductsQueryDto) {
-    const page = query.page || 1;
-    const limit = query.limit || 10;
-    const skip = (page - 1) * limit;
-
-    const where: Prisma.ProductWhereInput = {
-      isActive: true,
-    };
-
-    if (query.categoryId) {
-      where.categories = {
-        some: {
-          categoryId: query.categoryId,
-        },
-      };
-    }
-
-    if (query.subCategoryId) {
-      where.subCategories = {
-        some: {
-          subCategoryId: query.subCategoryId,
-        },
-      };
-    }
-
-    if (query.isNew !== undefined) {
-      where.isNew = query.isNew;
-    }
-
-    if (query.isBestSeller !== undefined) {
-      where.isBestSeller = query.isBestSeller;
-    }
-
-    if (query.isFeatured !== undefined) {
-      where.isFeatured = query.isFeatured;
-    }
-
-    if (query.minPrice !== undefined || query.maxPrice !== undefined) {
-      where.basePrice = {};
-
-      if (query.minPrice !== undefined) {
-        where.basePrice.gte = query.minPrice;
-      }
-
-      if (query.maxPrice !== undefined) {
-        where.basePrice.lte = query.maxPrice;
-      }
-    }
-
-    if (query.search) {
-      where.OR = [
-        {
-          name: {
-            contains: query.search,
-            mode: 'insensitive',
-          },
-        },
-        {
-          description: {
-            contains: query.search,
-            mode: 'insensitive',
-          },
-        },
-      ];
-    }
-
-    if (query.color || query.size || query.inStock !== undefined) {
-      const variantFilter: Prisma.ProductVariantWhereInput = {};
-
-      if (query.color) {
-        variantFilter.color = {
-          equals: query.color,
-          mode: 'insensitive',
-        };
-      }
-
-      if (query.size) {
-        variantFilter.size = {
-          equals: query.size,
-          mode: 'insensitive',
-        };
-      }
-
-      if (query.inStock === true) {
-        variantFilter.quantityRemaining = {
-          gt: 0,
-        };
-      }
-
-      where.variants = {
-        some: variantFilter,
-      };
-    }
-
-    let orderBy: Prisma.ProductOrderByWithRelationInput = {
-      createdAt: 'desc',
-    };
-
-    if (query.sortBy) {
-      if (query.sortBy === 'price-low') {
-        orderBy = {
-          basePrice: 'asc',
-        };
-      } else if (query.sortBy === 'price-high') {
-        orderBy = {
-          basePrice: 'desc',
-        };
-      } else if (query.sortBy === 'rating-high') {
-        orderBy = {
-          averageRating: 'desc',
-        };
-      } else if (query.sortBy === 'reviews-count') {
-        orderBy = {
-          reviews: {
-            _count: 'desc',
-          },
-        };
-      } else if (query.sortBy === 'newest') {
-        orderBy = {
-          createdAt: 'desc',
-        };
-      }
-    }
-
-    const include = {
-      categories: {
-        include: {
-          category: true,
-        },
-      },
-      subCategories: {
-        include: {
-          subCategory: true,
-        },
-      },
-      variants: true,
-      reviews: true,
-    };
-
-    const [totalProducts, products] = await Promise.all([
-      this.prisma.read.product.count({
-        where,
-      }),
-      this.prisma.read.product.findMany({
-        where,
-        skip,
-        take: limit,
-        include,
-        orderBy,
-      }),
-    ]);
-
-    if (totalProducts === 0 && products.length === 0 && page === 1) {
-      const [masterTotal, masterProducts] = await Promise.all([
-        this.prisma.write.product.count({
-          where,
-        }),
-        this.prisma.write.product.findMany({
-          where,
-          skip,
-          take: limit,
-          include,
-          orderBy,
-        }),
-      ]);
-
-      if (masterTotal > 0) {
-        return {
-          meta: {
-            totalProducts: masterTotal,
-            page,
-            limit,
-            totalPages: Math.ceil(masterTotal / limit),
-          },
-          products: masterProducts,
-        };
-      }
-    }
-
-    return {
-      meta: {
-        totalProducts,
-        page,
-        limit,
-        totalPages: Math.ceil(totalProducts / limit),
-      },
-      products,
-    };
-  }
-
-  async getProductBySlug(identifier: string) {
-    const include = {
-      categories: {
-        include: {
-          category: true,
-        },
-      },
-      subCategories: {
-        include: {
-          subCategory: true,
-        },
-      },
-      variants: true,
-      reviews: true,
-    };
-
-    const whereCondition: Prisma.ProductWhereInput = {
-      OR: [
-        {
-          slug: {
-            equals: identifier,
-            mode: 'insensitive',
-          },
-        },
-        {
-          id: identifier,
-        },
-        {
-          name: {
-            equals: identifier,
-            mode: 'insensitive',
-          },
-        },
-      ],
-    };
-
-    let product = await this.prisma.read.product.findFirst({
-      where: whereCondition,
-      include,
-    });
-
-    if (!product) {
-      product = await this.prisma.write.product.findFirst({
-        where: whereCondition,
-        include,
-      });
-    }
-
-    if (!product) {
-      throw new NotFoundException('Product not found');
-    }
-
-    return product;
   }
 
   async getCouponEligibility(productIds: string[]) {
@@ -617,7 +229,7 @@ export class ProductService {
     });
 
     if (products.length === 0) {
-      const masterProducts = await this.prisma.write.product.findMany({
+      return this.prisma.write.product.findMany({
         where: {
           id: {
             in: productIds,
@@ -626,28 +238,372 @@ export class ProductService {
         },
         select,
       });
-
-      return masterProducts;
     }
 
     return products;
   }
 
-  async deleteCategories(id: string): Promise<void> {
-    await this.prisma.write.category.delete({
-      where: { id },
+  async createProduct(dto: CreateProductDto) {
+    const existingSlug = await this.prisma.write.product.findUnique({
+      where: { slug: dto.slug },
+    });
+
+    if (existingSlug) {
+      throw new BadRequestException('Product slug already exists');
+    }
+
+    if (dto.sku) {
+      const existingSku = await this.prisma.write.product.findUnique({
+        where: { sku: dto.sku },
+      });
+      if (existingSku) {
+        throw new BadRequestException('Product SKU already exists');
+      }
+    }
+
+    const {
+      categoryIds,
+      subCategoryIds,
+      baseImage,
+      images,
+      variants,
+      ...productData
+    } = dto;
+
+    const productImages = images || (baseImage ? [baseImage] : []);
+
+    return this.prisma.write.product.create({
+      data: {
+        ...productData,
+        baseImage: baseImage || productImages[0] || null,
+        images: productImages,
+        categories: {
+          create: categoryIds.map((categoryId) => ({ categoryId })),
+        },
+        subCategories: subCategoryIds?.length
+          ? {
+              create: subCategoryIds.map((subCategoryId) => ({
+                subCategoryId,
+              })),
+            }
+          : undefined,
+        variants: variants?.length
+          ? {
+              create: variants.map((v) => ({
+                sku: v.sku,
+                color: v.color,
+                size: v.size,
+                fabric: v.fabric,
+                material: v.material,
+                fit: v.fit,
+                sleeve: v.sleeve,
+                neckType: v.neckType,
+                pattern: v.pattern,
+                shoeSize: v.shoeSize,
+                ram: v.ram,
+                storage: v.storage,
+                processor: v.processor,
+                screenSize: v.screenSize,
+                connectivity: v.connectivity,
+                volume: v.volume,
+                shade: v.shade,
+                skinType: v.skinType,
+                fragrance: v.fragrance,
+                weight: v.weight,
+                flavor: v.flavor,
+                packageType: v.packageType,
+                materialPurity: v.materialPurity,
+                strap: v.strap,
+                dimensions: v.dimensions,
+                format: v.format,
+                packQuantity: v.packQuantity,
+                condition: v.condition,
+                warranty: v.warranty,
+                price: v.price,
+                images: v.images || [],
+                isActive: v.isActive ?? true,
+              })),
+            }
+          : undefined,
+      },
+      include: {
+        categories: { include: { category: true } },
+        subCategories: { include: { subCategory: true } },
+        variants: true,
+      },
     });
   }
 
-  async deleteSubCategories(id: string): Promise<void> {
-    await this.prisma.write.subCategory.delete({
+  async getProducts(query: GetProductsQueryDto) {
+    const page = Number(query.page) || 1;
+    const limit = Number(query.limit) || 10;
+    const skip = (page - 1) * limit;
+
+    const where: Prisma.ProductWhereInput = {};
+
+    if (query.categoryId) {
+      where.categories = { some: { categoryId: query.categoryId } };
+    }
+
+    if (query.subCategoryId) {
+      where.subCategories = { some: { subCategoryId: query.subCategoryId } };
+    }
+
+    if (query.isNew !== undefined) where.isNew = query.isNew;
+    if (query.isBestSeller !== undefined)
+      where.isBestSeller = query.isBestSeller;
+    if (query.isFeatured !== undefined) where.isFeatured = query.isFeatured;
+
+    if (query.minPrice !== undefined || query.maxPrice !== undefined) {
+      where.basePrice = {};
+      if (query.minPrice !== undefined) where.basePrice.gte = query.minPrice;
+      if (query.maxPrice !== undefined) where.basePrice.lte = query.maxPrice;
+    }
+
+    if (query.search) {
+      where.OR = [
+        { name: { contains: query.search, mode: 'insensitive' } },
+        { sku: { contains: query.search, mode: 'insensitive' } },
+        { description: { contains: query.search, mode: 'insensitive' } },
+      ];
+    }
+
+    if (query.color || query.size) {
+      where.variants = {
+        some: {
+          ...(query.color && {
+            color: { equals: query.color, mode: 'insensitive' },
+          }),
+          ...(query.size && {
+            size: { equals: query.size, mode: 'insensitive' },
+          }),
+        },
+      };
+    }
+
+    let orderBy: Prisma.ProductOrderByWithRelationInput = {
+      createdAt: 'desc',
+    };
+    if (query.sortBy === 'price-low') orderBy = { basePrice: 'asc' };
+    else if (query.sortBy === 'price-high') orderBy = { basePrice: 'desc' };
+
+    const [totalProducts, products] = await Promise.all([
+      this.prisma.read.product.count({ where }),
+      this.prisma.read.product.findMany({
+        where,
+        skip,
+        take: limit,
+        include: {
+          categories: { include: { category: true } },
+          subCategories: { include: { subCategory: true } },
+          variants: true,
+          reviews: true,
+        },
+        orderBy,
+      }),
+    ]);
+
+    return {
+      meta: {
+        totalProducts,
+        page,
+        limit,
+        totalPages: Math.ceil(totalProducts / limit),
+      },
+      products,
+    };
+  }
+
+  async getProductById(id: string) {
+    const product = await this.prisma.read.product.findUnique({
       where: { id },
+      include: {
+        categories: { include: { category: true } },
+        subCategories: { include: { subCategory: true } },
+        variants: true,
+        reviews: true,
+      },
+    });
+
+    if (!product) throw new NotFoundException('Product not found');
+    return product;
+  }
+
+  async getProductBySlug(slug: string) {
+    const product = await this.prisma.read.product.findUnique({
+      where: { slug },
+      include: {
+        categories: { include: { category: true } },
+        subCategories: { include: { subCategory: true } },
+        variants: true,
+        reviews: true,
+      },
+    });
+
+    if (!product) throw new NotFoundException('Product not found');
+    return product;
+  }
+
+  async updateProduct(id: string, dto: UpdateProductDto) {
+    await this.getProductById(id);
+
+    const {
+      categoryIds,
+      subCategoryIds,
+      baseImage,
+      images,
+      variants,
+      ...productData
+    } = dto;
+
+    return this.prisma.write.product.update({
+      where: { id },
+      data: {
+        ...productData,
+        ...(baseImage !== undefined && { baseImage }),
+        ...(images !== undefined && { images }),
+        ...(categoryIds && {
+          categories: {
+            deleteMany: {},
+            create: categoryIds.map((categoryId) => ({ categoryId })),
+          },
+        }),
+        ...(subCategoryIds && {
+          subCategories: {
+            deleteMany: {},
+            create: subCategoryIds.map((subCategoryId) => ({
+              subCategoryId,
+            })),
+          },
+        }),
+      },
+      include: {
+        categories: { include: { category: true } },
+        subCategories: { include: { subCategory: true } },
+        variants: true,
+      },
     });
   }
 
-  async deleteProducts(id: string): Promise<void> {
-    await this.prisma.write.product.delete({
+  async deleteProduct(id: string): Promise<void> {
+    await this.getProductById(id);
+    await this.prisma.write.product.delete({ where: { id } });
+  }
+
+  async createVariant(productId: string, dto: CreateVariantDto) {
+    await this.getProductById(productId);
+
+    const existingSku = await this.prisma.write.productVariant.findFirst({
+      where: { sku: dto.sku },
+    });
+    if (existingSku) {
+      throw new BadRequestException('Variant SKU already exists');
+    }
+
+    return this.prisma.write.productVariant.create({
+      data: {
+        productId,
+        sku: dto.sku,
+        color: dto.color,
+        size: dto.size,
+        fabric: dto.fabric,
+        material: dto.material,
+        fit: dto.fit,
+        sleeve: dto.sleeve,
+        neckType: dto.neckType,
+        pattern: dto.pattern,
+        shoeSize: dto.shoeSize,
+        ram: dto.ram,
+        storage: dto.storage,
+        processor: dto.processor,
+        screenSize: dto.screenSize,
+        connectivity: dto.connectivity,
+        volume: dto.volume,
+        shade: dto.shade,
+        skinType: dto.skinType,
+        fragrance: dto.fragrance,
+        weight: dto.weight,
+        flavor: dto.flavor,
+        packageType: dto.packageType,
+        materialPurity: dto.materialPurity,
+        strap: dto.strap,
+        dimensions: dto.dimensions,
+        format: dto.format,
+        packQuantity: dto.packQuantity,
+        condition: dto.condition,
+        warranty: dto.warranty,
+        price: dto.price,
+        images: dto.images || [],
+        isActive: dto.isActive ?? true,
+      },
+    });
+  }
+
+  async getVariantsByProduct(productId: string) {
+    return this.prisma.read.productVariant.findMany({
+      where: { productId },
+      orderBy: { createdAt: 'asc' },
+    });
+  }
+
+  async updateVariant(id: string, dto: UpdateVariantDto) {
+    const existing = await this.prisma.write.productVariant.findUnique({
       where: { id },
     });
+    if (!existing) throw new NotFoundException('Variant not found');
+
+    if (dto.sku && dto.sku !== existing.sku) {
+      const skuTaken = await this.prisma.write.productVariant.findFirst({
+        where: { sku: dto.sku },
+      });
+      if (skuTaken) throw new BadRequestException('Variant SKU already exists');
+    }
+
+    return this.prisma.write.productVariant.update({
+      where: { id },
+      data: {
+        sku: dto.sku,
+        color: dto.color,
+        size: dto.size,
+        fabric: dto.fabric,
+        material: dto.material,
+        fit: dto.fit,
+        sleeve: dto.sleeve,
+        neckType: dto.neckType,
+        pattern: dto.pattern,
+        shoeSize: dto.shoeSize,
+        ram: dto.ram,
+        storage: dto.storage,
+        processor: dto.processor,
+        screenSize: dto.screenSize,
+        connectivity: dto.connectivity,
+        volume: dto.volume,
+        shade: dto.shade,
+        skinType: dto.skinType,
+        fragrance: dto.fragrance,
+        weight: dto.weight,
+        flavor: dto.flavor,
+        packageType: dto.packageType,
+        materialPurity: dto.materialPurity,
+        strap: dto.strap,
+        dimensions: dto.dimensions,
+        format: dto.format,
+        packQuantity: dto.packQuantity,
+        condition: dto.condition,
+        warranty: dto.warranty,
+        price: dto.price,
+        images: dto.images,
+        isActive: dto.isActive,
+      },
+    });
+  }
+
+  async deleteVariant(id: string) {
+    const existing = await this.prisma.write.productVariant.findUnique({
+      where: { id },
+    });
+    if (!existing) throw new NotFoundException('Variant not found');
+
+    await this.prisma.write.productVariant.delete({ where: { id } });
   }
 }
