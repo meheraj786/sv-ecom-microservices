@@ -20,7 +20,7 @@ const config: runtime.GetPrismaClientConfig = {
   "clientVersion": "7.9.1",
   "engineVersion": "e922089b7d7502aff4249d5da3420f6fa55fc6ad",
   "activeProvider": "postgresql",
-  "inlineSchema": "generator client {\n  provider     = \"prisma-client\"\n  output       = \"../src/generated/prisma\"\n  moduleFormat = \"cjs\"\n}\n\ndatasource db {\n  provider = \"postgresql\"\n}\n\n// Batch-based FIFO Inventory Table\nmodel InventoryBatch {\n  id                String   @id @default(cuid())\n  productId         String\n  batchNumber       String   @unique\n  purchasePrice     Float\n  sellingPrice      Float\n  quantityReceived  Int\n  quantityRemaining Int\n  createdAt         DateTime @default(now())\n  updatedAt         DateTime @updatedAt\n\n  @@map(\"inventory_batches\")\n}\n",
+  "inlineSchema": "generator client {\n  provider     = \"prisma-client\"\n  output       = \"../src/generated/prisma\"\n  moduleFormat = \"cjs\"\n}\n\ndatasource db {\n  provider = \"postgresql\"\n}\n\nmodel Stock {\n  id        String @id @default(cuid())\n  variantId String\n\n  purchasePrice     Float\n  sellingPrice      Float\n  quantityReceived  Int\n  quantityRemaining Int\n  batchNumber       String?\n  note              String?\n\n  createdAt DateTime @default(now())\n  updatedAt DateTime @updatedAt\n\n  @@index([variantId])\n  @@index([createdAt])\n  @@map(\"stocks\")\n}\n",
   "runtimeDataModel": {
     "models": {},
     "enums": {},
@@ -32,10 +32,10 @@ const config: runtime.GetPrismaClientConfig = {
   }
 }
 
-config.runtimeDataModel = JSON.parse("{\"models\":{\"InventoryBatch\":{\"fields\":[{\"name\":\"id\",\"kind\":\"scalar\",\"type\":\"String\"},{\"name\":\"productId\",\"kind\":\"scalar\",\"type\":\"String\"},{\"name\":\"batchNumber\",\"kind\":\"scalar\",\"type\":\"String\"},{\"name\":\"purchasePrice\",\"kind\":\"scalar\",\"type\":\"Float\"},{\"name\":\"sellingPrice\",\"kind\":\"scalar\",\"type\":\"Float\"},{\"name\":\"quantityReceived\",\"kind\":\"scalar\",\"type\":\"Int\"},{\"name\":\"quantityRemaining\",\"kind\":\"scalar\",\"type\":\"Int\"},{\"name\":\"createdAt\",\"kind\":\"scalar\",\"type\":\"DateTime\"},{\"name\":\"updatedAt\",\"kind\":\"scalar\",\"type\":\"DateTime\"}],\"dbName\":\"inventory_batches\"}},\"enums\":{},\"types\":{}}")
+config.runtimeDataModel = JSON.parse("{\"models\":{\"Stock\":{\"fields\":[{\"name\":\"id\",\"kind\":\"scalar\",\"type\":\"String\"},{\"name\":\"variantId\",\"kind\":\"scalar\",\"type\":\"String\"},{\"name\":\"purchasePrice\",\"kind\":\"scalar\",\"type\":\"Float\"},{\"name\":\"sellingPrice\",\"kind\":\"scalar\",\"type\":\"Float\"},{\"name\":\"quantityReceived\",\"kind\":\"scalar\",\"type\":\"Int\"},{\"name\":\"quantityRemaining\",\"kind\":\"scalar\",\"type\":\"Int\"},{\"name\":\"batchNumber\",\"kind\":\"scalar\",\"type\":\"String\"},{\"name\":\"note\",\"kind\":\"scalar\",\"type\":\"String\"},{\"name\":\"createdAt\",\"kind\":\"scalar\",\"type\":\"DateTime\"},{\"name\":\"updatedAt\",\"kind\":\"scalar\",\"type\":\"DateTime\"}],\"dbName\":\"stocks\"}},\"enums\":{},\"types\":{}}")
 config.parameterizationSchema = {
-  strings: JSON.parse("[\"where\",\"InventoryBatch.findUnique\",\"InventoryBatch.findUniqueOrThrow\",\"orderBy\",\"cursor\",\"InventoryBatch.findFirst\",\"InventoryBatch.findFirstOrThrow\",\"InventoryBatch.findMany\",\"data\",\"InventoryBatch.createOne\",\"InventoryBatch.createMany\",\"InventoryBatch.createManyAndReturn\",\"InventoryBatch.updateOne\",\"InventoryBatch.updateMany\",\"InventoryBatch.updateManyAndReturn\",\"create\",\"update\",\"InventoryBatch.upsertOne\",\"InventoryBatch.deleteOne\",\"InventoryBatch.deleteMany\",\"having\",\"_count\",\"_avg\",\"_sum\",\"_min\",\"_max\",\"InventoryBatch.groupBy\",\"InventoryBatch.aggregate\",\"AND\",\"OR\",\"NOT\",\"id\",\"productId\",\"batchNumber\",\"purchasePrice\",\"sellingPrice\",\"quantityReceived\",\"quantityRemaining\",\"createdAt\",\"updatedAt\",\"equals\",\"in\",\"notIn\",\"lt\",\"lte\",\"gt\",\"gte\",\"not\",\"contains\",\"startsWith\",\"endsWith\",\"set\",\"increment\",\"decrement\",\"multiply\",\"divide\"]"),
-  graph: "NAsQDBwAACcAMB0AAAQAEB4AACcAMB8BAAAAASABACgAISEBAAAAASIIACkAISMIACkAISQCACoAISUCACoAISZAACsAISdAACsAIQEAAAABACABAAAAAQAgDBwAACcAMB0AAAQAEB4AACcAMB8BACgAISABACgAISEBACgAISIIACkAISMIACkAISQCACoAISUCACoAISZAACsAISdAACsAIQADAAAABAAgAwAABQAwBAAAAQAgAwAAAAQAIAMAAAUAMAQAAAEAIAMAAAAEACADAAAFADAEAAABACAJHwEAAAABIAEAAAABIQEAAAABIggAAAABIwgAAAABJAIAAAABJQIAAAABJkAAAAABJ0AAAAABAQgAAAkAIAkfAQAAAAEgAQAAAAEhAQAAAAEiCAAAAAEjCAAAAAEkAgAAAAElAgAAAAEmQAAAAAEnQAAAAAEBCAAACwAwAQgAAAsAMAkfAQAxACEgAQAxACEhAQAxACEiCAAyACEjCAAyACEkAgAzACElAgAzACEmQAA0ACEnQAA0ACECAAAAAQAgCAAADgAgCR8BADEAISABADEAISEBADEAISIIADIAISMIADIAISQCADMAISUCADMAISZAADQAISdAADQAIQIAAAAEACAIAAAQACACAAAABAAgCAAAEAAgAwAAAAEAIA8AAAkAIBAAAA4AIAEAAAABACABAAAABAAgBRUAACwAIBYAAC0AIBcAADAAIBgAAC8AIBkAAC4AIAwcAAAaADAdAAAXABAeAAAaADAfAQAbACEgAQAbACEhAQAbACEiCAAcACEjCAAcACEkAgAdACElAgAdACEmQAAeACEnQAAeACEDAAAABAAgAwAAFgAwFAAAFwAgAwAAAAQAIAMAAAUAMAQAAAEAIAwcAAAaADAdAAAXABAeAAAaADAfAQAbACEgAQAbACEhAQAbACEiCAAcACEjCAAcACEkAgAdACElAgAdACEmQAAeACEnQAAeACEOFQAAIAAgGAAAJgAgGQAAJgAgKAEAAAABKQEAAAAEKgEAAAAEKwEAAAABLAEAAAABLQEAAAABLgEAAAABLwEAJQAhMAEAAAABMQEAAAABMgEAAAABDRUAACAAIBYAACMAIBcAACMAIBgAACMAIBkAACMAICgIAAAAASkIAAAABCoIAAAABCsIAAAAASwIAAAAAS0IAAAAAS4IAAAAAS8IACQAIQ0VAAAgACAWAAAjACAXAAAgACAYAAAgACAZAAAgACAoAgAAAAEpAgAAAAQqAgAAAAQrAgAAAAEsAgAAAAEtAgAAAAEuAgAAAAEvAgAiACELFQAAIAAgGAAAIQAgGQAAIQAgKEAAAAABKUAAAAAEKkAAAAAEK0AAAAABLEAAAAABLUAAAAABLkAAAAABL0AAHwAhCxUAACAAIBgAACEAIBkAACEAIChAAAAAASlAAAAABCpAAAAABCtAAAAAASxAAAAAAS1AAAAAAS5AAAAAAS9AAB8AIQgoAgAAAAEpAgAAAAQqAgAAAAQrAgAAAAEsAgAAAAEtAgAAAAEuAgAAAAEvAgAgACEIKEAAAAABKUAAAAAEKkAAAAAEK0AAAAABLEAAAAABLUAAAAABLkAAAAABL0AAIQAhDRUAACAAIBYAACMAIBcAACAAIBgAACAAIBkAACAAICgCAAAAASkCAAAABCoCAAAABCsCAAAAASwCAAAAAS0CAAAAAS4CAAAAAS8CACIAIQgoCAAAAAEpCAAAAAQqCAAAAAQrCAAAAAEsCAAAAAEtCAAAAAEuCAAAAAEvCAAjACENFQAAIAAgFgAAIwAgFwAAIwAgGAAAIwAgGQAAIwAgKAgAAAABKQgAAAAEKggAAAAEKwgAAAABLAgAAAABLQgAAAABLggAAAABLwgAJAAhDhUAACAAIBgAACYAIBkAACYAICgBAAAAASkBAAAABCoBAAAABCsBAAAAASwBAAAAAS0BAAAAAS4BAAAAAS8BACUAITABAAAAATEBAAAAATIBAAAAAQsoAQAAAAEpAQAAAAQqAQAAAAQrAQAAAAEsAQAAAAEtAQAAAAEuAQAAAAEvAQAmACEwAQAAAAExAQAAAAEyAQAAAAEMHAAAJwAwHQAABAAQHgAAJwAwHwEAKAAhIAEAKAAhIQEAKAAhIggAKQAhIwgAKQAhJAIAKgAhJQIAKgAhJkAAKwAhJ0AAKwAhCygBAAAAASkBAAAABCoBAAAABCsBAAAAASwBAAAAAS0BAAAAAS4BAAAAAS8BACYAITABAAAAATEBAAAAATIBAAAAAQgoCAAAAAEpCAAAAAQqCAAAAAQrCAAAAAEsCAAAAAEtCAAAAAEuCAAAAAEvCAAjACEIKAIAAAABKQIAAAAEKgIAAAAEKwIAAAABLAIAAAABLQIAAAABLgIAAAABLwIAIAAhCChAAAAAASlAAAAABCpAAAAABCtAAAAAASxAAAAAAS1AAAAAAS5AAAAAAS9AACEAIQAAAAAAATMBAAAAAQUzCAAAAAE0CAAAAAE1CAAAAAE2CAAAAAE3CAAAAAEFMwIAAAABNAIAAAABNQIAAAABNgIAAAABNwIAAAABATNAAAAAAQAAAAAFFQAGFgAHFwAIGAAJGQAKAAAAAAAFFQAGFgAHFwAIGAAJGQAKAQIBAgMBBQYBBgcBBwgBCQoBCgwCCw0DDA8BDRECDhIEERMBEhQBExUCGhgFGxkL"
+  strings: JSON.parse("[\"where\",\"Stock.findUnique\",\"Stock.findUniqueOrThrow\",\"orderBy\",\"cursor\",\"Stock.findFirst\",\"Stock.findFirstOrThrow\",\"Stock.findMany\",\"data\",\"Stock.createOne\",\"Stock.createMany\",\"Stock.createManyAndReturn\",\"Stock.updateOne\",\"Stock.updateMany\",\"Stock.updateManyAndReturn\",\"create\",\"update\",\"Stock.upsertOne\",\"Stock.deleteOne\",\"Stock.deleteMany\",\"having\",\"_count\",\"_avg\",\"_sum\",\"_min\",\"_max\",\"Stock.groupBy\",\"Stock.aggregate\",\"AND\",\"OR\",\"NOT\",\"id\",\"variantId\",\"purchasePrice\",\"sellingPrice\",\"quantityReceived\",\"quantityRemaining\",\"batchNumber\",\"note\",\"createdAt\",\"updatedAt\",\"equals\",\"in\",\"notIn\",\"lt\",\"lte\",\"gt\",\"gte\",\"not\",\"contains\",\"startsWith\",\"endsWith\",\"set\",\"increment\",\"decrement\",\"multiply\",\"divide\"]"),
+  graph: "OwsQDRwAACsAMB0AAAQAEB4AACsAMB8BAAAAASABACwAISEIAC0AISIIAC0AISMCAC4AISQCAC4AISUBAC8AISYBAC8AISdAADAAIShAADAAIQEAAAABACABAAAAAQAgDRwAACsAMB0AAAQAEB4AACsAMB8BACwAISABACwAISEIAC0AISIIAC0AISMCAC4AISQCAC4AISUBAC8AISYBAC8AISdAADAAIShAADAAIQIlAAAxACAmAAAxACADAAAABAAgAwAABQAwBAAAAQAgAwAAAAQAIAMAAAUAMAQAAAEAIAMAAAAEACADAAAFADAEAAABACAKHwEAAAABIAEAAAABIQgAAAABIggAAAABIwIAAAABJAIAAAABJQEAAAABJgEAAAABJ0AAAAABKEAAAAABAQgAAAkAIAofAQAAAAEgAQAAAAEhCAAAAAEiCAAAAAEjAgAAAAEkAgAAAAElAQAAAAEmAQAAAAEnQAAAAAEoQAAAAAEBCAAACwAwAQgAAAsAMAofAQA3ACEgAQA3ACEhCAA4ACEiCAA4ACEjAgA5ACEkAgA5ACElAQA6ACEmAQA6ACEnQAA7ACEoQAA7ACECAAAAAQAgCAAADgAgCh8BADcAISABADcAISEIADgAISIIADgAISMCADkAISQCADkAISUBADoAISYBADoAISdAADsAIShAADsAIQIAAAAEACAIAAAQACACAAAABAAgCAAAEAAgAwAAAAEAIA8AAAkAIBAAAA4AIAEAAAABACABAAAABAAgBxUAADIAIBYAADMAIBcAADYAIBgAADUAIBkAADQAICUAADEAICYAADEAIA0cAAAaADAdAAAXABAeAAAaADAfAQAbACEgAQAbACEhCAAcACEiCAAcACEjAgAdACEkAgAdACElAQAeACEmAQAeACEnQAAfACEoQAAfACEDAAAABAAgAwAAFgAwFAAAFwAgAwAAAAQAIAMAAAUAMAQAAAEAIA0cAAAaADAdAAAXABAeAAAaADAfAQAbACEgAQAbACEhCAAcACEiCAAcACEjAgAdACEkAgAdACElAQAeACEmAQAeACEnQAAfACEoQAAfACEOFQAAIQAgGAAAKgAgGQAAKgAgKQEAAAABKgEAAAAEKwEAAAAELAEAAAABLQEAAAABLgEAAAABLwEAAAABMAEAKQAhMQEAAAABMgEAAAAB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"
 }
 
 async function decodeBase64AsWasm(wasmBase64: string): Promise<WebAssembly.Module> {
@@ -70,8 +70,8 @@ export interface PrismaClientConstructor {
    * const prisma = new PrismaClient({
    *   adapter: new PrismaPg({ connectionString: process.env.DATABASE_URL })
    * })
-   * // Fetch zero or more InventoryBatches
-   * const inventoryBatches = await prisma.inventoryBatch.findMany()
+   * // Fetch zero or more Stocks
+   * const stocks = await prisma.stock.findMany()
    * ```
    * 
    * Read more in our [docs](https://pris.ly/d/client).
@@ -94,8 +94,8 @@ export interface PrismaClientConstructor {
  * const prisma = new PrismaClient({
  *   adapter: new PrismaPg({ connectionString: process.env.DATABASE_URL })
  * })
- * // Fetch zero or more InventoryBatches
- * const inventoryBatches = await prisma.inventoryBatch.findMany()
+ * // Fetch zero or more Stocks
+ * const stocks = await prisma.stock.findMany()
  * ```
  * 
  * Read more in our [docs](https://pris.ly/d/client).
@@ -189,14 +189,14 @@ export interface PrismaClient<
   }>>
 
       /**
-   * `prisma.inventoryBatch`: Exposes CRUD operations for the **InventoryBatch** model.
+   * `prisma.stock`: Exposes CRUD operations for the **Stock** model.
     * Example usage:
     * ```ts
-    * // Fetch zero or more InventoryBatches
-    * const inventoryBatches = await prisma.inventoryBatch.findMany()
+    * // Fetch zero or more Stocks
+    * const stocks = await prisma.stock.findMany()
     * ```
     */
-  get inventoryBatch(): Prisma.InventoryBatchDelegate<ExtArgs, { omit: OmitOpts }>;
+  get stock(): Prisma.StockDelegate<ExtArgs, { omit: OmitOpts }>;
 }
 
 export function getPrismaClientClass(): PrismaClientConstructor {

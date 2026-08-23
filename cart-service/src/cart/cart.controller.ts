@@ -27,12 +27,12 @@ export class CartController {
     return { items };
   }
 
-  @Delete('cart/:productId')
+  @Delete('cart/:variantId')
   async removeFromCart(
-    @Param('productId') productId: string,
+    @Param('variantId') variantId: string,
     @Body('userId') userId: string,
   ) {
-    const items = await this.cartService.removeFromCart(userId, productId);
+    const items = await this.cartService.removeFromCart(userId, variantId);
     return { items };
   }
 

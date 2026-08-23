@@ -197,9 +197,13 @@ export class GetProductsQueryDto extends PaginationQueryDto {
 }
 
 export class AddToCartDto {
+  @IsOptional()
   @IsString()
-  @IsNotEmpty()
-  productId: string;
+  productId?: string;
+
+  @IsOptional()
+  @IsString()
+  variantId?: string;
 
   @IsNumber()
   @Min(1)

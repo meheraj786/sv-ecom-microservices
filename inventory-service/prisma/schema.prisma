@@ -8,17 +8,21 @@ datasource db {
   provider = "postgresql"
 }
 
-// Batch-based FIFO Inventory Table
-model InventoryBatch {
-  id                String   @id @default(cuid())
-  productId         String
-  batchNumber       String   @unique
+model Stock {
+  id                String  @id @default(cuid())
+  variantId         String
+
   purchasePrice     Float
   sellingPrice      Float
   quantityReceived  Int
   quantityRemaining Int
+  batchNumber       String?
+  note              String?
+
   createdAt         DateTime @default(now())
   updatedAt         DateTime @updatedAt
 
-  @@map("inventory_batches")
+  @@index([variantId])
+  @@index([createdAt])
+  @@map("stocks")
 }

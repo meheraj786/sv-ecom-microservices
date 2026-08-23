@@ -8,7 +8,7 @@ service InventoryGrpcService {
 }
 
 message FifoPriceRequest {
-  string productId = 1;
+  string variantId = 1;
   int32 quantity = 2;
 }
 
@@ -18,7 +18,7 @@ message FifoPriceResponse {
 }
 
 message AddBatchRequest {
-  string productId = 1;
+  string variantId = 1;
   string batchNumber = 2;
   double purchasePrice = 3;
   double sellingPrice = 4;
@@ -29,4 +29,5 @@ message BatchResponse {
   string id = 1;
   string batchNumber = 2;
   int32 quantityRemaining = 3;
+  string variantId = 4;
 }

@@ -29,8 +29,8 @@ export * from "./enums.js"
  * const prisma = new PrismaClient({
  *   adapter: new PrismaPg({ connectionString: process.env.DATABASE_URL })
  * })
- * // Fetch zero or more InventoryBatches
- * const inventoryBatches = await prisma.inventoryBatch.findMany()
+ * // Fetch zero or more Stocks
+ * const stocks = await prisma.stock.findMany()
  * ```
  * 
  * Read more in our [docs](https://pris.ly/d/client).
@@ -40,7 +40,7 @@ export type PrismaClient<LogOpts extends Prisma.LogLevel = never, OmitOpts exten
 export { Prisma }
 
 /**
- * Model InventoryBatch
+ * Model Stock
  * 
  */
-export type InventoryBatch = Prisma.InventoryBatchModel
+export type Stock = Prisma.StockModel

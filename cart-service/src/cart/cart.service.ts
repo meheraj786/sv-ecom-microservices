@@ -20,7 +20,7 @@ export class CartService {
     const cart = await this.getCart(userId);
 
     const existingItemIndex = cart.findIndex(
-      (item: any) => item.productId === dto.productId,
+      (item: any) => item.variantId === dto.variantId,
     );
 
     if (existingItemIndex > -1) {
@@ -33,11 +33,11 @@ export class CartService {
     return cart;
   }
 
-  async removeFromCart(userId: string, productId: string) {
+  async removeFromCart(userId: string, variantId: string) {
     const key = this.getCartKey(userId);
     let cart = await this.getCart(userId);
 
-    cart = cart.filter((item: any) => item.productId !== productId);
+    cart = cart.filter((item: any) => item.variantId !== variantId);
 
     await this.redis.client.set(key, JSON.stringify(cart), 'EX', 604800);
     return cart;

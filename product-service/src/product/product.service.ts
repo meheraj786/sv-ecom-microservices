@@ -252,13 +252,6 @@ export class ProductService {
       throw new BadRequestException('Product slug already exists');
     }
 
-    const existingSku = await this.prisma.write.product.findUnique({
-      where: { sku: dto.sku },
-    });
-
-    if (existingSku) {
-      throw new BadRequestException('Product SKU already exists');
-    }
 
     const categoriesCount = await this.prisma.write.category.count({
       where: {
@@ -290,6 +283,7 @@ export class ProductService {
       categoryIds,
       subCategoryIds,
       price,
+      sku,
       image,
       images,
       ...productData
@@ -297,10 +291,10 @@ export class ProductService {
 
     const productImages = images || (image ? [image] : []);
 
-    return this.prisma.write.product.create({
+    // Create product first
+    const createdProduct = await this.prisma.write.product.create({
       data: {
         ...productData,
-        basePrice: Number(price),
         images: productImages,
         categories: {
           create: categoryIds.map((categoryId) => ({ categoryId })),
@@ -326,6 +320,31 @@ export class ProductService {
         },
       },
     });
+
+    // Create a default variant for compatibility if sku/price provided
+    if (sku) {
+      const existingVariant = await this.prisma.write.productVariant.findFirst({
+        where: { sku },
+      });
+
+      if (existingVariant) {
+        throw new BadRequestException('Product SKU already exists');
+      }
+
+      await this.prisma.write.productVariant.create({
+        data: {
+          productId: createdProduct.id,
+          sku,
+          price: price ?? undefined,
+          images: productImages,
+          quantityRemaining: 0,
+          // `attributes` is required by the Prisma model (JSON). Provide an empty object for default variants.
+          attributes: {},
+        },
+      });
+    }
+
+    return createdProduct;
   }
 
   async getProducts(query: GetProductsQueryDto) {

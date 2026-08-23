@@ -3,11 +3,11 @@ import { IsString, IsNotEmpty, IsNumber, Min } from 'class-validator';
 export class AddBatchDto {
   @IsString()
   @IsNotEmpty()
-  productId: string;
+  variantId: string;
 
   @IsString()
   @IsNotEmpty()
-  batchNumber: string;
+  batchNumber?: string;
 
   @IsNumber()
   @Min(0)

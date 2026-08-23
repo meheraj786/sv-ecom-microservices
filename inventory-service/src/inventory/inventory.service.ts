@@ -8,16 +8,18 @@ export class InventoryService {
 
   // 1. Add fresh inventory procurement batch
   async addBatch(dto: AddBatchDto) {
-    const existing = await this.prisma.inventoryBatch.findUnique({
-      where: { batchNumber: dto.batchNumber },
-    });
+    // Use variant-based Stock model
+    const existing = dto.batchNumber
+      ? await this.prisma.stock.findFirst({ where: { batchNumber: dto.batchNumber } })
+      : null;
+
     if (existing) {
       throw new BadRequestException('Batch number already exists');
     }
 
-    return this.prisma.inventoryBatch.create({
+    return this.prisma.stock.create({
       data: {
-        productId: dto.productId,
+        variantId: dto.variantId,
         batchNumber: dto.batchNumber,
         purchasePrice: dto.purchasePrice,
         sellingPrice: dto.sellingPrice,
@@ -29,8 +31,8 @@ export class InventoryService {
 
   // 2. FIFO algorithm: Calculate total selling price (gRPC Sync request)
   async calculateFifoPrice(productId: string, quantity: number) {
-    const batches = await this.prisma.inventoryBatch.findMany({
-      where: { productId, quantityRemaining: { gt: 0 } },
+    const batches = await this.prisma.stock.findMany({
+      where: { variantId: productId, quantityRemaining: { gt: 0 } },
       orderBy: { createdAt: 'asc' }, // FIFO Order
     });
 
@@ -62,8 +64,8 @@ export class InventoryService {
 
   // 3. FIFO actual stock reduction (Asynchronously called via RMQ)
   async deductFifoStock(productId: string, quantity: number) {
-    const batches = await this.prisma.inventoryBatch.findMany({
-      where: { productId, quantityRemaining: { gt: 0 } },
+    const batches = await this.prisma.stock.findMany({
+      where: { variantId: productId, quantityRemaining: { gt: 0 } },
       orderBy: { createdAt: 'asc' },
     });
 
@@ -77,7 +79,7 @@ export class InventoryService {
         remainingToDeduct,
       );
 
-      await this.prisma.inventoryBatch.update({
+      await this.prisma.stock.update({
         where: { id: batch.id },
         data: {
           quantityRemaining: batch.quantityRemaining - deductFromThisBatch,

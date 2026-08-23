@@ -37,26 +37,29 @@ model SubCategory {
 }
 
 model Product {
-  id             String               @id @default(cuid())
-  name           String
-  slug           String               @unique
-  description    String?
-  basePrice      Float
+  id           String           @id @default(cuid())
+  name         String
+  slug         String           @unique
+  description  String?
+  isActive     Boolean          @default(true)
+  isNew        Boolean          @default(false)
+  isBestSeller Boolean          @default(false)
+  isFeatured   Boolean          @default(false)
+
+  // Backward-compatible fields
+  basePrice      Float?
   discountPrice  Float?
-  sku            String               @unique
+  sku            String?          @unique
   images         String[]
-  isNew          Boolean              @default(false)
-  isBestSeller   Boolean              @default(false)
-  isFeatured     Boolean              @default(false)
-  isActive       Boolean              @default(true)
-  averageRating  Float                @default(0.0)
+  averageRating  Float            @default(0.0)
   specifications Json?
+
   categories     ProductCategory[]
   subCategories  ProductSubCategory[]
   variants       ProductVariant[]
   reviews        Review[]
-  createdAt      DateTime             @default(now())
-  updatedAt      DateTime             @updatedAt
+  createdAt      DateTime         @default(now())
+  updatedAt      DateTime         @updatedAt
 
   @@index([isActive])
   @@map("products")
@@ -87,20 +90,25 @@ model ProductSubCategory {
 }
 
 model ProductVariant {
-  id                String   @id @default(cuid())
-  productId         String
-  product           Product  @relation(fields: [productId], references: [id], onDelete: Cascade)
-  sku               String   @unique
+  id          String   @id @default(cuid())
+  productId   String
+  product     Product  @relation(fields: [productId], references: [id], onDelete: Cascade)
+
+  sku         String   @unique
+  attributes  Json
+  images      String[]
+  isActive    Boolean  @default(true)
+
+  // Legacy/compat fields (kept optional for backward compatibility)
   color             String?
   size              String?
   price             Float?
-  images            String[]
-  quantityRemaining Int      @default(0)
-  createdAt         DateTime @default(now())
-  updatedAt         DateTime @updatedAt
+  quantityRemaining Int?     @default(0)
+
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
 
   @@index([productId])
-  @@index([quantityRemaining])
   @@map("product_variants")
 }
 

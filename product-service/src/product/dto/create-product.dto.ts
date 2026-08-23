@@ -23,8 +23,6 @@ export class CreateProductDto {
   description?: string;
 
   @Type(() => Number)
-  @IsNumber({}, { message: 'Price must be a valid number' })
-  @Min(0, { message: 'Price cannot be negative' })
   price: number;
 
   @IsString()

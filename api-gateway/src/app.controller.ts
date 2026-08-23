@@ -239,17 +239,35 @@ export class AppController {
   @Post('cart/add')
   addToCart(@Req() req: any, @Body() dto: AddToCartDto) {
     const userId = req.user.userId;
+
+    // If frontend sent productId (legacy), resolve a variantId by fetching product
+    const resolveVariant = async () => {
+      if (dto.variantId) return dto.variantId;
+      if (dto.productId) {
+        const productResult: any = await this.appService.rpcCall(
+          this.appService.productService.getProductBySlug({ slug: dto.productId }),
+        );
+        const product = productResult;
+        const variantId = product?.variants?.[0]?.id;
+        return variantId || dto.productId;
+      }
+      return undefined;
+    };
+
     return this.appService.rpcCall(
-      this.appService.cartService.addToCart({ userId, ...dto }),
+      (async () => {
+        const variantId = await resolveVariant();
+        return this.appService.cartService.addToCart({ userId, variantId, quantity: dto.quantity, price: dto.price });
+      })(),
     );
   }
 
   @UseGuards(JwtAuthGuard)
-  @Delete('cart/:productId')
-  removeFromCart(@Req() req: any, @Param('productId') productId: string) {
+  @Delete('cart/:variantId')
+  removeFromCart(@Req() req: any, @Param('variantId') variantId: string) {
     const userId = req.user.userId;
     return this.appService.rpcCall(
-      this.appService.cartService.removeFromCart({ userId, productId }),
+      this.appService.cartService.removeFromCart({ userId, variantId }),
     );
   }
 
@@ -283,9 +301,21 @@ export class AppController {
   @UseGuards(JwtAuthGuard, AdminGuard)
   @Post('inventory/batch')
   addInventoryBatch(@Body() dto: any) {
-    return this.appService.rpcCall(
-      this.appService.inventoryService.addBatch(dto),
-    );
+    // If frontend provided productId, resolve to a variantId
+    const prepare = (async () => {
+      if (dto.variantId) return dto;
+      if (dto.productId) {
+        const productResult: any = await this.appService.rpcCall(
+          this.appService.productService.getProductBySlug({ slug: dto.productId }),
+        );
+        const product = productResult;
+        const variantId = product?.variants?.[0]?.id;
+        return { ...dto, variantId: variantId || dto.productId };
+      }
+      return dto;
+    })();
+
+    return this.appService.rpcCall(prepare.then((resolved) => this.appService.inventoryService.addBatch(resolved)));
   }
 
   @UseGuards(JwtAuthGuard, AdminGuard)

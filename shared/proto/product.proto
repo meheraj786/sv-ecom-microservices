@@ -78,10 +78,8 @@ message CreateProductRequest {
   string name = 1;
   string slug = 2;
   string description = 3;
-  double price = 4;
-  string sku = 5;
-  string categoryId = 6;
-  string subCategoryId = 7;
+  string categoryId = 4;
+  string subCategoryId = 5;
 }
 
 message ProductResponse {
@@ -89,10 +87,8 @@ message ProductResponse {
   string name = 2;
   string slug = 3;
   string description = 4;
-  double price = 5;
-  string sku = 6;
-  string categoryId = 7;
-  string subCategoryId = 8;
+  string categoryId = 5;
+  string subCategoryId = 6;
 }
 
 message GetProductsRequest {
