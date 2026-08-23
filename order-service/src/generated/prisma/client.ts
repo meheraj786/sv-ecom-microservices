@@ -69,3 +69,8 @@ export type CouponCategory = Prisma.CouponCategoryModel
  * 
  */
 export type CouponUsage = Prisma.CouponUsageModel
+/**
+ * Model Division
+ * 
+ */
+export type Division = Prisma.DivisionModel

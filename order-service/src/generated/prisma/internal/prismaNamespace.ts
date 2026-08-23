@@ -402,7 +402,8 @@ export const ModelName = {
   Coupon: 'Coupon',
   CouponProduct: 'CouponProduct',
   CouponCategory: 'CouponCategory',
-  CouponUsage: 'CouponUsage'
+  CouponUsage: 'CouponUsage',
+  Division: 'Division'
 } as const
 
 export type ModelName = (typeof ModelName)[keyof typeof ModelName]
@@ -418,7 +419,7 @@ export type TypeMap<ExtArgs extends runtime.Types.Extensions.InternalArgs = runt
     omit: GlobalOmitOptions
   }
   meta: {
-    modelProps: "order" | "orderItem" | "coupon" | "couponProduct" | "couponCategory" | "couponUsage"
+    modelProps: "order" | "orderItem" | "coupon" | "couponProduct" | "couponCategory" | "couponUsage" | "division"
     txIsolationLevel: TransactionIsolationLevel
   }
   model: {
@@ -866,6 +867,80 @@ export type TypeMap<ExtArgs extends runtime.Types.Extensions.InternalArgs = runt
         }
       }
     }
+    Division: {
+      payload: Prisma.$DivisionPayload<ExtArgs>
+      fields: Prisma.DivisionFieldRefs
+      operations: {
+        findUnique: {
+          args: Prisma.DivisionFindUniqueArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$DivisionPayload> | null
+        }
+        findUniqueOrThrow: {
+          args: Prisma.DivisionFindUniqueOrThrowArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$DivisionPayload>
+        }
+        findFirst: {
+          args: Prisma.DivisionFindFirstArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$DivisionPayload> | null
+        }
+        findFirstOrThrow: {
+          args: Prisma.DivisionFindFirstOrThrowArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$DivisionPayload>
+        }
+        findMany: {
+          args: Prisma.DivisionFindManyArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$DivisionPayload>[]
+        }
+        create: {
+          args: Prisma.DivisionCreateArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$DivisionPayload>
+        }
+        createMany: {
+          args: Prisma.DivisionCreateManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        createManyAndReturn: {
+          args: Prisma.DivisionCreateManyAndReturnArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$DivisionPayload>[]
+        }
+        delete: {
+          args: Prisma.DivisionDeleteArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$DivisionPayload>
+        }
+        update: {
+          args: Prisma.DivisionUpdateArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$DivisionPayload>
+        }
+        deleteMany: {
+          args: Prisma.DivisionDeleteManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        updateMany: {
+          args: Prisma.DivisionUpdateManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        updateManyAndReturn: {
+          args: Prisma.DivisionUpdateManyAndReturnArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$DivisionPayload>[]
+        }
+        upsert: {
+          args: Prisma.DivisionUpsertArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$DivisionPayload>
+        }
+        aggregate: {
+          args: Prisma.DivisionAggregateArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.AggregateDivision>
+        }
+        groupBy: {
+          args: Prisma.DivisionGroupByArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.DivisionGroupByOutputType>[]
+        }
+        count: {
+          args: Prisma.DivisionCountArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.DivisionCountAggregateOutputType> | number
+        }
+      }
+    }
   }
 } & {
   other: {
@@ -980,6 +1055,17 @@ export const CouponUsageScalarFieldEnum = {
 } as const
 
 export type CouponUsageScalarFieldEnum = (typeof CouponUsageScalarFieldEnum)[keyof typeof CouponUsageScalarFieldEnum]
+
+
+export const DivisionScalarFieldEnum = {
+  id: 'id',
+  name: 'name',
+  deliveryCharge: 'deliveryCharge',
+  createdAt: 'createdAt',
+  updatedAt: 'updatedAt'
+} as const
+
+export type DivisionScalarFieldEnum = (typeof DivisionScalarFieldEnum)[keyof typeof DivisionScalarFieldEnum]
 
 
 export const SortOrder = {
@@ -1231,6 +1317,7 @@ export type GlobalOmitConfig = {
   couponProduct?: Prisma.CouponProductOmit
   couponCategory?: Prisma.CouponCategoryOmit
   couponUsage?: Prisma.CouponUsageOmit
+  division?: Prisma.DivisionOmit
 }
 
 /* Types for Logging */
