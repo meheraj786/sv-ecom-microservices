@@ -157,7 +157,7 @@ export class ProductService {
     }
   }
 
-  private validateOptionInput(options: CreateProductDto['options']) {
+  private async validateOptionInput(options: CreateProductDto['options']) {
     if (!options?.length) {
       return;
     }
@@ -287,6 +287,10 @@ export class ProductService {
       });
 
       const createdOptions: any[] = [];
+      const optionValueLookup = new Map<
+        string,
+        { id: string; optionName: string; value: string }
+      >();
 
       if (dto.options?.length) {
         for (const optionDto of dto.options) {
@@ -307,6 +311,15 @@ export class ProductService {
           });
 
           createdOptions.push(option);
+
+          for (const pov of option.productOptionValues) {
+            const lookupKey = `${this.normalize(option.name)}:${this.normalize(pov.value)}`;
+            optionValueLookup.set(lookupKey, {
+              id: pov.id,
+              optionName: option.name,
+              value: pov.value,
+            });
+          }
         }
       }
 
@@ -342,46 +355,62 @@ export class ProductService {
 
           skuSet.add(this.normalize(sku));
 
-          const optionValueIds = variantDto.optionValueIds ?? [];
+          let resolvedOptionValues: Array<{
+            id: string;
+            option: { name: string };
+            value: string;
+          }> = [];
 
-          const optionValues = await tx.productOptionValue.findMany({
-            where: {
-              id: {
-                in: optionValueIds,
+          if (
+            variantDto.options &&
+            Object.keys(variantDto.options).length > 0
+          ) {
+            for (const [optName, optVal] of Object.entries(
+              variantDto.options,
+            )) {
+              const lookupKey = `${this.normalize(optName)}:${this.normalize(optVal)}`;
+              const found = optionValueLookup.get(lookupKey);
+
+              if (!found) {
+                throw new BadRequestException(
+                  `Invalid option value "${optVal}" for option "${optName}" in variant "${sku}"`,
+                );
+              }
+
+              resolvedOptionValues.push({
+                id: found.id,
+                option: { name: found.optionName },
+                value: found.value,
+              });
+            }
+          } else if (variantDto.optionValueIds?.length) {
+            const values = await tx.productOptionValue.findMany({
+              where: {
+                id: {
+                  in: variantDto.optionValueIds,
+                },
+                option: {
+                  productId: product.id,
+                },
               },
-              option: {
-                productId: product.id,
+              include: {
+                option: true,
               },
-            },
-            include: {
-              option: true,
-            },
-          });
+            });
 
-          if (optionValues.length !== optionValueIds.length) {
-            throw new BadRequestException(
-              `Invalid option values for variant "${sku}"`,
-            );
-          }
-
-          const optionIds = new Set(optionValues.map((item) => item.optionId));
-
-          if (optionIds.size !== optionValues.length) {
-            throw new BadRequestException(
-              `Variant "${sku}" contains multiple values from the same option`,
-            );
+            resolvedOptionValues = values;
           }
 
           if (
             createdOptions.length &&
-            optionIds.size !== createdOptions.length
+            resolvedOptionValues.length !== createdOptions.length
           ) {
             throw new BadRequestException(
               `Variant "${sku}" must have exactly one value from every option`,
             );
           }
 
-          const combinationKey = this.buildCombinationKey(optionValues);
+          const combinationKey = this.buildCombinationKey(resolvedOptionValues);
 
           if (combinationSet.has(combinationKey)) {
             throw new ConflictException(
@@ -398,7 +427,7 @@ export class ProductService {
               images: variantDto.images ?? [],
               combinationKey,
               productVariantValues: {
-                create: optionValues.map((value) => ({
+                create: resolvedOptionValues.map((value) => ({
                   optionValueId: value.id,
                 })),
               },
@@ -730,7 +759,7 @@ export class ProductService {
         });
       }
 
-      if (dto.options) {
+      if (dto.options !== undefined || dto.variants !== undefined) {
         await tx.productVariantValue.deleteMany({
           where: {
             productVariant: {
@@ -752,41 +781,153 @@ export class ProductService {
         });
 
         const createdOptions: any[] = [];
+        const optionValueLookup = new Map<
+          string,
+          { id: string; optionName: string; value: string }
+        >();
 
-        for (const optionDto of dto.options) {
-          const option = await tx.productOption.create({
-            data: {
-              productId: id,
-              name: optionDto.name.trim(),
-              productOptionValues: {
-                create: optionDto.values.map((value) => ({
-                  value: value.value.trim(),
-                  metadata: value.metadata,
-                })),
+        if (dto.options?.length) {
+          for (const optionDto of dto.options) {
+            const option = await tx.productOption.create({
+              data: {
+                productId: id,
+                name: optionDto.name.trim(),
+                productOptionValues: {
+                  create: optionDto.values.map((value) => ({
+                    value: value.value.trim(),
+                    metadata: value.metadata,
+                  })),
+                },
               },
-            },
-            include: {
-              productOptionValues: true,
-            },
-          });
+              include: {
+                productOptionValues: true,
+              },
+            });
 
-          createdOptions.push(option);
+            createdOptions.push(option);
+
+            for (const pov of option.productOptionValues) {
+              const lookupKey = `${this.normalize(option.name)}:${this.normalize(pov.value)}`;
+              optionValueLookup.set(lookupKey, {
+                id: pov.id,
+                optionName: option.name,
+                value: pov.value,
+              });
+            }
+          }
         }
 
-        if (!createdOptions.length) {
-          const product = await tx.product.findUnique({
-            where: { id },
-            select: { sku: true, baseImage: true },
-          });
+        const variants = dto.variants ?? [];
 
-          await tx.productVariant.create({
-            data: {
-              productId: id,
-              sku: product?.sku?.trim() || this.generateDefaultSku(),
-              images: product?.baseImage ? [product.baseImage] : [],
-              combinationKey: 'default',
-            },
-          });
+        if (!variants.length) {
+          if (!createdOptions.length) {
+            const product = await tx.product.findUnique({
+              where: { id },
+              select: { sku: true, baseImage: true },
+            });
+
+            await tx.productVariant.create({
+              data: {
+                productId: id,
+                sku: product?.sku?.trim() || this.generateDefaultSku(),
+                images: product?.baseImage ? [product.baseImage] : [],
+                combinationKey: 'default',
+              },
+            });
+          }
+        } else {
+          const skuSet = new Set<string>();
+          const combinationSet = new Set<string>();
+
+          for (const variantDto of variants) {
+            const sku = variantDto.sku.trim();
+
+            if (skuSet.has(this.normalize(sku))) {
+              throw new ConflictException(`Duplicate variant SKU: ${sku}`);
+            }
+
+            skuSet.add(this.normalize(sku));
+
+            let resolvedOptionValues: Array<{
+              id: string;
+              option: { name: string };
+              value: string;
+            }> = [];
+
+            if (
+              variantDto.options &&
+              Object.keys(variantDto.options).length > 0
+            ) {
+              for (const [optName, optVal] of Object.entries(
+                variantDto.options,
+              )) {
+                const lookupKey = `${this.normalize(optName)}:${this.normalize(optVal)}`;
+                const found = optionValueLookup.get(lookupKey);
+
+                if (!found) {
+                  throw new BadRequestException(
+                    `Invalid option value "${optVal}" for option "${optName}" in variant "${sku}"`,
+                  );
+                }
+
+                resolvedOptionValues.push({
+                  id: found.id,
+                  option: { name: found.optionName },
+                  value: found.value,
+                });
+              }
+            } else if (variantDto.optionValueIds?.length) {
+              const values = await tx.productOptionValue.findMany({
+                where: {
+                  id: {
+                    in: variantDto.optionValueIds,
+                  },
+                  option: {
+                    productId: id,
+                  },
+                },
+                include: {
+                  option: true,
+                },
+              });
+
+              resolvedOptionValues = values;
+            }
+
+            if (
+              createdOptions.length &&
+              resolvedOptionValues.length !== createdOptions.length
+            ) {
+              throw new BadRequestException(
+                `Variant "${sku}" must have exactly one value from every option`,
+              );
+            }
+
+            const combinationKey =
+              this.buildCombinationKey(resolvedOptionValues);
+
+            if (combinationSet.has(combinationKey)) {
+              throw new ConflictException(
+                `Duplicate variant combination: ${combinationKey}`,
+              );
+            }
+
+            combinationSet.add(combinationKey);
+
+            await tx.productVariant.create({
+              data: {
+                productId: id,
+                sku,
+                images: variantDto.images ?? [],
+                combinationKey,
+                productVariantValues: {
+                  create: resolvedOptionValues.map((value) => ({
+                    optionValueId: value.id,
+                  })),
+                },
+              },
+            });
+          }
         }
       }
 

@@ -155,6 +155,10 @@ export class CreateVariantDto {
   @ArrayUnique()
   @IsOptional()
   optionValueIds?: string[];
+
+  @IsOptional()
+  @IsObject()
+  options?: Record<string, string>;
 }
 
 export class UpdateVariantDto {
@@ -290,6 +294,12 @@ export class UpdateProductDto {
   @ValidateNested({ each: true })
   @Type(() => CreateProductOptionDto)
   options?: CreateProductOptionDto[];
+
+  @IsArray()
+  @IsOptional()
+  @ValidateNested({ each: true })
+  @Type(() => CreateVariantDto)
+  variants?: CreateVariantDto[];
 }
 
 export class PaginationQueryDto {

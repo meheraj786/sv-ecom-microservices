@@ -2,6 +2,7 @@ import {
   ArrayUnique,
   IsArray,
   IsNotEmpty,
+  IsObject,
   IsOptional,
   IsString,
 } from 'class-validator';
@@ -21,22 +22,10 @@ export class CreateVariantDto {
   @ArrayUnique()
   @IsOptional()
   optionValueIds?: string[];
+
+  @IsOptional()
+  @IsObject()
+  options?: Record<string, string>;
 }
 
-export class UpdateVariantDto {
-  @IsString()
-  @IsOptional()
-  @IsNotEmpty()
-  sku?: string;
-
-  @IsArray()
-  @IsOptional()
-  @IsString({ each: true })
-  images?: string[];
-
-  @IsArray()
-  @IsString({ each: true })
-  @ArrayUnique()
-  @IsOptional()
-  optionValueIds?: string[];
-}
+export class UpdateVariantDto extends CreateVariantDto {}

@@ -8,6 +8,7 @@ import {
 } from 'class-validator';
 import { Type } from 'class-transformer';
 import { CreateProductOptionDto } from './create-product.dto';
+import { CreateVariantDto } from './create-variant.dto';
 
 export class UpdateProductDto {
   @IsString()
@@ -63,4 +64,10 @@ export class UpdateProductDto {
   @ValidateNested({ each: true })
   @Type(() => CreateProductOptionDto)
   options?: CreateProductOptionDto[];
+
+  @IsArray()
+  @IsOptional()
+  @ValidateNested({ each: true })
+  @Type(() => CreateVariantDto)
+  variants?: CreateVariantDto[];
 }

@@ -20,11 +20,13 @@ services:
       - USER_SERVICE_URL=http://user-service:3001
       - PRODUCT_SERVICE_URL=http://product-service:3002
       - CART_SERVICE_URL=http://cart-service:3003
+      - INVENTORY_SERVICE_URL=http://inventory-service:3004
       - ORDER_SERVICE_URL=http://order-service:3005
     depends_on:
       - user-service
       - product-service
       - cart-service
+      - inventory-service
       - order-service
     networks:
       - ecommerce-network
