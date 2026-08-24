@@ -33,6 +33,26 @@ export type SubCategory = Prisma.SubCategoryModel
  */
 export type Product = Prisma.ProductModel
 /**
+ * Model ProductOption
+ * 
+ */
+export type ProductOption = Prisma.ProductOptionModel
+/**
+ * Model ProductOptionValue
+ * 
+ */
+export type ProductOptionValue = Prisma.ProductOptionValueModel
+/**
+ * Model ProductVariant
+ * 
+ */
+export type ProductVariant = Prisma.ProductVariantModel
+/**
+ * Model ProductVariantValue
+ * 
+ */
+export type ProductVariantValue = Prisma.ProductVariantValueModel
+/**
  * Model ProductCategory
  * 
  */
@@ -43,42 +63,7 @@ export type ProductCategory = Prisma.ProductCategoryModel
  */
 export type ProductSubCategory = Prisma.ProductSubCategoryModel
 /**
- * Model ProductVariant
- * 
- */
-export type ProductVariant = Prisma.ProductVariantModel
-/**
  * Model Review
  * 
  */
 export type Review = Prisma.ReviewModel
-/**
- * Model Order
- * 
- */
-export type Order = Prisma.OrderModel
-/**
- * Model OrderItem
- * 
- */
-export type OrderItem = Prisma.OrderItemModel
-/**
- * Model Coupon
- * 
- */
-export type Coupon = Prisma.CouponModel
-/**
- * Model CouponProduct
- * 
- */
-export type CouponProduct = Prisma.CouponProductModel
-/**
- * Model CouponCategory
- * 
- */
-export type CouponCategory = Prisma.CouponCategoryModel
-/**
- * Model CouponUsage
- * 
- */
-export type CouponUsage = Prisma.CouponUsageModel

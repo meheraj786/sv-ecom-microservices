@@ -12,6 +12,8 @@ model Stock {
   id                String  @id @default(cuid())
   variantId         String
   purchasePrice     Float
+  isDiscounted      Boolean @default(false)
+  beforeDiscount    Float?
   sellingPrice      Float
   quantityReceived  Int
   quantityRemaining Int

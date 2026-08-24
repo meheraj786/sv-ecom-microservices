@@ -28,6 +28,7 @@ export type AggregateStock = {
 
 export type StockAvgAggregateOutputType = {
   purchasePrice: number | null
+  beforeDiscount: number | null
   sellingPrice: number | null
   quantityReceived: number | null
   quantityRemaining: number | null
@@ -35,6 +36,7 @@ export type StockAvgAggregateOutputType = {
 
 export type StockSumAggregateOutputType = {
   purchasePrice: number | null
+  beforeDiscount: number | null
   sellingPrice: number | null
   quantityReceived: number | null
   quantityRemaining: number | null
@@ -44,6 +46,8 @@ export type StockMinAggregateOutputType = {
   id: string | null
   variantId: string | null
   purchasePrice: number | null
+  isDiscounted: boolean | null
+  beforeDiscount: number | null
   sellingPrice: number | null
   quantityReceived: number | null
   quantityRemaining: number | null
@@ -57,6 +61,8 @@ export type StockMaxAggregateOutputType = {
   id: string | null
   variantId: string | null
   purchasePrice: number | null
+  isDiscounted: boolean | null
+  beforeDiscount: number | null
   sellingPrice: number | null
   quantityReceived: number | null
   quantityRemaining: number | null
@@ -70,6 +76,8 @@ export type StockCountAggregateOutputType = {
   id: number
   variantId: number
   purchasePrice: number
+  isDiscounted: number
+  beforeDiscount: number
   sellingPrice: number
   quantityReceived: number
   quantityRemaining: number
@@ -83,6 +91,7 @@ export type StockCountAggregateOutputType = {
 
 export type StockAvgAggregateInputType = {
   purchasePrice?: true
+  beforeDiscount?: true
   sellingPrice?: true
   quantityReceived?: true
   quantityRemaining?: true
@@ -90,6 +99,7 @@ export type StockAvgAggregateInputType = {
 
 export type StockSumAggregateInputType = {
   purchasePrice?: true
+  beforeDiscount?: true
   sellingPrice?: true
   quantityReceived?: true
   quantityRemaining?: true
@@ -99,6 +109,8 @@ export type StockMinAggregateInputType = {
   id?: true
   variantId?: true
   purchasePrice?: true
+  isDiscounted?: true
+  beforeDiscount?: true
   sellingPrice?: true
   quantityReceived?: true
   quantityRemaining?: true
@@ -112,6 +124,8 @@ export type StockMaxAggregateInputType = {
   id?: true
   variantId?: true
   purchasePrice?: true
+  isDiscounted?: true
+  beforeDiscount?: true
   sellingPrice?: true
   quantityReceived?: true
   quantityRemaining?: true
@@ -125,6 +139,8 @@ export type StockCountAggregateInputType = {
   id?: true
   variantId?: true
   purchasePrice?: true
+  isDiscounted?: true
+  beforeDiscount?: true
   sellingPrice?: true
   quantityReceived?: true
   quantityRemaining?: true
@@ -225,6 +241,8 @@ export type StockGroupByOutputType = {
   id: string
   variantId: string
   purchasePrice: number
+  isDiscounted: boolean
+  beforeDiscount: number | null
   sellingPrice: number
   quantityReceived: number
   quantityRemaining: number
@@ -261,6 +279,8 @@ export type StockWhereInput = {
   id?: Prisma.StringFilter<"Stock"> | string
   variantId?: Prisma.StringFilter<"Stock"> | string
   purchasePrice?: Prisma.FloatFilter<"Stock"> | number
+  isDiscounted?: Prisma.BoolFilter<"Stock"> | boolean
+  beforeDiscount?: Prisma.FloatNullableFilter<"Stock"> | number | null
   sellingPrice?: Prisma.FloatFilter<"Stock"> | number
   quantityReceived?: Prisma.IntFilter<"Stock"> | number
   quantityRemaining?: Prisma.IntFilter<"Stock"> | number
@@ -274,6 +294,8 @@ export type StockOrderByWithRelationInput = {
   id?: Prisma.SortOrder
   variantId?: Prisma.SortOrder
   purchasePrice?: Prisma.SortOrder
+  isDiscounted?: Prisma.SortOrder
+  beforeDiscount?: Prisma.SortOrderInput | Prisma.SortOrder
   sellingPrice?: Prisma.SortOrder
   quantityReceived?: Prisma.SortOrder
   quantityRemaining?: Prisma.SortOrder
@@ -290,6 +312,8 @@ export type StockWhereUniqueInput = Prisma.AtLeast<{
   NOT?: Prisma.StockWhereInput | Prisma.StockWhereInput[]
   variantId?: Prisma.StringFilter<"Stock"> | string
   purchasePrice?: Prisma.FloatFilter<"Stock"> | number
+  isDiscounted?: Prisma.BoolFilter<"Stock"> | boolean
+  beforeDiscount?: Prisma.FloatNullableFilter<"Stock"> | number | null
   sellingPrice?: Prisma.FloatFilter<"Stock"> | number
   quantityReceived?: Prisma.IntFilter<"Stock"> | number
   quantityRemaining?: Prisma.IntFilter<"Stock"> | number
@@ -303,6 +327,8 @@ export type StockOrderByWithAggregationInput = {
   id?: Prisma.SortOrder
   variantId?: Prisma.SortOrder
   purchasePrice?: Prisma.SortOrder
+  isDiscounted?: Prisma.SortOrder
+  beforeDiscount?: Prisma.SortOrderInput | Prisma.SortOrder
   sellingPrice?: Prisma.SortOrder
   quantityReceived?: Prisma.SortOrder
   quantityRemaining?: Prisma.SortOrder
@@ -324,6 +350,8 @@ export type StockScalarWhereWithAggregatesInput = {
   id?: Prisma.StringWithAggregatesFilter<"Stock"> | string
   variantId?: Prisma.StringWithAggregatesFilter<"Stock"> | string
   purchasePrice?: Prisma.FloatWithAggregatesFilter<"Stock"> | number
+  isDiscounted?: Prisma.BoolWithAggregatesFilter<"Stock"> | boolean
+  beforeDiscount?: Prisma.FloatNullableWithAggregatesFilter<"Stock"> | number | null
   sellingPrice?: Prisma.FloatWithAggregatesFilter<"Stock"> | number
   quantityReceived?: Prisma.IntWithAggregatesFilter<"Stock"> | number
   quantityRemaining?: Prisma.IntWithAggregatesFilter<"Stock"> | number
@@ -337,6 +365,8 @@ export type StockCreateInput = {
   id?: string
   variantId: string
   purchasePrice: number
+  isDiscounted?: boolean
+  beforeDiscount?: number | null
   sellingPrice: number
   quantityReceived: number
   quantityRemaining: number
@@ -350,6 +380,8 @@ export type StockUncheckedCreateInput = {
   id?: string
   variantId: string
   purchasePrice: number
+  isDiscounted?: boolean
+  beforeDiscount?: number | null
   sellingPrice: number
   quantityReceived: number
   quantityRemaining: number
@@ -363,6 +395,8 @@ export type StockUpdateInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
   variantId?: Prisma.StringFieldUpdateOperationsInput | string
   purchasePrice?: Prisma.FloatFieldUpdateOperationsInput | number
+  isDiscounted?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  beforeDiscount?: Prisma.NullableFloatFieldUpdateOperationsInput | number | null
   sellingPrice?: Prisma.FloatFieldUpdateOperationsInput | number
   quantityReceived?: Prisma.IntFieldUpdateOperationsInput | number
   quantityRemaining?: Prisma.IntFieldUpdateOperationsInput | number
@@ -376,6 +410,8 @@ export type StockUncheckedUpdateInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
   variantId?: Prisma.StringFieldUpdateOperationsInput | string
   purchasePrice?: Prisma.FloatFieldUpdateOperationsInput | number
+  isDiscounted?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  beforeDiscount?: Prisma.NullableFloatFieldUpdateOperationsInput | number | null
   sellingPrice?: Prisma.FloatFieldUpdateOperationsInput | number
   quantityReceived?: Prisma.IntFieldUpdateOperationsInput | number
   quantityRemaining?: Prisma.IntFieldUpdateOperationsInput | number
@@ -389,6 +425,8 @@ export type StockCreateManyInput = {
   id?: string
   variantId: string
   purchasePrice: number
+  isDiscounted?: boolean
+  beforeDiscount?: number | null
   sellingPrice: number
   quantityReceived: number
   quantityRemaining: number
@@ -402,6 +440,8 @@ export type StockUpdateManyMutationInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
   variantId?: Prisma.StringFieldUpdateOperationsInput | string
   purchasePrice?: Prisma.FloatFieldUpdateOperationsInput | number
+  isDiscounted?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  beforeDiscount?: Prisma.NullableFloatFieldUpdateOperationsInput | number | null
   sellingPrice?: Prisma.FloatFieldUpdateOperationsInput | number
   quantityReceived?: Prisma.IntFieldUpdateOperationsInput | number
   quantityRemaining?: Prisma.IntFieldUpdateOperationsInput | number
@@ -415,6 +455,8 @@ export type StockUncheckedUpdateManyInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
   variantId?: Prisma.StringFieldUpdateOperationsInput | string
   purchasePrice?: Prisma.FloatFieldUpdateOperationsInput | number
+  isDiscounted?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  beforeDiscount?: Prisma.NullableFloatFieldUpdateOperationsInput | number | null
   sellingPrice?: Prisma.FloatFieldUpdateOperationsInput | number
   quantityReceived?: Prisma.IntFieldUpdateOperationsInput | number
   quantityRemaining?: Prisma.IntFieldUpdateOperationsInput | number
@@ -428,6 +470,8 @@ export type StockCountOrderByAggregateInput = {
   id?: Prisma.SortOrder
   variantId?: Prisma.SortOrder
   purchasePrice?: Prisma.SortOrder
+  isDiscounted?: Prisma.SortOrder
+  beforeDiscount?: Prisma.SortOrder
   sellingPrice?: Prisma.SortOrder
   quantityReceived?: Prisma.SortOrder
   quantityRemaining?: Prisma.SortOrder
@@ -439,6 +483,7 @@ export type StockCountOrderByAggregateInput = {
 
 export type StockAvgOrderByAggregateInput = {
   purchasePrice?: Prisma.SortOrder
+  beforeDiscount?: Prisma.SortOrder
   sellingPrice?: Prisma.SortOrder
   quantityReceived?: Prisma.SortOrder
   quantityRemaining?: Prisma.SortOrder
@@ -448,6 +493,8 @@ export type StockMaxOrderByAggregateInput = {
   id?: Prisma.SortOrder
   variantId?: Prisma.SortOrder
   purchasePrice?: Prisma.SortOrder
+  isDiscounted?: Prisma.SortOrder
+  beforeDiscount?: Prisma.SortOrder
   sellingPrice?: Prisma.SortOrder
   quantityReceived?: Prisma.SortOrder
   quantityRemaining?: Prisma.SortOrder
@@ -461,6 +508,8 @@ export type StockMinOrderByAggregateInput = {
   id?: Prisma.SortOrder
   variantId?: Prisma.SortOrder
   purchasePrice?: Prisma.SortOrder
+  isDiscounted?: Prisma.SortOrder
+  beforeDiscount?: Prisma.SortOrder
   sellingPrice?: Prisma.SortOrder
   quantityReceived?: Prisma.SortOrder
   quantityRemaining?: Prisma.SortOrder
@@ -472,6 +521,7 @@ export type StockMinOrderByAggregateInput = {
 
 export type StockSumOrderByAggregateInput = {
   purchasePrice?: Prisma.SortOrder
+  beforeDiscount?: Prisma.SortOrder
   sellingPrice?: Prisma.SortOrder
   quantityReceived?: Prisma.SortOrder
   quantityRemaining?: Prisma.SortOrder
@@ -483,6 +533,18 @@ export type StringFieldUpdateOperationsInput = {
 
 export type FloatFieldUpdateOperationsInput = {
   set?: number
+  increment?: number
+  decrement?: number
+  multiply?: number
+  divide?: number
+}
+
+export type BoolFieldUpdateOperationsInput = {
+  set?: boolean
+}
+
+export type NullableFloatFieldUpdateOperationsInput = {
+  set?: number | null
   increment?: number
   decrement?: number
   multiply?: number
@@ -511,6 +573,8 @@ export type StockSelect<ExtArgs extends runtime.Types.Extensions.InternalArgs = 
   id?: boolean
   variantId?: boolean
   purchasePrice?: boolean
+  isDiscounted?: boolean
+  beforeDiscount?: boolean
   sellingPrice?: boolean
   quantityReceived?: boolean
   quantityRemaining?: boolean
@@ -524,6 +588,8 @@ export type StockSelectCreateManyAndReturn<ExtArgs extends runtime.Types.Extensi
   id?: boolean
   variantId?: boolean
   purchasePrice?: boolean
+  isDiscounted?: boolean
+  beforeDiscount?: boolean
   sellingPrice?: boolean
   quantityReceived?: boolean
   quantityRemaining?: boolean
@@ -537,6 +603,8 @@ export type StockSelectUpdateManyAndReturn<ExtArgs extends runtime.Types.Extensi
   id?: boolean
   variantId?: boolean
   purchasePrice?: boolean
+  isDiscounted?: boolean
+  beforeDiscount?: boolean
   sellingPrice?: boolean
   quantityReceived?: boolean
   quantityRemaining?: boolean
@@ -550,6 +618,8 @@ export type StockSelectScalar = {
   id?: boolean
   variantId?: boolean
   purchasePrice?: boolean
+  isDiscounted?: boolean
+  beforeDiscount?: boolean
   sellingPrice?: boolean
   quantityReceived?: boolean
   quantityRemaining?: boolean
@@ -559,7 +629,7 @@ export type StockSelectScalar = {
   updatedAt?: boolean
 }
 
-export type StockOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "variantId" | "purchasePrice" | "sellingPrice" | "quantityReceived" | "quantityRemaining" | "batchNumber" | "note" | "createdAt" | "updatedAt", ExtArgs["result"]["stock"]>
+export type StockOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "variantId" | "purchasePrice" | "isDiscounted" | "beforeDiscount" | "sellingPrice" | "quantityReceived" | "quantityRemaining" | "batchNumber" | "note" | "createdAt" | "updatedAt", ExtArgs["result"]["stock"]>
 
 export type $StockPayload<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   name: "Stock"
@@ -568,6 +638,8 @@ export type $StockPayload<ExtArgs extends runtime.Types.Extensions.InternalArgs 
     id: string
     variantId: string
     purchasePrice: number
+    isDiscounted: boolean
+    beforeDiscount: number | null
     sellingPrice: number
     quantityReceived: number
     quantityRemaining: number
@@ -1001,6 +1073,8 @@ export interface StockFieldRefs {
   readonly id: Prisma.FieldRef<"Stock", 'String'>
   readonly variantId: Prisma.FieldRef<"Stock", 'String'>
   readonly purchasePrice: Prisma.FieldRef<"Stock", 'Float'>
+  readonly isDiscounted: Prisma.FieldRef<"Stock", 'Boolean'>
+  readonly beforeDiscount: Prisma.FieldRef<"Stock", 'Float'>
   readonly sellingPrice: Prisma.FieldRef<"Stock", 'Float'>
   readonly quantityReceived: Prisma.FieldRef<"Stock", 'Int'>
   readonly quantityRemaining: Prisma.FieldRef<"Stock", 'Int'>

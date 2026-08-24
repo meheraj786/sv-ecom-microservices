@@ -1,44 +1,39 @@
 import {
-  IsString,
+  ArrayUnique,
+  IsArray,
+  IsBoolean,
+  IsDateString,
+  IsIn,
+  IsInt,
   IsNotEmpty,
   IsNumber,
-  Min,
   IsOptional,
-  IsEnum,
-  IsDateString,
-  IsInt,
-  IsBoolean,
-  IsArray,
+  IsString,
+  Min,
 } from 'class-validator';
-
-export enum CouponDiscountType {
-  PERCENTAGE = 'PERCENTAGE',
-  FIXED = 'FIXED',
-}
-
-export enum CouponScope {
-  ALL = 'ALL',
-  PRODUCTS = 'PRODUCTS',
-  CATEGORIES = 'CATEGORIES',
-}
+import { Type } from 'class-transformer';
 
 export class CreateCouponDto {
   @IsString()
-  @IsNotEmpty()
+  @IsNotEmpty({ message: 'Coupon code is required' })
   code: string;
 
-  @IsEnum(CouponDiscountType)
-  discountType: CouponDiscountType;
+  @IsString()
+  @IsIn(['PERCENTAGE', 'FIXED'])
+  discountType: 'PERCENTAGE' | 'FIXED';
 
+  @Type(() => Number)
   @IsNumber()
   @Min(0.01)
   discountValue: number;
 
+  @Type(() => Number)
   @IsNumber()
   @Min(0)
   @IsOptional()
   minOrderValue?: number;
 
+  @Type(() => Number)
   @IsNumber()
   @Min(0.01)
   @IsOptional()
@@ -49,34 +44,39 @@ export class CreateCouponDto {
   startsAt?: string;
 
   @IsDateString()
-  @IsNotEmpty()
+  @IsNotEmpty({ message: 'Expiry date is required' })
   expiresAt: string;
 
+  @Type(() => Number)
   @IsInt()
   @Min(1)
   @IsOptional()
   usageLimit?: number;
 
+  @Type(() => Number)
   @IsInt()
   @Min(1)
   @IsOptional()
   perUserLimit?: number;
 
-  @IsEnum(CouponScope)
+  @IsString()
+  @IsIn(['ALL', 'PRODUCTS', 'CATEGORIES'])
   @IsOptional()
-  scope?: CouponScope;
+  scope?: 'ALL' | 'PRODUCTS' | 'CATEGORIES';
+
+  @IsBoolean()
+  @IsOptional()
+  isActive?: boolean;
 
   @IsArray()
   @IsString({ each: true })
+  @ArrayUnique()
   @IsOptional()
   productIds?: string[];
 
   @IsArray()
   @IsString({ each: true })
+  @ArrayUnique()
   @IsOptional()
   categoryIds?: string[];
-
-  @IsBoolean()
-  @IsOptional()
-  isActive?: boolean;
 }

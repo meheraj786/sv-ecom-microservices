@@ -20,54 +20,15 @@ export type ProductVariantModel = runtime.Types.Result.DefaultSelection<Prisma.$
 
 export type AggregateProductVariant = {
   _count: ProductVariantCountAggregateOutputType | null
-  _avg: ProductVariantAvgAggregateOutputType | null
-  _sum: ProductVariantSumAggregateOutputType | null
   _min: ProductVariantMinAggregateOutputType | null
   _max: ProductVariantMaxAggregateOutputType | null
-}
-
-export type ProductVariantAvgAggregateOutputType = {
-  price: number | null
-}
-
-export type ProductVariantSumAggregateOutputType = {
-  price: number | null
 }
 
 export type ProductVariantMinAggregateOutputType = {
   id: string | null
   productId: string | null
   sku: string | null
-  price: number | null
-  isActive: boolean | null
-  color: string | null
-  size: string | null
-  fabric: string | null
-  material: string | null
-  fit: string | null
-  sleeve: string | null
-  neckType: string | null
-  pattern: string | null
-  shoeSize: string | null
-  ram: string | null
-  storage: string | null
-  processor: string | null
-  screenSize: string | null
-  connectivity: string | null
-  volume: string | null
-  shade: string | null
-  skinType: string | null
-  fragrance: string | null
-  weight: string | null
-  flavor: string | null
-  packageType: string | null
-  materialPurity: string | null
-  strap: string | null
-  dimensions: string | null
-  format: string | null
-  packQuantity: string | null
-  condition: string | null
-  warranty: string | null
+  combinationKey: string | null
   createdAt: Date | null
   updatedAt: Date | null
 }
@@ -76,36 +37,7 @@ export type ProductVariantMaxAggregateOutputType = {
   id: string | null
   productId: string | null
   sku: string | null
-  price: number | null
-  isActive: boolean | null
-  color: string | null
-  size: string | null
-  fabric: string | null
-  material: string | null
-  fit: string | null
-  sleeve: string | null
-  neckType: string | null
-  pattern: string | null
-  shoeSize: string | null
-  ram: string | null
-  storage: string | null
-  processor: string | null
-  screenSize: string | null
-  connectivity: string | null
-  volume: string | null
-  shade: string | null
-  skinType: string | null
-  fragrance: string | null
-  weight: string | null
-  flavor: string | null
-  packageType: string | null
-  materialPurity: string | null
-  strap: string | null
-  dimensions: string | null
-  format: string | null
-  packQuantity: string | null
-  condition: string | null
-  warranty: string | null
+  combinationKey: string | null
   createdAt: Date | null
   updatedAt: Date | null
 }
@@ -114,85 +46,19 @@ export type ProductVariantCountAggregateOutputType = {
   id: number
   productId: number
   sku: number
-  price: number
   images: number
-  isActive: number
-  color: number
-  size: number
-  fabric: number
-  material: number
-  fit: number
-  sleeve: number
-  neckType: number
-  pattern: number
-  shoeSize: number
-  ram: number
-  storage: number
-  processor: number
-  screenSize: number
-  connectivity: number
-  volume: number
-  shade: number
-  skinType: number
-  fragrance: number
-  weight: number
-  flavor: number
-  packageType: number
-  materialPurity: number
-  strap: number
-  dimensions: number
-  format: number
-  packQuantity: number
-  condition: number
-  warranty: number
+  combinationKey: number
   createdAt: number
   updatedAt: number
   _all: number
 }
 
 
-export type ProductVariantAvgAggregateInputType = {
-  price?: true
-}
-
-export type ProductVariantSumAggregateInputType = {
-  price?: true
-}
-
 export type ProductVariantMinAggregateInputType = {
   id?: true
   productId?: true
   sku?: true
-  price?: true
-  isActive?: true
-  color?: true
-  size?: true
-  fabric?: true
-  material?: true
-  fit?: true
-  sleeve?: true
-  neckType?: true
-  pattern?: true
-  shoeSize?: true
-  ram?: true
-  storage?: true
-  processor?: true
-  screenSize?: true
-  connectivity?: true
-  volume?: true
-  shade?: true
-  skinType?: true
-  fragrance?: true
-  weight?: true
-  flavor?: true
-  packageType?: true
-  materialPurity?: true
-  strap?: true
-  dimensions?: true
-  format?: true
-  packQuantity?: true
-  condition?: true
-  warranty?: true
+  combinationKey?: true
   createdAt?: true
   updatedAt?: true
 }
@@ -201,36 +67,7 @@ export type ProductVariantMaxAggregateInputType = {
   id?: true
   productId?: true
   sku?: true
-  price?: true
-  isActive?: true
-  color?: true
-  size?: true
-  fabric?: true
-  material?: true
-  fit?: true
-  sleeve?: true
-  neckType?: true
-  pattern?: true
-  shoeSize?: true
-  ram?: true
-  storage?: true
-  processor?: true
-  screenSize?: true
-  connectivity?: true
-  volume?: true
-  shade?: true
-  skinType?: true
-  fragrance?: true
-  weight?: true
-  flavor?: true
-  packageType?: true
-  materialPurity?: true
-  strap?: true
-  dimensions?: true
-  format?: true
-  packQuantity?: true
-  condition?: true
-  warranty?: true
+  combinationKey?: true
   createdAt?: true
   updatedAt?: true
 }
@@ -239,37 +76,8 @@ export type ProductVariantCountAggregateInputType = {
   id?: true
   productId?: true
   sku?: true
-  price?: true
   images?: true
-  isActive?: true
-  color?: true
-  size?: true
-  fabric?: true
-  material?: true
-  fit?: true
-  sleeve?: true
-  neckType?: true
-  pattern?: true
-  shoeSize?: true
-  ram?: true
-  storage?: true
-  processor?: true
-  screenSize?: true
-  connectivity?: true
-  volume?: true
-  shade?: true
-  skinType?: true
-  fragrance?: true
-  weight?: true
-  flavor?: true
-  packageType?: true
-  materialPurity?: true
-  strap?: true
-  dimensions?: true
-  format?: true
-  packQuantity?: true
-  condition?: true
-  warranty?: true
+  combinationKey?: true
   createdAt?: true
   updatedAt?: true
   _all?: true
@@ -313,18 +121,6 @@ export type ProductVariantAggregateArgs<ExtArgs extends runtime.Types.Extensions
   /**
    * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
    * 
-   * Select which fields to average
-  **/
-  _avg?: ProductVariantAvgAggregateInputType
-  /**
-   * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
-   * 
-   * Select which fields to sum
-  **/
-  _sum?: ProductVariantSumAggregateInputType
-  /**
-   * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
-   * 
    * Select which fields to find the minimum value
   **/
   _min?: ProductVariantMinAggregateInputType
@@ -355,8 +151,6 @@ export type ProductVariantGroupByArgs<ExtArgs extends runtime.Types.Extensions.I
   take?: number
   skip?: number
   _count?: ProductVariantCountAggregateInputType | true
-  _avg?: ProductVariantAvgAggregateInputType
-  _sum?: ProductVariantSumAggregateInputType
   _min?: ProductVariantMinAggregateInputType
   _max?: ProductVariantMaxAggregateInputType
 }
@@ -365,42 +159,11 @@ export type ProductVariantGroupByOutputType = {
   id: string
   productId: string
   sku: string
-  price: number | null
   images: string[]
-  isActive: boolean
-  color: string | null
-  size: string | null
-  fabric: string | null
-  material: string | null
-  fit: string | null
-  sleeve: string | null
-  neckType: string | null
-  pattern: string | null
-  shoeSize: string | null
-  ram: string | null
-  storage: string | null
-  processor: string | null
-  screenSize: string | null
-  connectivity: string | null
-  volume: string | null
-  shade: string | null
-  skinType: string | null
-  fragrance: string | null
-  weight: string | null
-  flavor: string | null
-  packageType: string | null
-  materialPurity: string | null
-  strap: string | null
-  dimensions: string | null
-  format: string | null
-  packQuantity: string | null
-  condition: string | null
-  warranty: string | null
+  combinationKey: string
   createdAt: Date
   updatedAt: Date
   _count: ProductVariantCountAggregateOutputType | null
-  _avg: ProductVariantAvgAggregateOutputType | null
-  _sum: ProductVariantSumAggregateOutputType | null
   _min: ProductVariantMinAggregateOutputType | null
   _max: ProductVariantMaxAggregateOutputType | null
 }
@@ -427,167 +190,53 @@ export type ProductVariantWhereInput = {
   id?: Prisma.StringFilter<"ProductVariant"> | string
   productId?: Prisma.StringFilter<"ProductVariant"> | string
   sku?: Prisma.StringFilter<"ProductVariant"> | string
-  price?: Prisma.FloatNullableFilter<"ProductVariant"> | number | null
   images?: Prisma.StringNullableListFilter<"ProductVariant">
-  isActive?: Prisma.BoolFilter<"ProductVariant"> | boolean
-  color?: Prisma.StringNullableFilter<"ProductVariant"> | string | null
-  size?: Prisma.StringNullableFilter<"ProductVariant"> | string | null
-  fabric?: Prisma.StringNullableFilter<"ProductVariant"> | string | null
-  material?: Prisma.StringNullableFilter<"ProductVariant"> | string | null
-  fit?: Prisma.StringNullableFilter<"ProductVariant"> | string | null
-  sleeve?: Prisma.StringNullableFilter<"ProductVariant"> | string | null
-  neckType?: Prisma.StringNullableFilter<"ProductVariant"> | string | null
-  pattern?: Prisma.StringNullableFilter<"ProductVariant"> | string | null
-  shoeSize?: Prisma.StringNullableFilter<"ProductVariant"> | string | null
-  ram?: Prisma.StringNullableFilter<"ProductVariant"> | string | null
-  storage?: Prisma.StringNullableFilter<"ProductVariant"> | string | null
-  processor?: Prisma.StringNullableFilter<"ProductVariant"> | string | null
-  screenSize?: Prisma.StringNullableFilter<"ProductVariant"> | string | null
-  connectivity?: Prisma.StringNullableFilter<"ProductVariant"> | string | null
-  volume?: Prisma.StringNullableFilter<"ProductVariant"> | string | null
-  shade?: Prisma.StringNullableFilter<"ProductVariant"> | string | null
-  skinType?: Prisma.StringNullableFilter<"ProductVariant"> | string | null
-  fragrance?: Prisma.StringNullableFilter<"ProductVariant"> | string | null
-  weight?: Prisma.StringNullableFilter<"ProductVariant"> | string | null
-  flavor?: Prisma.StringNullableFilter<"ProductVariant"> | string | null
-  packageType?: Prisma.StringNullableFilter<"ProductVariant"> | string | null
-  materialPurity?: Prisma.StringNullableFilter<"ProductVariant"> | string | null
-  strap?: Prisma.StringNullableFilter<"ProductVariant"> | string | null
-  dimensions?: Prisma.StringNullableFilter<"ProductVariant"> | string | null
-  format?: Prisma.StringNullableFilter<"ProductVariant"> | string | null
-  packQuantity?: Prisma.StringNullableFilter<"ProductVariant"> | string | null
-  condition?: Prisma.StringNullableFilter<"ProductVariant"> | string | null
-  warranty?: Prisma.StringNullableFilter<"ProductVariant"> | string | null
+  combinationKey?: Prisma.StringFilter<"ProductVariant"> | string
   createdAt?: Prisma.DateTimeFilter<"ProductVariant"> | Date | string
   updatedAt?: Prisma.DateTimeFilter<"ProductVariant"> | Date | string
   product?: Prisma.XOR<Prisma.ProductScalarRelationFilter, Prisma.ProductWhereInput>
+  productVariantValues?: Prisma.ProductVariantValueListRelationFilter
 }
 
 export type ProductVariantOrderByWithRelationInput = {
   id?: Prisma.SortOrder
   productId?: Prisma.SortOrder
   sku?: Prisma.SortOrder
-  price?: Prisma.SortOrderInput | Prisma.SortOrder
   images?: Prisma.SortOrder
-  isActive?: Prisma.SortOrder
-  color?: Prisma.SortOrderInput | Prisma.SortOrder
-  size?: Prisma.SortOrderInput | Prisma.SortOrder
-  fabric?: Prisma.SortOrderInput | Prisma.SortOrder
-  material?: Prisma.SortOrderInput | Prisma.SortOrder
-  fit?: Prisma.SortOrderInput | Prisma.SortOrder
-  sleeve?: Prisma.SortOrderInput | Prisma.SortOrder
-  neckType?: Prisma.SortOrderInput | Prisma.SortOrder
-  pattern?: Prisma.SortOrderInput | Prisma.SortOrder
-  shoeSize?: Prisma.SortOrderInput | Prisma.SortOrder
-  ram?: Prisma.SortOrderInput | Prisma.SortOrder
-  storage?: Prisma.SortOrderInput | Prisma.SortOrder
-  processor?: Prisma.SortOrderInput | Prisma.SortOrder
-  screenSize?: Prisma.SortOrderInput | Prisma.SortOrder
-  connectivity?: Prisma.SortOrderInput | Prisma.SortOrder
-  volume?: Prisma.SortOrderInput | Prisma.SortOrder
-  shade?: Prisma.SortOrderInput | Prisma.SortOrder
-  skinType?: Prisma.SortOrderInput | Prisma.SortOrder
-  fragrance?: Prisma.SortOrderInput | Prisma.SortOrder
-  weight?: Prisma.SortOrderInput | Prisma.SortOrder
-  flavor?: Prisma.SortOrderInput | Prisma.SortOrder
-  packageType?: Prisma.SortOrderInput | Prisma.SortOrder
-  materialPurity?: Prisma.SortOrderInput | Prisma.SortOrder
-  strap?: Prisma.SortOrderInput | Prisma.SortOrder
-  dimensions?: Prisma.SortOrderInput | Prisma.SortOrder
-  format?: Prisma.SortOrderInput | Prisma.SortOrder
-  packQuantity?: Prisma.SortOrderInput | Prisma.SortOrder
-  condition?: Prisma.SortOrderInput | Prisma.SortOrder
-  warranty?: Prisma.SortOrderInput | Prisma.SortOrder
+  combinationKey?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
   updatedAt?: Prisma.SortOrder
   product?: Prisma.ProductOrderByWithRelationInput
+  productVariantValues?: Prisma.ProductVariantValueOrderByRelationAggregateInput
 }
 
 export type ProductVariantWhereUniqueInput = Prisma.AtLeast<{
   id?: string
   sku?: string
+  productId_combinationKey?: Prisma.ProductVariantProductIdCombinationKeyCompoundUniqueInput
   AND?: Prisma.ProductVariantWhereInput | Prisma.ProductVariantWhereInput[]
   OR?: Prisma.ProductVariantWhereInput[]
   NOT?: Prisma.ProductVariantWhereInput | Prisma.ProductVariantWhereInput[]
   productId?: Prisma.StringFilter<"ProductVariant"> | string
-  price?: Prisma.FloatNullableFilter<"ProductVariant"> | number | null
   images?: Prisma.StringNullableListFilter<"ProductVariant">
-  isActive?: Prisma.BoolFilter<"ProductVariant"> | boolean
-  color?: Prisma.StringNullableFilter<"ProductVariant"> | string | null
-  size?: Prisma.StringNullableFilter<"ProductVariant"> | string | null
-  fabric?: Prisma.StringNullableFilter<"ProductVariant"> | string | null
-  material?: Prisma.StringNullableFilter<"ProductVariant"> | string | null
-  fit?: Prisma.StringNullableFilter<"ProductVariant"> | string | null
-  sleeve?: Prisma.StringNullableFilter<"ProductVariant"> | string | null
-  neckType?: Prisma.StringNullableFilter<"ProductVariant"> | string | null
-  pattern?: Prisma.StringNullableFilter<"ProductVariant"> | string | null
-  shoeSize?: Prisma.StringNullableFilter<"ProductVariant"> | string | null
-  ram?: Prisma.StringNullableFilter<"ProductVariant"> | string | null
-  storage?: Prisma.StringNullableFilter<"ProductVariant"> | string | null
-  processor?: Prisma.StringNullableFilter<"ProductVariant"> | string | null
-  screenSize?: Prisma.StringNullableFilter<"ProductVariant"> | string | null
-  connectivity?: Prisma.StringNullableFilter<"ProductVariant"> | string | null
-  volume?: Prisma.StringNullableFilter<"ProductVariant"> | string | null
-  shade?: Prisma.StringNullableFilter<"ProductVariant"> | string | null
-  skinType?: Prisma.StringNullableFilter<"ProductVariant"> | string | null
-  fragrance?: Prisma.StringNullableFilter<"ProductVariant"> | string | null
-  weight?: Prisma.StringNullableFilter<"ProductVariant"> | string | null
-  flavor?: Prisma.StringNullableFilter<"ProductVariant"> | string | null
-  packageType?: Prisma.StringNullableFilter<"ProductVariant"> | string | null
-  materialPurity?: Prisma.StringNullableFilter<"ProductVariant"> | string | null
-  strap?: Prisma.StringNullableFilter<"ProductVariant"> | string | null
-  dimensions?: Prisma.StringNullableFilter<"ProductVariant"> | string | null
-  format?: Prisma.StringNullableFilter<"ProductVariant"> | string | null
-  packQuantity?: Prisma.StringNullableFilter<"ProductVariant"> | string | null
-  condition?: Prisma.StringNullableFilter<"ProductVariant"> | string | null
-  warranty?: Prisma.StringNullableFilter<"ProductVariant"> | string | null
+  combinationKey?: Prisma.StringFilter<"ProductVariant"> | string
   createdAt?: Prisma.DateTimeFilter<"ProductVariant"> | Date | string
   updatedAt?: Prisma.DateTimeFilter<"ProductVariant"> | Date | string
   product?: Prisma.XOR<Prisma.ProductScalarRelationFilter, Prisma.ProductWhereInput>
-}, "id" | "sku">
+  productVariantValues?: Prisma.ProductVariantValueListRelationFilter
+}, "id" | "productId_combinationKey" | "sku">
 
 export type ProductVariantOrderByWithAggregationInput = {
   id?: Prisma.SortOrder
   productId?: Prisma.SortOrder
   sku?: Prisma.SortOrder
-  price?: Prisma.SortOrderInput | Prisma.SortOrder
   images?: Prisma.SortOrder
-  isActive?: Prisma.SortOrder
-  color?: Prisma.SortOrderInput | Prisma.SortOrder
-  size?: Prisma.SortOrderInput | Prisma.SortOrder
-  fabric?: Prisma.SortOrderInput | Prisma.SortOrder
-  material?: Prisma.SortOrderInput | Prisma.SortOrder
-  fit?: Prisma.SortOrderInput | Prisma.SortOrder
-  sleeve?: Prisma.SortOrderInput | Prisma.SortOrder
-  neckType?: Prisma.SortOrderInput | Prisma.SortOrder
-  pattern?: Prisma.SortOrderInput | Prisma.SortOrder
-  shoeSize?: Prisma.SortOrderInput | Prisma.SortOrder
-  ram?: Prisma.SortOrderInput | Prisma.SortOrder
-  storage?: Prisma.SortOrderInput | Prisma.SortOrder
-  processor?: Prisma.SortOrderInput | Prisma.SortOrder
-  screenSize?: Prisma.SortOrderInput | Prisma.SortOrder
-  connectivity?: Prisma.SortOrderInput | Prisma.SortOrder
-  volume?: Prisma.SortOrderInput | Prisma.SortOrder
-  shade?: Prisma.SortOrderInput | Prisma.SortOrder
-  skinType?: Prisma.SortOrderInput | Prisma.SortOrder
-  fragrance?: Prisma.SortOrderInput | Prisma.SortOrder
-  weight?: Prisma.SortOrderInput | Prisma.SortOrder
-  flavor?: Prisma.SortOrderInput | Prisma.SortOrder
-  packageType?: Prisma.SortOrderInput | Prisma.SortOrder
-  materialPurity?: Prisma.SortOrderInput | Prisma.SortOrder
-  strap?: Prisma.SortOrderInput | Prisma.SortOrder
-  dimensions?: Prisma.SortOrderInput | Prisma.SortOrder
-  format?: Prisma.SortOrderInput | Prisma.SortOrder
-  packQuantity?: Prisma.SortOrderInput | Prisma.SortOrder
-  condition?: Prisma.SortOrderInput | Prisma.SortOrder
-  warranty?: Prisma.SortOrderInput | Prisma.SortOrder
+  combinationKey?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
   updatedAt?: Prisma.SortOrder
   _count?: Prisma.ProductVariantCountOrderByAggregateInput
-  _avg?: Prisma.ProductVariantAvgOrderByAggregateInput
   _max?: Prisma.ProductVariantMaxOrderByAggregateInput
   _min?: Prisma.ProductVariantMinOrderByAggregateInput
-  _sum?: Prisma.ProductVariantSumOrderByAggregateInput
 }
 
 export type ProductVariantScalarWhereWithAggregatesInput = {
@@ -597,37 +246,8 @@ export type ProductVariantScalarWhereWithAggregatesInput = {
   id?: Prisma.StringWithAggregatesFilter<"ProductVariant"> | string
   productId?: Prisma.StringWithAggregatesFilter<"ProductVariant"> | string
   sku?: Prisma.StringWithAggregatesFilter<"ProductVariant"> | string
-  price?: Prisma.FloatNullableWithAggregatesFilter<"ProductVariant"> | number | null
   images?: Prisma.StringNullableListFilter<"ProductVariant">
-  isActive?: Prisma.BoolWithAggregatesFilter<"ProductVariant"> | boolean
-  color?: Prisma.StringNullableWithAggregatesFilter<"ProductVariant"> | string | null
-  size?: Prisma.StringNullableWithAggregatesFilter<"ProductVariant"> | string | null
-  fabric?: Prisma.StringNullableWithAggregatesFilter<"ProductVariant"> | string | null
-  material?: Prisma.StringNullableWithAggregatesFilter<"ProductVariant"> | string | null
-  fit?: Prisma.StringNullableWithAggregatesFilter<"ProductVariant"> | string | null
-  sleeve?: Prisma.StringNullableWithAggregatesFilter<"ProductVariant"> | string | null
-  neckType?: Prisma.StringNullableWithAggregatesFilter<"ProductVariant"> | string | null
-  pattern?: Prisma.StringNullableWithAggregatesFilter<"ProductVariant"> | string | null
-  shoeSize?: Prisma.StringNullableWithAggregatesFilter<"ProductVariant"> | string | null
-  ram?: Prisma.StringNullableWithAggregatesFilter<"ProductVariant"> | string | null
-  storage?: Prisma.StringNullableWithAggregatesFilter<"ProductVariant"> | string | null
-  processor?: Prisma.StringNullableWithAggregatesFilter<"ProductVariant"> | string | null
-  screenSize?: Prisma.StringNullableWithAggregatesFilter<"ProductVariant"> | string | null
-  connectivity?: Prisma.StringNullableWithAggregatesFilter<"ProductVariant"> | string | null
-  volume?: Prisma.StringNullableWithAggregatesFilter<"ProductVariant"> | string | null
-  shade?: Prisma.StringNullableWithAggregatesFilter<"ProductVariant"> | string | null
-  skinType?: Prisma.StringNullableWithAggregatesFilter<"ProductVariant"> | string | null
-  fragrance?: Prisma.StringNullableWithAggregatesFilter<"ProductVariant"> | string | null
-  weight?: Prisma.StringNullableWithAggregatesFilter<"ProductVariant"> | string | null
-  flavor?: Prisma.StringNullableWithAggregatesFilter<"ProductVariant"> | string | null
-  packageType?: Prisma.StringNullableWithAggregatesFilter<"ProductVariant"> | string | null
-  materialPurity?: Prisma.StringNullableWithAggregatesFilter<"ProductVariant"> | string | null
-  strap?: Prisma.StringNullableWithAggregatesFilter<"ProductVariant"> | string | null
-  dimensions?: Prisma.StringNullableWithAggregatesFilter<"ProductVariant"> | string | null
-  format?: Prisma.StringNullableWithAggregatesFilter<"ProductVariant"> | string | null
-  packQuantity?: Prisma.StringNullableWithAggregatesFilter<"ProductVariant"> | string | null
-  condition?: Prisma.StringNullableWithAggregatesFilter<"ProductVariant"> | string | null
-  warranty?: Prisma.StringNullableWithAggregatesFilter<"ProductVariant"> | string | null
+  combinationKey?: Prisma.StringWithAggregatesFilter<"ProductVariant"> | string
   createdAt?: Prisma.DateTimeWithAggregatesFilter<"ProductVariant"> | Date | string
   updatedAt?: Prisma.DateTimeWithAggregatesFilter<"ProductVariant"> | Date | string
 }
@@ -635,194 +255,53 @@ export type ProductVariantScalarWhereWithAggregatesInput = {
 export type ProductVariantCreateInput = {
   id?: string
   sku: string
-  price?: number | null
   images?: Prisma.ProductVariantCreateimagesInput | string[]
-  isActive?: boolean
-  color?: string | null
-  size?: string | null
-  fabric?: string | null
-  material?: string | null
-  fit?: string | null
-  sleeve?: string | null
-  neckType?: string | null
-  pattern?: string | null
-  shoeSize?: string | null
-  ram?: string | null
-  storage?: string | null
-  processor?: string | null
-  screenSize?: string | null
-  connectivity?: string | null
-  volume?: string | null
-  shade?: string | null
-  skinType?: string | null
-  fragrance?: string | null
-  weight?: string | null
-  flavor?: string | null
-  packageType?: string | null
-  materialPurity?: string | null
-  strap?: string | null
-  dimensions?: string | null
-  format?: string | null
-  packQuantity?: string | null
-  condition?: string | null
-  warranty?: string | null
+  combinationKey: string
   createdAt?: Date | string
   updatedAt?: Date | string
   product: Prisma.ProductCreateNestedOneWithoutVariantsInput
+  productVariantValues?: Prisma.ProductVariantValueCreateNestedManyWithoutProductVariantInput
 }
 
 export type ProductVariantUncheckedCreateInput = {
   id?: string
   productId: string
   sku: string
-  price?: number | null
   images?: Prisma.ProductVariantCreateimagesInput | string[]
-  isActive?: boolean
-  color?: string | null
-  size?: string | null
-  fabric?: string | null
-  material?: string | null
-  fit?: string | null
-  sleeve?: string | null
-  neckType?: string | null
-  pattern?: string | null
-  shoeSize?: string | null
-  ram?: string | null
-  storage?: string | null
-  processor?: string | null
-  screenSize?: string | null
-  connectivity?: string | null
-  volume?: string | null
-  shade?: string | null
-  skinType?: string | null
-  fragrance?: string | null
-  weight?: string | null
-  flavor?: string | null
-  packageType?: string | null
-  materialPurity?: string | null
-  strap?: string | null
-  dimensions?: string | null
-  format?: string | null
-  packQuantity?: string | null
-  condition?: string | null
-  warranty?: string | null
+  combinationKey: string
   createdAt?: Date | string
   updatedAt?: Date | string
+  productVariantValues?: Prisma.ProductVariantValueUncheckedCreateNestedManyWithoutProductVariantInput
 }
 
 export type ProductVariantUpdateInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
   sku?: Prisma.StringFieldUpdateOperationsInput | string
-  price?: Prisma.NullableFloatFieldUpdateOperationsInput | number | null
   images?: Prisma.ProductVariantUpdateimagesInput | string[]
-  isActive?: Prisma.BoolFieldUpdateOperationsInput | boolean
-  color?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  size?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  fabric?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  material?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  fit?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  sleeve?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  neckType?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  pattern?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  shoeSize?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  ram?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  storage?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  processor?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  screenSize?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  connectivity?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  volume?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  shade?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  skinType?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  fragrance?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  weight?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  flavor?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  packageType?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  materialPurity?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  strap?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  dimensions?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  format?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  packQuantity?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  condition?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  warranty?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  combinationKey?: Prisma.StringFieldUpdateOperationsInput | string
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   product?: Prisma.ProductUpdateOneRequiredWithoutVariantsNestedInput
+  productVariantValues?: Prisma.ProductVariantValueUpdateManyWithoutProductVariantNestedInput
 }
 
 export type ProductVariantUncheckedUpdateInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
   productId?: Prisma.StringFieldUpdateOperationsInput | string
   sku?: Prisma.StringFieldUpdateOperationsInput | string
-  price?: Prisma.NullableFloatFieldUpdateOperationsInput | number | null
   images?: Prisma.ProductVariantUpdateimagesInput | string[]
-  isActive?: Prisma.BoolFieldUpdateOperationsInput | boolean
-  color?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  size?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  fabric?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  material?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  fit?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  sleeve?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  neckType?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  pattern?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  shoeSize?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  ram?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  storage?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  processor?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  screenSize?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  connectivity?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  volume?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  shade?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  skinType?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  fragrance?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  weight?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  flavor?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  packageType?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  materialPurity?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  strap?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  dimensions?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  format?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  packQuantity?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  condition?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  warranty?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  combinationKey?: Prisma.StringFieldUpdateOperationsInput | string
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  productVariantValues?: Prisma.ProductVariantValueUncheckedUpdateManyWithoutProductVariantNestedInput
 }
 
 export type ProductVariantCreateManyInput = {
   id?: string
   productId: string
   sku: string
-  price?: number | null
   images?: Prisma.ProductVariantCreateimagesInput | string[]
-  isActive?: boolean
-  color?: string | null
-  size?: string | null
-  fabric?: string | null
-  material?: string | null
-  fit?: string | null
-  sleeve?: string | null
-  neckType?: string | null
-  pattern?: string | null
-  shoeSize?: string | null
-  ram?: string | null
-  storage?: string | null
-  processor?: string | null
-  screenSize?: string | null
-  connectivity?: string | null
-  volume?: string | null
-  shade?: string | null
-  skinType?: string | null
-  fragrance?: string | null
-  weight?: string | null
-  flavor?: string | null
-  packageType?: string | null
-  materialPurity?: string | null
-  strap?: string | null
-  dimensions?: string | null
-  format?: string | null
-  packQuantity?: string | null
-  condition?: string | null
-  warranty?: string | null
+  combinationKey: string
   createdAt?: Date | string
   updatedAt?: Date | string
 }
@@ -830,37 +309,8 @@ export type ProductVariantCreateManyInput = {
 export type ProductVariantUpdateManyMutationInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
   sku?: Prisma.StringFieldUpdateOperationsInput | string
-  price?: Prisma.NullableFloatFieldUpdateOperationsInput | number | null
   images?: Prisma.ProductVariantUpdateimagesInput | string[]
-  isActive?: Prisma.BoolFieldUpdateOperationsInput | boolean
-  color?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  size?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  fabric?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  material?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  fit?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  sleeve?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  neckType?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  pattern?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  shoeSize?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  ram?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  storage?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  processor?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  screenSize?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  connectivity?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  volume?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  shade?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  skinType?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  fragrance?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  weight?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  flavor?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  packageType?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  materialPurity?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  strap?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  dimensions?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  format?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  packQuantity?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  condition?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  warranty?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  combinationKey?: Prisma.StringFieldUpdateOperationsInput | string
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
 }
@@ -869,37 +319,8 @@ export type ProductVariantUncheckedUpdateManyInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
   productId?: Prisma.StringFieldUpdateOperationsInput | string
   sku?: Prisma.StringFieldUpdateOperationsInput | string
-  price?: Prisma.NullableFloatFieldUpdateOperationsInput | number | null
   images?: Prisma.ProductVariantUpdateimagesInput | string[]
-  isActive?: Prisma.BoolFieldUpdateOperationsInput | boolean
-  color?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  size?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  fabric?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  material?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  fit?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  sleeve?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  neckType?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  pattern?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  shoeSize?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  ram?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  storage?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  processor?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  screenSize?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  connectivity?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  volume?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  shade?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  skinType?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  fragrance?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  weight?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  flavor?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  packageType?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  materialPurity?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  strap?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  dimensions?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  format?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  packQuantity?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  condition?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  warranty?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  combinationKey?: Prisma.StringFieldUpdateOperationsInput | string
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
 }
@@ -914,83 +335,34 @@ export type ProductVariantOrderByRelationAggregateInput = {
   _count?: Prisma.SortOrder
 }
 
+export type StringNullableListFilter<$PrismaModel = never> = {
+  equals?: string[] | Prisma.ListStringFieldRefInput<$PrismaModel> | null
+  has?: string | Prisma.StringFieldRefInput<$PrismaModel> | null
+  hasEvery?: string[] | Prisma.ListStringFieldRefInput<$PrismaModel>
+  hasSome?: string[] | Prisma.ListStringFieldRefInput<$PrismaModel>
+  isEmpty?: boolean
+}
+
+export type ProductVariantProductIdCombinationKeyCompoundUniqueInput = {
+  productId: string
+  combinationKey: string
+}
+
 export type ProductVariantCountOrderByAggregateInput = {
   id?: Prisma.SortOrder
   productId?: Prisma.SortOrder
   sku?: Prisma.SortOrder
-  price?: Prisma.SortOrder
   images?: Prisma.SortOrder
-  isActive?: Prisma.SortOrder
-  color?: Prisma.SortOrder
-  size?: Prisma.SortOrder
-  fabric?: Prisma.SortOrder
-  material?: Prisma.SortOrder
-  fit?: Prisma.SortOrder
-  sleeve?: Prisma.SortOrder
-  neckType?: Prisma.SortOrder
-  pattern?: Prisma.SortOrder
-  shoeSize?: Prisma.SortOrder
-  ram?: Prisma.SortOrder
-  storage?: Prisma.SortOrder
-  processor?: Prisma.SortOrder
-  screenSize?: Prisma.SortOrder
-  connectivity?: Prisma.SortOrder
-  volume?: Prisma.SortOrder
-  shade?: Prisma.SortOrder
-  skinType?: Prisma.SortOrder
-  fragrance?: Prisma.SortOrder
-  weight?: Prisma.SortOrder
-  flavor?: Prisma.SortOrder
-  packageType?: Prisma.SortOrder
-  materialPurity?: Prisma.SortOrder
-  strap?: Prisma.SortOrder
-  dimensions?: Prisma.SortOrder
-  format?: Prisma.SortOrder
-  packQuantity?: Prisma.SortOrder
-  condition?: Prisma.SortOrder
-  warranty?: Prisma.SortOrder
+  combinationKey?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
   updatedAt?: Prisma.SortOrder
-}
-
-export type ProductVariantAvgOrderByAggregateInput = {
-  price?: Prisma.SortOrder
 }
 
 export type ProductVariantMaxOrderByAggregateInput = {
   id?: Prisma.SortOrder
   productId?: Prisma.SortOrder
   sku?: Prisma.SortOrder
-  price?: Prisma.SortOrder
-  isActive?: Prisma.SortOrder
-  color?: Prisma.SortOrder
-  size?: Prisma.SortOrder
-  fabric?: Prisma.SortOrder
-  material?: Prisma.SortOrder
-  fit?: Prisma.SortOrder
-  sleeve?: Prisma.SortOrder
-  neckType?: Prisma.SortOrder
-  pattern?: Prisma.SortOrder
-  shoeSize?: Prisma.SortOrder
-  ram?: Prisma.SortOrder
-  storage?: Prisma.SortOrder
-  processor?: Prisma.SortOrder
-  screenSize?: Prisma.SortOrder
-  connectivity?: Prisma.SortOrder
-  volume?: Prisma.SortOrder
-  shade?: Prisma.SortOrder
-  skinType?: Prisma.SortOrder
-  fragrance?: Prisma.SortOrder
-  weight?: Prisma.SortOrder
-  flavor?: Prisma.SortOrder
-  packageType?: Prisma.SortOrder
-  materialPurity?: Prisma.SortOrder
-  strap?: Prisma.SortOrder
-  dimensions?: Prisma.SortOrder
-  format?: Prisma.SortOrder
-  packQuantity?: Prisma.SortOrder
-  condition?: Prisma.SortOrder
-  warranty?: Prisma.SortOrder
+  combinationKey?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
   updatedAt?: Prisma.SortOrder
 }
@@ -999,42 +371,14 @@ export type ProductVariantMinOrderByAggregateInput = {
   id?: Prisma.SortOrder
   productId?: Prisma.SortOrder
   sku?: Prisma.SortOrder
-  price?: Prisma.SortOrder
-  isActive?: Prisma.SortOrder
-  color?: Prisma.SortOrder
-  size?: Prisma.SortOrder
-  fabric?: Prisma.SortOrder
-  material?: Prisma.SortOrder
-  fit?: Prisma.SortOrder
-  sleeve?: Prisma.SortOrder
-  neckType?: Prisma.SortOrder
-  pattern?: Prisma.SortOrder
-  shoeSize?: Prisma.SortOrder
-  ram?: Prisma.SortOrder
-  storage?: Prisma.SortOrder
-  processor?: Prisma.SortOrder
-  screenSize?: Prisma.SortOrder
-  connectivity?: Prisma.SortOrder
-  volume?: Prisma.SortOrder
-  shade?: Prisma.SortOrder
-  skinType?: Prisma.SortOrder
-  fragrance?: Prisma.SortOrder
-  weight?: Prisma.SortOrder
-  flavor?: Prisma.SortOrder
-  packageType?: Prisma.SortOrder
-  materialPurity?: Prisma.SortOrder
-  strap?: Prisma.SortOrder
-  dimensions?: Prisma.SortOrder
-  format?: Prisma.SortOrder
-  packQuantity?: Prisma.SortOrder
-  condition?: Prisma.SortOrder
-  warranty?: Prisma.SortOrder
+  combinationKey?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
   updatedAt?: Prisma.SortOrder
 }
 
-export type ProductVariantSumOrderByAggregateInput = {
-  price?: Prisma.SortOrder
+export type ProductVariantScalarRelationFilter = {
+  is?: Prisma.ProductVariantWhereInput
+  isNot?: Prisma.ProductVariantWhereInput
 }
 
 export type ProductVariantCreateNestedManyWithoutProductInput = {
@@ -1088,80 +432,38 @@ export type ProductVariantUpdateimagesInput = {
   push?: string | string[]
 }
 
+export type ProductVariantCreateNestedOneWithoutProductVariantValuesInput = {
+  create?: Prisma.XOR<Prisma.ProductVariantCreateWithoutProductVariantValuesInput, Prisma.ProductVariantUncheckedCreateWithoutProductVariantValuesInput>
+  connectOrCreate?: Prisma.ProductVariantCreateOrConnectWithoutProductVariantValuesInput
+  connect?: Prisma.ProductVariantWhereUniqueInput
+}
+
+export type ProductVariantUpdateOneRequiredWithoutProductVariantValuesNestedInput = {
+  create?: Prisma.XOR<Prisma.ProductVariantCreateWithoutProductVariantValuesInput, Prisma.ProductVariantUncheckedCreateWithoutProductVariantValuesInput>
+  connectOrCreate?: Prisma.ProductVariantCreateOrConnectWithoutProductVariantValuesInput
+  upsert?: Prisma.ProductVariantUpsertWithoutProductVariantValuesInput
+  connect?: Prisma.ProductVariantWhereUniqueInput
+  update?: Prisma.XOR<Prisma.XOR<Prisma.ProductVariantUpdateToOneWithWhereWithoutProductVariantValuesInput, Prisma.ProductVariantUpdateWithoutProductVariantValuesInput>, Prisma.ProductVariantUncheckedUpdateWithoutProductVariantValuesInput>
+}
+
 export type ProductVariantCreateWithoutProductInput = {
   id?: string
   sku: string
-  price?: number | null
   images?: Prisma.ProductVariantCreateimagesInput | string[]
-  isActive?: boolean
-  color?: string | null
-  size?: string | null
-  fabric?: string | null
-  material?: string | null
-  fit?: string | null
-  sleeve?: string | null
-  neckType?: string | null
-  pattern?: string | null
-  shoeSize?: string | null
-  ram?: string | null
-  storage?: string | null
-  processor?: string | null
-  screenSize?: string | null
-  connectivity?: string | null
-  volume?: string | null
-  shade?: string | null
-  skinType?: string | null
-  fragrance?: string | null
-  weight?: string | null
-  flavor?: string | null
-  packageType?: string | null
-  materialPurity?: string | null
-  strap?: string | null
-  dimensions?: string | null
-  format?: string | null
-  packQuantity?: string | null
-  condition?: string | null
-  warranty?: string | null
+  combinationKey: string
   createdAt?: Date | string
   updatedAt?: Date | string
+  productVariantValues?: Prisma.ProductVariantValueCreateNestedManyWithoutProductVariantInput
 }
 
 export type ProductVariantUncheckedCreateWithoutProductInput = {
   id?: string
   sku: string
-  price?: number | null
   images?: Prisma.ProductVariantCreateimagesInput | string[]
-  isActive?: boolean
-  color?: string | null
-  size?: string | null
-  fabric?: string | null
-  material?: string | null
-  fit?: string | null
-  sleeve?: string | null
-  neckType?: string | null
-  pattern?: string | null
-  shoeSize?: string | null
-  ram?: string | null
-  storage?: string | null
-  processor?: string | null
-  screenSize?: string | null
-  connectivity?: string | null
-  volume?: string | null
-  shade?: string | null
-  skinType?: string | null
-  fragrance?: string | null
-  weight?: string | null
-  flavor?: string | null
-  packageType?: string | null
-  materialPurity?: string | null
-  strap?: string | null
-  dimensions?: string | null
-  format?: string | null
-  packQuantity?: string | null
-  condition?: string | null
-  warranty?: string | null
+  combinationKey: string
   createdAt?: Date | string
   updatedAt?: Date | string
+  productVariantValues?: Prisma.ProductVariantValueUncheckedCreateNestedManyWithoutProductVariantInput
 }
 
 export type ProductVariantCreateOrConnectWithoutProductInput = {
@@ -1197,75 +499,73 @@ export type ProductVariantScalarWhereInput = {
   id?: Prisma.StringFilter<"ProductVariant"> | string
   productId?: Prisma.StringFilter<"ProductVariant"> | string
   sku?: Prisma.StringFilter<"ProductVariant"> | string
-  price?: Prisma.FloatNullableFilter<"ProductVariant"> | number | null
   images?: Prisma.StringNullableListFilter<"ProductVariant">
-  isActive?: Prisma.BoolFilter<"ProductVariant"> | boolean
-  color?: Prisma.StringNullableFilter<"ProductVariant"> | string | null
-  size?: Prisma.StringNullableFilter<"ProductVariant"> | string | null
-  fabric?: Prisma.StringNullableFilter<"ProductVariant"> | string | null
-  material?: Prisma.StringNullableFilter<"ProductVariant"> | string | null
-  fit?: Prisma.StringNullableFilter<"ProductVariant"> | string | null
-  sleeve?: Prisma.StringNullableFilter<"ProductVariant"> | string | null
-  neckType?: Prisma.StringNullableFilter<"ProductVariant"> | string | null
-  pattern?: Prisma.StringNullableFilter<"ProductVariant"> | string | null
-  shoeSize?: Prisma.StringNullableFilter<"ProductVariant"> | string | null
-  ram?: Prisma.StringNullableFilter<"ProductVariant"> | string | null
-  storage?: Prisma.StringNullableFilter<"ProductVariant"> | string | null
-  processor?: Prisma.StringNullableFilter<"ProductVariant"> | string | null
-  screenSize?: Prisma.StringNullableFilter<"ProductVariant"> | string | null
-  connectivity?: Prisma.StringNullableFilter<"ProductVariant"> | string | null
-  volume?: Prisma.StringNullableFilter<"ProductVariant"> | string | null
-  shade?: Prisma.StringNullableFilter<"ProductVariant"> | string | null
-  skinType?: Prisma.StringNullableFilter<"ProductVariant"> | string | null
-  fragrance?: Prisma.StringNullableFilter<"ProductVariant"> | string | null
-  weight?: Prisma.StringNullableFilter<"ProductVariant"> | string | null
-  flavor?: Prisma.StringNullableFilter<"ProductVariant"> | string | null
-  packageType?: Prisma.StringNullableFilter<"ProductVariant"> | string | null
-  materialPurity?: Prisma.StringNullableFilter<"ProductVariant"> | string | null
-  strap?: Prisma.StringNullableFilter<"ProductVariant"> | string | null
-  dimensions?: Prisma.StringNullableFilter<"ProductVariant"> | string | null
-  format?: Prisma.StringNullableFilter<"ProductVariant"> | string | null
-  packQuantity?: Prisma.StringNullableFilter<"ProductVariant"> | string | null
-  condition?: Prisma.StringNullableFilter<"ProductVariant"> | string | null
-  warranty?: Prisma.StringNullableFilter<"ProductVariant"> | string | null
+  combinationKey?: Prisma.StringFilter<"ProductVariant"> | string
   createdAt?: Prisma.DateTimeFilter<"ProductVariant"> | Date | string
   updatedAt?: Prisma.DateTimeFilter<"ProductVariant"> | Date | string
+}
+
+export type ProductVariantCreateWithoutProductVariantValuesInput = {
+  id?: string
+  sku: string
+  images?: Prisma.ProductVariantCreateimagesInput | string[]
+  combinationKey: string
+  createdAt?: Date | string
+  updatedAt?: Date | string
+  product: Prisma.ProductCreateNestedOneWithoutVariantsInput
+}
+
+export type ProductVariantUncheckedCreateWithoutProductVariantValuesInput = {
+  id?: string
+  productId: string
+  sku: string
+  images?: Prisma.ProductVariantCreateimagesInput | string[]
+  combinationKey: string
+  createdAt?: Date | string
+  updatedAt?: Date | string
+}
+
+export type ProductVariantCreateOrConnectWithoutProductVariantValuesInput = {
+  where: Prisma.ProductVariantWhereUniqueInput
+  create: Prisma.XOR<Prisma.ProductVariantCreateWithoutProductVariantValuesInput, Prisma.ProductVariantUncheckedCreateWithoutProductVariantValuesInput>
+}
+
+export type ProductVariantUpsertWithoutProductVariantValuesInput = {
+  update: Prisma.XOR<Prisma.ProductVariantUpdateWithoutProductVariantValuesInput, Prisma.ProductVariantUncheckedUpdateWithoutProductVariantValuesInput>
+  create: Prisma.XOR<Prisma.ProductVariantCreateWithoutProductVariantValuesInput, Prisma.ProductVariantUncheckedCreateWithoutProductVariantValuesInput>
+  where?: Prisma.ProductVariantWhereInput
+}
+
+export type ProductVariantUpdateToOneWithWhereWithoutProductVariantValuesInput = {
+  where?: Prisma.ProductVariantWhereInput
+  data: Prisma.XOR<Prisma.ProductVariantUpdateWithoutProductVariantValuesInput, Prisma.ProductVariantUncheckedUpdateWithoutProductVariantValuesInput>
+}
+
+export type ProductVariantUpdateWithoutProductVariantValuesInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  sku?: Prisma.StringFieldUpdateOperationsInput | string
+  images?: Prisma.ProductVariantUpdateimagesInput | string[]
+  combinationKey?: Prisma.StringFieldUpdateOperationsInput | string
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  product?: Prisma.ProductUpdateOneRequiredWithoutVariantsNestedInput
+}
+
+export type ProductVariantUncheckedUpdateWithoutProductVariantValuesInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  productId?: Prisma.StringFieldUpdateOperationsInput | string
+  sku?: Prisma.StringFieldUpdateOperationsInput | string
+  images?: Prisma.ProductVariantUpdateimagesInput | string[]
+  combinationKey?: Prisma.StringFieldUpdateOperationsInput | string
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
 }
 
 export type ProductVariantCreateManyProductInput = {
   id?: string
   sku: string
-  price?: number | null
   images?: Prisma.ProductVariantCreateimagesInput | string[]
-  isActive?: boolean
-  color?: string | null
-  size?: string | null
-  fabric?: string | null
-  material?: string | null
-  fit?: string | null
-  sleeve?: string | null
-  neckType?: string | null
-  pattern?: string | null
-  shoeSize?: string | null
-  ram?: string | null
-  storage?: string | null
-  processor?: string | null
-  screenSize?: string | null
-  connectivity?: string | null
-  volume?: string | null
-  shade?: string | null
-  skinType?: string | null
-  fragrance?: string | null
-  weight?: string | null
-  flavor?: string | null
-  packageType?: string | null
-  materialPurity?: string | null
-  strap?: string | null
-  dimensions?: string | null
-  format?: string | null
-  packQuantity?: string | null
-  condition?: string | null
-  warranty?: string | null
+  combinationKey: string
   createdAt?: Date | string
   updatedAt?: Date | string
 }
@@ -1273,194 +573,82 @@ export type ProductVariantCreateManyProductInput = {
 export type ProductVariantUpdateWithoutProductInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
   sku?: Prisma.StringFieldUpdateOperationsInput | string
-  price?: Prisma.NullableFloatFieldUpdateOperationsInput | number | null
   images?: Prisma.ProductVariantUpdateimagesInput | string[]
-  isActive?: Prisma.BoolFieldUpdateOperationsInput | boolean
-  color?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  size?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  fabric?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  material?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  fit?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  sleeve?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  neckType?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  pattern?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  shoeSize?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  ram?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  storage?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  processor?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  screenSize?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  connectivity?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  volume?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  shade?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  skinType?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  fragrance?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  weight?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  flavor?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  packageType?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  materialPurity?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  strap?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  dimensions?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  format?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  packQuantity?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  condition?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  warranty?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  combinationKey?: Prisma.StringFieldUpdateOperationsInput | string
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  productVariantValues?: Prisma.ProductVariantValueUpdateManyWithoutProductVariantNestedInput
 }
 
 export type ProductVariantUncheckedUpdateWithoutProductInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
   sku?: Prisma.StringFieldUpdateOperationsInput | string
-  price?: Prisma.NullableFloatFieldUpdateOperationsInput | number | null
   images?: Prisma.ProductVariantUpdateimagesInput | string[]
-  isActive?: Prisma.BoolFieldUpdateOperationsInput | boolean
-  color?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  size?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  fabric?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  material?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  fit?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  sleeve?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  neckType?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  pattern?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  shoeSize?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  ram?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  storage?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  processor?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  screenSize?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  connectivity?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  volume?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  shade?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  skinType?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  fragrance?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  weight?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  flavor?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  packageType?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  materialPurity?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  strap?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  dimensions?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  format?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  packQuantity?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  condition?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  warranty?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  combinationKey?: Prisma.StringFieldUpdateOperationsInput | string
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  productVariantValues?: Prisma.ProductVariantValueUncheckedUpdateManyWithoutProductVariantNestedInput
 }
 
 export type ProductVariantUncheckedUpdateManyWithoutProductInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
   sku?: Prisma.StringFieldUpdateOperationsInput | string
-  price?: Prisma.NullableFloatFieldUpdateOperationsInput | number | null
   images?: Prisma.ProductVariantUpdateimagesInput | string[]
-  isActive?: Prisma.BoolFieldUpdateOperationsInput | boolean
-  color?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  size?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  fabric?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  material?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  fit?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  sleeve?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  neckType?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  pattern?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  shoeSize?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  ram?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  storage?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  processor?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  screenSize?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  connectivity?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  volume?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  shade?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  skinType?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  fragrance?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  weight?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  flavor?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  packageType?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  materialPurity?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  strap?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  dimensions?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  format?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  packQuantity?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  condition?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  warranty?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  combinationKey?: Prisma.StringFieldUpdateOperationsInput | string
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
 }
 
+
+/**
+ * Count Type ProductVariantCountOutputType
+ */
+
+export type ProductVariantCountOutputType = {
+  productVariantValues: number
+}
+
+export type ProductVariantCountOutputTypeSelect<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  productVariantValues?: boolean | ProductVariantCountOutputTypeCountProductVariantValuesArgs
+}
+
+/**
+ * ProductVariantCountOutputType without action
+ */
+export type ProductVariantCountOutputTypeDefaultArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  /**
+   * Select specific fields to fetch from the ProductVariantCountOutputType
+   */
+  select?: Prisma.ProductVariantCountOutputTypeSelect<ExtArgs> | null
+}
+
+/**
+ * ProductVariantCountOutputType without action
+ */
+export type ProductVariantCountOutputTypeCountProductVariantValuesArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  where?: Prisma.ProductVariantValueWhereInput
+}
 
 
 export type ProductVariantSelect<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetSelect<{
   id?: boolean
   productId?: boolean
   sku?: boolean
-  price?: boolean
   images?: boolean
-  isActive?: boolean
-  color?: boolean
-  size?: boolean
-  fabric?: boolean
-  material?: boolean
-  fit?: boolean
-  sleeve?: boolean
-  neckType?: boolean
-  pattern?: boolean
-  shoeSize?: boolean
-  ram?: boolean
-  storage?: boolean
-  processor?: boolean
-  screenSize?: boolean
-  connectivity?: boolean
-  volume?: boolean
-  shade?: boolean
-  skinType?: boolean
-  fragrance?: boolean
-  weight?: boolean
-  flavor?: boolean
-  packageType?: boolean
-  materialPurity?: boolean
-  strap?: boolean
-  dimensions?: boolean
-  format?: boolean
-  packQuantity?: boolean
-  condition?: boolean
-  warranty?: boolean
+  combinationKey?: boolean
   createdAt?: boolean
   updatedAt?: boolean
   product?: boolean | Prisma.ProductDefaultArgs<ExtArgs>
+  productVariantValues?: boolean | Prisma.ProductVariant$productVariantValuesArgs<ExtArgs>
+  _count?: boolean | Prisma.ProductVariantCountOutputTypeDefaultArgs<ExtArgs>
 }, ExtArgs["result"]["productVariant"]>
 
 export type ProductVariantSelectCreateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetSelect<{
   id?: boolean
   productId?: boolean
   sku?: boolean
-  price?: boolean
   images?: boolean
-  isActive?: boolean
-  color?: boolean
-  size?: boolean
-  fabric?: boolean
-  material?: boolean
-  fit?: boolean
-  sleeve?: boolean
-  neckType?: boolean
-  pattern?: boolean
-  shoeSize?: boolean
-  ram?: boolean
-  storage?: boolean
-  processor?: boolean
-  screenSize?: boolean
-  connectivity?: boolean
-  volume?: boolean
-  shade?: boolean
-  skinType?: boolean
-  fragrance?: boolean
-  weight?: boolean
-  flavor?: boolean
-  packageType?: boolean
-  materialPurity?: boolean
-  strap?: boolean
-  dimensions?: boolean
-  format?: boolean
-  packQuantity?: boolean
-  condition?: boolean
-  warranty?: boolean
+  combinationKey?: boolean
   createdAt?: boolean
   updatedAt?: boolean
   product?: boolean | Prisma.ProductDefaultArgs<ExtArgs>
@@ -1470,37 +658,8 @@ export type ProductVariantSelectUpdateManyAndReturn<ExtArgs extends runtime.Type
   id?: boolean
   productId?: boolean
   sku?: boolean
-  price?: boolean
   images?: boolean
-  isActive?: boolean
-  color?: boolean
-  size?: boolean
-  fabric?: boolean
-  material?: boolean
-  fit?: boolean
-  sleeve?: boolean
-  neckType?: boolean
-  pattern?: boolean
-  shoeSize?: boolean
-  ram?: boolean
-  storage?: boolean
-  processor?: boolean
-  screenSize?: boolean
-  connectivity?: boolean
-  volume?: boolean
-  shade?: boolean
-  skinType?: boolean
-  fragrance?: boolean
-  weight?: boolean
-  flavor?: boolean
-  packageType?: boolean
-  materialPurity?: boolean
-  strap?: boolean
-  dimensions?: boolean
-  format?: boolean
-  packQuantity?: boolean
-  condition?: boolean
-  warranty?: boolean
+  combinationKey?: boolean
   createdAt?: boolean
   updatedAt?: boolean
   product?: boolean | Prisma.ProductDefaultArgs<ExtArgs>
@@ -1510,44 +669,17 @@ export type ProductVariantSelectScalar = {
   id?: boolean
   productId?: boolean
   sku?: boolean
-  price?: boolean
   images?: boolean
-  isActive?: boolean
-  color?: boolean
-  size?: boolean
-  fabric?: boolean
-  material?: boolean
-  fit?: boolean
-  sleeve?: boolean
-  neckType?: boolean
-  pattern?: boolean
-  shoeSize?: boolean
-  ram?: boolean
-  storage?: boolean
-  processor?: boolean
-  screenSize?: boolean
-  connectivity?: boolean
-  volume?: boolean
-  shade?: boolean
-  skinType?: boolean
-  fragrance?: boolean
-  weight?: boolean
-  flavor?: boolean
-  packageType?: boolean
-  materialPurity?: boolean
-  strap?: boolean
-  dimensions?: boolean
-  format?: boolean
-  packQuantity?: boolean
-  condition?: boolean
-  warranty?: boolean
+  combinationKey?: boolean
   createdAt?: boolean
   updatedAt?: boolean
 }
 
-export type ProductVariantOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "productId" | "sku" | "price" | "images" | "isActive" | "color" | "size" | "fabric" | "material" | "fit" | "sleeve" | "neckType" | "pattern" | "shoeSize" | "ram" | "storage" | "processor" | "screenSize" | "connectivity" | "volume" | "shade" | "skinType" | "fragrance" | "weight" | "flavor" | "packageType" | "materialPurity" | "strap" | "dimensions" | "format" | "packQuantity" | "condition" | "warranty" | "createdAt" | "updatedAt", ExtArgs["result"]["productVariant"]>
+export type ProductVariantOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "productId" | "sku" | "images" | "combinationKey" | "createdAt" | "updatedAt", ExtArgs["result"]["productVariant"]>
 export type ProductVariantInclude<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   product?: boolean | Prisma.ProductDefaultArgs<ExtArgs>
+  productVariantValues?: boolean | Prisma.ProductVariant$productVariantValuesArgs<ExtArgs>
+  _count?: boolean | Prisma.ProductVariantCountOutputTypeDefaultArgs<ExtArgs>
 }
 export type ProductVariantIncludeCreateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   product?: boolean | Prisma.ProductDefaultArgs<ExtArgs>
@@ -1560,42 +692,14 @@ export type $ProductVariantPayload<ExtArgs extends runtime.Types.Extensions.Inte
   name: "ProductVariant"
   objects: {
     product: Prisma.$ProductPayload<ExtArgs>
+    productVariantValues: Prisma.$ProductVariantValuePayload<ExtArgs>[]
   }
   scalars: runtime.Types.Extensions.GetPayloadResult<{
     id: string
     productId: string
     sku: string
-    price: number | null
     images: string[]
-    isActive: boolean
-    color: string | null
-    size: string | null
-    fabric: string | null
-    material: string | null
-    fit: string | null
-    sleeve: string | null
-    neckType: string | null
-    pattern: string | null
-    shoeSize: string | null
-    ram: string | null
-    storage: string | null
-    processor: string | null
-    screenSize: string | null
-    connectivity: string | null
-    volume: string | null
-    shade: string | null
-    skinType: string | null
-    fragrance: string | null
-    weight: string | null
-    flavor: string | null
-    packageType: string | null
-    materialPurity: string | null
-    strap: string | null
-    dimensions: string | null
-    format: string | null
-    packQuantity: string | null
-    condition: string | null
-    warranty: string | null
+    combinationKey: string
     createdAt: Date
     updatedAt: Date
   }, ExtArgs["result"]["productVariant"]>
@@ -1993,6 +1097,7 @@ readonly fields: ProductVariantFieldRefs;
 export interface Prisma__ProductVariantClient<T, Null = never, ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs, GlobalOmitOptions = {}> extends Prisma.PrismaPromise<T> {
   readonly [Symbol.toStringTag]: "PrismaPromise"
   product<T extends Prisma.ProductDefaultArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.ProductDefaultArgs<ExtArgs>>): Prisma.Prisma__ProductClient<runtime.Types.Result.GetResult<Prisma.$ProductPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | Null, Null, ExtArgs, GlobalOmitOptions>
+  productVariantValues<T extends Prisma.ProductVariant$productVariantValuesArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.ProductVariant$productVariantValuesArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$ProductVariantValuePayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
   /**
    * Attaches callbacks for the resolution and/or rejection of the Promise.
    * @param onfulfilled The callback to execute when the Promise is resolved.
@@ -2025,37 +1130,8 @@ export interface ProductVariantFieldRefs {
   readonly id: Prisma.FieldRef<"ProductVariant", 'String'>
   readonly productId: Prisma.FieldRef<"ProductVariant", 'String'>
   readonly sku: Prisma.FieldRef<"ProductVariant", 'String'>
-  readonly price: Prisma.FieldRef<"ProductVariant", 'Float'>
   readonly images: Prisma.FieldRef<"ProductVariant", 'String[]'>
-  readonly isActive: Prisma.FieldRef<"ProductVariant", 'Boolean'>
-  readonly color: Prisma.FieldRef<"ProductVariant", 'String'>
-  readonly size: Prisma.FieldRef<"ProductVariant", 'String'>
-  readonly fabric: Prisma.FieldRef<"ProductVariant", 'String'>
-  readonly material: Prisma.FieldRef<"ProductVariant", 'String'>
-  readonly fit: Prisma.FieldRef<"ProductVariant", 'String'>
-  readonly sleeve: Prisma.FieldRef<"ProductVariant", 'String'>
-  readonly neckType: Prisma.FieldRef<"ProductVariant", 'String'>
-  readonly pattern: Prisma.FieldRef<"ProductVariant", 'String'>
-  readonly shoeSize: Prisma.FieldRef<"ProductVariant", 'String'>
-  readonly ram: Prisma.FieldRef<"ProductVariant", 'String'>
-  readonly storage: Prisma.FieldRef<"ProductVariant", 'String'>
-  readonly processor: Prisma.FieldRef<"ProductVariant", 'String'>
-  readonly screenSize: Prisma.FieldRef<"ProductVariant", 'String'>
-  readonly connectivity: Prisma.FieldRef<"ProductVariant", 'String'>
-  readonly volume: Prisma.FieldRef<"ProductVariant", 'String'>
-  readonly shade: Prisma.FieldRef<"ProductVariant", 'String'>
-  readonly skinType: Prisma.FieldRef<"ProductVariant", 'String'>
-  readonly fragrance: Prisma.FieldRef<"ProductVariant", 'String'>
-  readonly weight: Prisma.FieldRef<"ProductVariant", 'String'>
-  readonly flavor: Prisma.FieldRef<"ProductVariant", 'String'>
-  readonly packageType: Prisma.FieldRef<"ProductVariant", 'String'>
-  readonly materialPurity: Prisma.FieldRef<"ProductVariant", 'String'>
-  readonly strap: Prisma.FieldRef<"ProductVariant", 'String'>
-  readonly dimensions: Prisma.FieldRef<"ProductVariant", 'String'>
-  readonly format: Prisma.FieldRef<"ProductVariant", 'String'>
-  readonly packQuantity: Prisma.FieldRef<"ProductVariant", 'String'>
-  readonly condition: Prisma.FieldRef<"ProductVariant", 'String'>
-  readonly warranty: Prisma.FieldRef<"ProductVariant", 'String'>
+  readonly combinationKey: Prisma.FieldRef<"ProductVariant", 'String'>
   readonly createdAt: Prisma.FieldRef<"ProductVariant", 'DateTime'>
   readonly updatedAt: Prisma.FieldRef<"ProductVariant", 'DateTime'>
 }
@@ -2456,6 +1532,30 @@ export type ProductVariantDeleteManyArgs<ExtArgs extends runtime.Types.Extension
    * Limit how many ProductVariants to delete.
    */
   limit?: number
+}
+
+/**
+ * ProductVariant.productVariantValues
+ */
+export type ProductVariant$productVariantValuesArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  /**
+   * Select specific fields to fetch from the ProductVariantValue
+   */
+  select?: Prisma.ProductVariantValueSelect<ExtArgs> | null
+  /**
+   * Omit specific fields from the ProductVariantValue
+   */
+  omit?: Prisma.ProductVariantValueOmit<ExtArgs> | null
+  /**
+   * Choose, which related nodes to fetch as well
+   */
+  include?: Prisma.ProductVariantValueInclude<ExtArgs> | null
+  where?: Prisma.ProductVariantValueWhereInput
+  orderBy?: Prisma.ProductVariantValueOrderByWithRelationInput | Prisma.ProductVariantValueOrderByWithRelationInput[]
+  cursor?: Prisma.ProductVariantValueWhereUniqueInput
+  take?: number
+  skip?: number
+  distinct?: Prisma.ProductVariantValueScalarFieldEnum | Prisma.ProductVariantValueScalarFieldEnum[]
 }
 
 /**

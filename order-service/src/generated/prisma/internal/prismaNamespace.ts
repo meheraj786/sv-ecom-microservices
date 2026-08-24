@@ -403,7 +403,7 @@ export const ModelName = {
   CouponProduct: 'CouponProduct',
   CouponCategory: 'CouponCategory',
   CouponUsage: 'CouponUsage',
-  Division: 'Division'
+  division: 'division'
 } as const
 
 export type ModelName = (typeof ModelName)[keyof typeof ModelName]
@@ -867,76 +867,76 @@ export type TypeMap<ExtArgs extends runtime.Types.Extensions.InternalArgs = runt
         }
       }
     }
-    Division: {
-      payload: Prisma.$DivisionPayload<ExtArgs>
-      fields: Prisma.DivisionFieldRefs
+    division: {
+      payload: Prisma.$divisionPayload<ExtArgs>
+      fields: Prisma.divisionFieldRefs
       operations: {
         findUnique: {
-          args: Prisma.DivisionFindUniqueArgs<ExtArgs>
-          result: runtime.Types.Utils.PayloadToResult<Prisma.$DivisionPayload> | null
+          args: Prisma.divisionFindUniqueArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$divisionPayload> | null
         }
         findUniqueOrThrow: {
-          args: Prisma.DivisionFindUniqueOrThrowArgs<ExtArgs>
-          result: runtime.Types.Utils.PayloadToResult<Prisma.$DivisionPayload>
+          args: Prisma.divisionFindUniqueOrThrowArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$divisionPayload>
         }
         findFirst: {
-          args: Prisma.DivisionFindFirstArgs<ExtArgs>
-          result: runtime.Types.Utils.PayloadToResult<Prisma.$DivisionPayload> | null
+          args: Prisma.divisionFindFirstArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$divisionPayload> | null
         }
         findFirstOrThrow: {
-          args: Prisma.DivisionFindFirstOrThrowArgs<ExtArgs>
-          result: runtime.Types.Utils.PayloadToResult<Prisma.$DivisionPayload>
+          args: Prisma.divisionFindFirstOrThrowArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$divisionPayload>
         }
         findMany: {
-          args: Prisma.DivisionFindManyArgs<ExtArgs>
-          result: runtime.Types.Utils.PayloadToResult<Prisma.$DivisionPayload>[]
+          args: Prisma.divisionFindManyArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$divisionPayload>[]
         }
         create: {
-          args: Prisma.DivisionCreateArgs<ExtArgs>
-          result: runtime.Types.Utils.PayloadToResult<Prisma.$DivisionPayload>
+          args: Prisma.divisionCreateArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$divisionPayload>
         }
         createMany: {
-          args: Prisma.DivisionCreateManyArgs<ExtArgs>
+          args: Prisma.divisionCreateManyArgs<ExtArgs>
           result: BatchPayload
         }
         createManyAndReturn: {
-          args: Prisma.DivisionCreateManyAndReturnArgs<ExtArgs>
-          result: runtime.Types.Utils.PayloadToResult<Prisma.$DivisionPayload>[]
+          args: Prisma.divisionCreateManyAndReturnArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$divisionPayload>[]
         }
         delete: {
-          args: Prisma.DivisionDeleteArgs<ExtArgs>
-          result: runtime.Types.Utils.PayloadToResult<Prisma.$DivisionPayload>
+          args: Prisma.divisionDeleteArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$divisionPayload>
         }
         update: {
-          args: Prisma.DivisionUpdateArgs<ExtArgs>
-          result: runtime.Types.Utils.PayloadToResult<Prisma.$DivisionPayload>
+          args: Prisma.divisionUpdateArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$divisionPayload>
         }
         deleteMany: {
-          args: Prisma.DivisionDeleteManyArgs<ExtArgs>
+          args: Prisma.divisionDeleteManyArgs<ExtArgs>
           result: BatchPayload
         }
         updateMany: {
-          args: Prisma.DivisionUpdateManyArgs<ExtArgs>
+          args: Prisma.divisionUpdateManyArgs<ExtArgs>
           result: BatchPayload
         }
         updateManyAndReturn: {
-          args: Prisma.DivisionUpdateManyAndReturnArgs<ExtArgs>
-          result: runtime.Types.Utils.PayloadToResult<Prisma.$DivisionPayload>[]
+          args: Prisma.divisionUpdateManyAndReturnArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$divisionPayload>[]
         }
         upsert: {
-          args: Prisma.DivisionUpsertArgs<ExtArgs>
-          result: runtime.Types.Utils.PayloadToResult<Prisma.$DivisionPayload>
+          args: Prisma.divisionUpsertArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$divisionPayload>
         }
         aggregate: {
           args: Prisma.DivisionAggregateArgs<ExtArgs>
           result: runtime.Types.Utils.Optional<Prisma.AggregateDivision>
         }
         groupBy: {
-          args: Prisma.DivisionGroupByArgs<ExtArgs>
+          args: Prisma.divisionGroupByArgs<ExtArgs>
           result: runtime.Types.Utils.Optional<Prisma.DivisionGroupByOutputType>[]
         }
         count: {
-          args: Prisma.DivisionCountArgs<ExtArgs>
+          args: Prisma.divisionCountArgs<ExtArgs>
           result: runtime.Types.Utils.Optional<Prisma.DivisionCountAggregateOutputType> | number
         }
       }
@@ -983,10 +983,13 @@ export type TransactionIsolationLevel = (typeof TransactionIsolationLevel)[keyof
 export const OrderScalarFieldEnum = {
   id: 'id',
   userId: 'userId',
+  customerId: 'customerId',
   totalAmount: 'totalAmount',
   discountAmount: 'discountAmount',
   couponCode: 'couponCode',
   status: 'status',
+  divisionId: 'divisionId',
+  couponId: 'couponId',
   createdAt: 'createdAt',
   updatedAt: 'updatedAt'
 } as const
@@ -1001,6 +1004,7 @@ export const OrderItemScalarFieldEnum = {
   variantId: 'variantId',
   quantity: 'quantity',
   price: 'price',
+  variantSnapshot: 'variantSnapshot',
   createdAt: 'createdAt',
   updatedAt: 'updatedAt'
 } as const
@@ -1077,6 +1081,13 @@ export const SortOrder = {
 export type SortOrder = (typeof SortOrder)[keyof typeof SortOrder]
 
 
+export const JsonNullValueInput = {
+  JsonNull: JsonNull
+} as const
+
+export type JsonNullValueInput = (typeof JsonNullValueInput)[keyof typeof JsonNullValueInput]
+
+
 export const QueryMode = {
   default: 'default',
   insensitive: 'insensitive'
@@ -1091,6 +1102,15 @@ export const NullsOrder = {
 } as const
 
 export type NullsOrder = (typeof NullsOrder)[keyof typeof NullsOrder]
+
+
+export const JsonNullValueFilter = {
+  DbNull: DbNull,
+  JsonNull: JsonNull,
+  AnyNull: AnyNull
+} as const
+
+export type JsonNullValueFilter = (typeof JsonNullValueFilter)[keyof typeof JsonNullValueFilter]
 
 
 
@@ -1110,6 +1130,20 @@ export type StringFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 
  * Reference to a field of type 'String[]'
  */
 export type ListStringFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'String[]'>
+    
+
+
+/**
+ * Reference to a field of type 'Decimal'
+ */
+export type DecimalFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'Decimal'>
+    
+
+
+/**
+ * Reference to a field of type 'Decimal[]'
+ */
+export type ListDecimalFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'Decimal[]'>
     
 
 
@@ -1152,6 +1186,20 @@ export type IntFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'In
  * Reference to a field of type 'Int[]'
  */
 export type ListIntFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'Int[]'>
+    
+
+
+/**
+ * Reference to a field of type 'Json'
+ */
+export type JsonFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'Json'>
+    
+
+
+/**
+ * Reference to a field of type 'QueryMode'
+ */
+export type EnumQueryModeFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'QueryMode'>
     
 
 
@@ -1318,7 +1366,7 @@ export type GlobalOmitConfig = {
   couponProduct?: Prisma.CouponProductOmit
   couponCategory?: Prisma.CouponCategoryOmit
   couponUsage?: Prisma.CouponUsageOmit
-  division?: Prisma.DivisionOmit
+  division?: Prisma.divisionOmit
 }
 
 /* Types for Logging */

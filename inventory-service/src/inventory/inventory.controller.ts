@@ -1,4 +1,12 @@
-import { Body, Controller, Get, Param, Post, Query } from '@nestjs/common';
+import {
+  Body,
+  Controller,
+  Delete,
+  Get,
+  Param,
+  Post,
+  Query,
+} from '@nestjs/common';
 import { EventPattern, Payload } from '@nestjs/microservices';
 import { InventoryService } from './inventory.service';
 import { AddBatchDto } from './dto/add-batch.dto';
@@ -19,6 +27,11 @@ export class InventoryController {
     return this.inventoryService.getStocks(query);
   }
 
+  @Get('stock/:id')
+  getStockById(@Param('id') id: string) {
+    return this.inventoryService.getStockById(id);
+  }
+
   @Get('summary/:variantId')
   getVariantStockSummary(@Param('variantId') variantId: string) {
     return this.inventoryService.getVariantStockSummary(variantId);
@@ -34,11 +47,28 @@ export class InventoryController {
 
   @EventPattern('order_created')
   async handleOrderCreated(
-    @Payload() data: { items: { variantId: string; quantity: number }[] },
+    @Payload()
+    data: {
+      items: {
+        variantId: string;
+        quantity: number;
+      }[];
+    },
   ) {
-    const promises = data.items.map((item) =>
-      this.inventoryService.deductFifoStock(item.variantId, item.quantity),
-    );
-    await Promise.all(promises);
+    for (const item of data.items) {
+      await this.inventoryService.deductFifoStock(
+        item.variantId,
+        item.quantity,
+      );
+    }
+
+    return {
+      success: true,
+    };
+  }
+
+  @Delete('batch/:id')
+  deleteBatch(@Param('id') id: string) {
+    return this.inventoryService.deleteBatch(id);
   }
 }

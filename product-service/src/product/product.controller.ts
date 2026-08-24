@@ -8,7 +8,9 @@ import {
   Put,
   Query,
 } from '@nestjs/common';
+
 import { ProductService } from './product.service';
+
 import { CreateCategoryDto } from './dto/create-category.dto';
 import { CreateSubCategoryDto } from './dto/create-subcategory.dto';
 import { CreateProductDto } from './dto/create-product.dto';
@@ -42,7 +44,7 @@ export class ProductController {
   }
 
   @Delete('category/:id')
-  deleteCategories(@Param('id') id: string) {
+  deleteCategory(@Param('id') id: string) {
     return this.productService.deleteCategories(id);
   }
 
@@ -70,7 +72,7 @@ export class ProductController {
   }
 
   @Delete('subcategory/:id')
-  deleteSubCategories(@Param('id') id: string) {
+  deleteSubCategory(@Param('id') id: string) {
     return this.productService.deleteSubCategories(id);
   }
 
@@ -120,7 +122,7 @@ export class ProductController {
   }
 
   @Delete(':id')
-  deleteProducts(@Param('id') id: string) {
+  deleteProduct(@Param('id') id: string) {
     return this.productService.deleteProduct(id);
   }
 

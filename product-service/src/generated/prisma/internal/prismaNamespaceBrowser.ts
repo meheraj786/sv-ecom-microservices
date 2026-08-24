@@ -54,16 +54,13 @@ export const ModelName = {
   Category: 'Category',
   SubCategory: 'SubCategory',
   Product: 'Product',
+  ProductOption: 'ProductOption',
+  ProductOptionValue: 'ProductOptionValue',
+  ProductVariant: 'ProductVariant',
+  ProductVariantValue: 'ProductVariantValue',
   ProductCategory: 'ProductCategory',
   ProductSubCategory: 'ProductSubCategory',
-  ProductVariant: 'ProductVariant',
-  Review: 'Review',
-  Order: 'Order',
-  OrderItem: 'OrderItem',
-  Coupon: 'Coupon',
-  CouponProduct: 'CouponProduct',
-  CouponCategory: 'CouponCategory',
-  CouponUsage: 'CouponUsage'
+  Review: 'Review'
 } as const
 
 export type ModelName = (typeof ModelName)[keyof typeof ModelName]
@@ -113,20 +110,64 @@ export const ProductScalarFieldEnum = {
   slug: 'slug',
   sku: 'sku',
   baseImage: 'baseImage',
-  images: 'images',
   description: 'description',
   isActive: 'isActive',
   isNew: 'isNew',
   isBestSeller: 'isBestSeller',
   isFeatured: 'isFeatured',
-  basePrice: 'basePrice',
-  discountPrice: 'discountPrice',
   averageRating: 'averageRating',
   createdAt: 'createdAt',
   updatedAt: 'updatedAt'
 } as const
 
 export type ProductScalarFieldEnum = (typeof ProductScalarFieldEnum)[keyof typeof ProductScalarFieldEnum]
+
+
+export const ProductOptionScalarFieldEnum = {
+  id: 'id',
+  productId: 'productId',
+  name: 'name',
+  createdAt: 'createdAt',
+  updatedAt: 'updatedAt'
+} as const
+
+export type ProductOptionScalarFieldEnum = (typeof ProductOptionScalarFieldEnum)[keyof typeof ProductOptionScalarFieldEnum]
+
+
+export const ProductOptionValueScalarFieldEnum = {
+  id: 'id',
+  optionId: 'optionId',
+  value: 'value',
+  metadata: 'metadata',
+  createdAt: 'createdAt',
+  updatedAt: 'updatedAt'
+} as const
+
+export type ProductOptionValueScalarFieldEnum = (typeof ProductOptionValueScalarFieldEnum)[keyof typeof ProductOptionValueScalarFieldEnum]
+
+
+export const ProductVariantScalarFieldEnum = {
+  id: 'id',
+  productId: 'productId',
+  sku: 'sku',
+  images: 'images',
+  combinationKey: 'combinationKey',
+  createdAt: 'createdAt',
+  updatedAt: 'updatedAt'
+} as const
+
+export type ProductVariantScalarFieldEnum = (typeof ProductVariantScalarFieldEnum)[keyof typeof ProductVariantScalarFieldEnum]
+
+
+export const ProductVariantValueScalarFieldEnum = {
+  id: 'id',
+  productVariantId: 'productVariantId',
+  optionValueId: 'optionValueId',
+  createdAt: 'createdAt',
+  updatedAt: 'updatedAt'
+} as const
+
+export type ProductVariantValueScalarFieldEnum = (typeof ProductVariantValueScalarFieldEnum)[keyof typeof ProductVariantValueScalarFieldEnum]
 
 
 export const ProductCategoryScalarFieldEnum = {
@@ -147,48 +188,6 @@ export const ProductSubCategoryScalarFieldEnum = {
 export type ProductSubCategoryScalarFieldEnum = (typeof ProductSubCategoryScalarFieldEnum)[keyof typeof ProductSubCategoryScalarFieldEnum]
 
 
-export const ProductVariantScalarFieldEnum = {
-  id: 'id',
-  productId: 'productId',
-  sku: 'sku',
-  price: 'price',
-  images: 'images',
-  isActive: 'isActive',
-  color: 'color',
-  size: 'size',
-  fabric: 'fabric',
-  material: 'material',
-  fit: 'fit',
-  sleeve: 'sleeve',
-  neckType: 'neckType',
-  pattern: 'pattern',
-  shoeSize: 'shoeSize',
-  ram: 'ram',
-  storage: 'storage',
-  processor: 'processor',
-  screenSize: 'screenSize',
-  connectivity: 'connectivity',
-  volume: 'volume',
-  shade: 'shade',
-  skinType: 'skinType',
-  fragrance: 'fragrance',
-  weight: 'weight',
-  flavor: 'flavor',
-  packageType: 'packageType',
-  materialPurity: 'materialPurity',
-  strap: 'strap',
-  dimensions: 'dimensions',
-  format: 'format',
-  packQuantity: 'packQuantity',
-  condition: 'condition',
-  warranty: 'warranty',
-  createdAt: 'createdAt',
-  updatedAt: 'updatedAt'
-} as const
-
-export type ProductVariantScalarFieldEnum = (typeof ProductVariantScalarFieldEnum)[keyof typeof ProductVariantScalarFieldEnum]
-
-
 export const ReviewScalarFieldEnum = {
   id: 'id',
   productId: 'productId',
@@ -204,89 +203,20 @@ export const ReviewScalarFieldEnum = {
 export type ReviewScalarFieldEnum = (typeof ReviewScalarFieldEnum)[keyof typeof ReviewScalarFieldEnum]
 
 
-export const OrderScalarFieldEnum = {
-  id: 'id',
-  userId: 'userId',
-  totalAmount: 'totalAmount',
-  discountAmount: 'discountAmount',
-  couponCode: 'couponCode',
-  status: 'status',
-  createdAt: 'createdAt',
-  updatedAt: 'updatedAt'
-} as const
-
-export type OrderScalarFieldEnum = (typeof OrderScalarFieldEnum)[keyof typeof OrderScalarFieldEnum]
-
-
-export const OrderItemScalarFieldEnum = {
-  id: 'id',
-  orderId: 'orderId',
-  productId: 'productId',
-  quantity: 'quantity',
-  price: 'price',
-  createdAt: 'createdAt',
-  updatedAt: 'updatedAt'
-} as const
-
-export type OrderItemScalarFieldEnum = (typeof OrderItemScalarFieldEnum)[keyof typeof OrderItemScalarFieldEnum]
-
-
-export const CouponScalarFieldEnum = {
-  id: 'id',
-  code: 'code',
-  discountType: 'discountType',
-  discountValue: 'discountValue',
-  minOrderValue: 'minOrderValue',
-  maxDiscount: 'maxDiscount',
-  startsAt: 'startsAt',
-  expiresAt: 'expiresAt',
-  usageLimit: 'usageLimit',
-  usedCount: 'usedCount',
-  perUserLimit: 'perUserLimit',
-  scope: 'scope',
-  isActive: 'isActive',
-  createdAt: 'createdAt',
-  updatedAt: 'updatedAt'
-} as const
-
-export type CouponScalarFieldEnum = (typeof CouponScalarFieldEnum)[keyof typeof CouponScalarFieldEnum]
-
-
-export const CouponProductScalarFieldEnum = {
-  id: 'id',
-  couponId: 'couponId',
-  productId: 'productId'
-} as const
-
-export type CouponProductScalarFieldEnum = (typeof CouponProductScalarFieldEnum)[keyof typeof CouponProductScalarFieldEnum]
-
-
-export const CouponCategoryScalarFieldEnum = {
-  id: 'id',
-  couponId: 'couponId',
-  categoryId: 'categoryId'
-} as const
-
-export type CouponCategoryScalarFieldEnum = (typeof CouponCategoryScalarFieldEnum)[keyof typeof CouponCategoryScalarFieldEnum]
-
-
-export const CouponUsageScalarFieldEnum = {
-  id: 'id',
-  couponId: 'couponId',
-  userId: 'userId',
-  orderId: 'orderId',
-  createdAt: 'createdAt'
-} as const
-
-export type CouponUsageScalarFieldEnum = (typeof CouponUsageScalarFieldEnum)[keyof typeof CouponUsageScalarFieldEnum]
-
-
 export const SortOrder = {
   asc: 'asc',
   desc: 'desc'
 } as const
 
 export type SortOrder = (typeof SortOrder)[keyof typeof SortOrder]
+
+
+export const NullableJsonNullValueInput = {
+  DbNull: DbNull,
+  JsonNull: JsonNull
+} as const
+
+export type NullableJsonNullValueInput = (typeof NullableJsonNullValueInput)[keyof typeof NullableJsonNullValueInput]
 
 
 export const QueryMode = {
@@ -303,4 +233,13 @@ export const NullsOrder = {
 } as const
 
 export type NullsOrder = (typeof NullsOrder)[keyof typeof NullsOrder]
+
+
+export const JsonNullValueFilter = {
+  DbNull: DbNull,
+  JsonNull: JsonNull,
+  AnyNull: AnyNull
+} as const
+
+export type JsonNullValueFilter = (typeof JsonNullValueFilter)[keyof typeof JsonNullValueFilter]
 

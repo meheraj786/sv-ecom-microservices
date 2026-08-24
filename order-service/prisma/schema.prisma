@@ -10,13 +10,18 @@ datasource db {
 
 model Order {
   id             String        @id @default(cuid())
-  userId         String
-  totalAmount    Float
+  userId         String?
+  customerId     String
+  totalAmount    Decimal       @db.Decimal(12, 2)
   discountAmount Float         @default(0)
   couponCode     String?
   status         String        @default("PENDING")
+  divisionId     String
+  couponId       String?
+  coupon         Coupon?       @relation(fields: [couponId], references: [id])
   items          OrderItem[]
   couponUsages   CouponUsage[]
+  division       division      @relation(fields: [divisionId], references: [id], onDelete: Cascade)
   createdAt      DateTime      @default(now())
   updatedAt      DateTime      @updatedAt
 
@@ -24,15 +29,16 @@ model Order {
 }
 
 model OrderItem {
-  id        String   @id @default(cuid())
-  orderId   String
-  order     Order    @relation(fields: [orderId], references: [id], onDelete: Cascade)
-  productId String
-  variantId String
-  quantity  Int
-  price     Float
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
+  id              String   @id @default(cuid())
+  orderId         String
+  order           Order    @relation(fields: [orderId], references: [id], onDelete: Cascade)
+  productId       String
+  variantId       String
+  quantity        Int
+  price           Float
+  variantSnapshot Json
+  createdAt       DateTime @default(now())
+  updatedAt       DateTime @updatedAt
 
   @@index([orderId])
   @@index([productId])
@@ -59,6 +65,7 @@ model Coupon {
   usages        CouponUsage[]
   createdAt     DateTime         @default(now())
   updatedAt     DateTime         @updatedAt
+  orders        Order[]
 
   @@index([isActive])
   @@index([expiresAt])
@@ -105,12 +112,13 @@ model CouponUsage {
   @@map("coupon_usages")
 }
 
-model Division {
+model division {
   id             String   @id @default(cuid())
   name           String
   deliveryCharge Float
   createdAt      DateTime @default(now())
   updatedAt      DateTime @updatedAt
+  orders         Order[]
 
   @@map("divisions")
 }

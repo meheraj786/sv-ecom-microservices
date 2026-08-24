@@ -1,6 +1,8 @@
 import { Injectable } from '@nestjs/common';
 
-type ServiceName = 'user' | 'product' | 'cart' | 'order' | 'inventory';
+type ServiceName =
+  'user' | 'product' | 'cart' | 'order' | 'inventory' | 'division';
+
 type QueryValue = string | number | boolean | undefined | null;
 
 @Injectable()
@@ -11,6 +13,10 @@ export class AppService {
     cart: process.env.CART_SERVICE_URL ?? 'http://localhost:3003',
     inventory: process.env.INVENTORY_SERVICE_URL ?? 'http://localhost:3004',
     order: process.env.ORDER_SERVICE_URL ?? 'http://localhost:3005',
+    division:
+      process.env.DIVISION_SERVICE_URL ??
+      process.env.ORDER_SERVICE_URL ??
+      'http://localhost:3005',
   };
 
   public userService = {
@@ -192,17 +198,28 @@ export class AppService {
   };
 
   public orderService = {
-    createOrder: (data: any) =>
-      this.httpRequest('order', '/order', 'POST', data.billing, {
-        userId: data.userId,
-        couponCode: data.couponCode,
-      }),
+    createOrder: (data: { userId?: string; [key: string]: any }) => {
+      const { userId, ...body } = data;
+      return this.httpRequest(
+        'order',
+        '/order',
+        'POST',
+        body,
+        userId ? { userId } : undefined,
+      );
+    },
     getOrders: (data: any) =>
       this.httpRequest('order', '/order', 'GET', undefined, {
         userId: data.userId,
         ...(data.page ? { page: data.page } : {}),
         ...(data.limit ? { limit: data.limit } : {}),
       }),
+    getOrderById: (data: { id: string }) =>
+      this.httpRequest(
+        'order',
+        `/order/single/${encodeURIComponent(data.id)}`,
+        'GET',
+      ),
 
     createCoupon: (data: any) =>
       this.httpRequest('order', '/order/coupon', 'POST', data),
@@ -236,27 +253,29 @@ export class AppService {
         { code: data.code },
         { userId: data.userId },
       ),
+  };
 
+  public divisionService = {
     createDivision: (data: any) =>
-      this.httpRequest('order', '/order/division', 'POST', data),
-    getAllDivisions: () => this.httpRequest('order', '/order/divisions', 'GET'),
+      this.httpRequest('division', '/division', 'POST', data),
+    getAllDivisions: () => this.httpRequest('division', '/division', 'GET'),
     getDivisionById: (data: { id: string }) =>
       this.httpRequest(
-        'order',
-        `/order/division/${encodeURIComponent(data.id)}`,
+        'division',
+        `/division/${encodeURIComponent(data.id)}`,
         'GET',
       ),
     updateDivision: (data: any) =>
       this.httpRequest(
-        'order',
-        `/order/division/${encodeURIComponent(data.id)}`,
+        'division',
+        `/division/${encodeURIComponent(data.id)}`,
         'PUT',
         data,
       ),
     deleteDivision: (data: { id: string }) =>
       this.httpRequest(
-        'order',
-        `/order/division/${encodeURIComponent(data.id)}`,
+        'division',
+        `/division/${encodeURIComponent(data.id)}`,
         'DELETE',
       ),
   };

@@ -74,6 +74,8 @@ export const StockScalarFieldEnum = {
   id: 'id',
   variantId: 'variantId',
   purchasePrice: 'purchasePrice',
+  isDiscounted: 'isDiscounted',
+  beforeDiscount: 'beforeDiscount',
   sellingPrice: 'sellingPrice',
   quantityReceived: 'quantityReceived',
   quantityRemaining: 'quantityRemaining',

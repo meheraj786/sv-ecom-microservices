@@ -1,36 +1,40 @@
 import {
-  IsString,
-  IsOptional,
-  IsNumber,
-  Min,
-  IsEnum,
-  IsDateString,
-  IsBoolean,
-  IsInt,
+  ArrayUnique,
   IsArray,
+  IsBoolean,
+  IsDateString,
+  IsIn,
+  IsInt,
+  IsNumber,
+  IsOptional,
+  IsString,
+  Min,
 } from 'class-validator';
-
-import { CouponDiscountType, CouponScope } from './create-coupon.dto';
+import { Type } from 'class-transformer';
 
 export class UpdateCouponDto {
   @IsString()
   @IsOptional()
   code?: string;
 
-  @IsEnum(CouponDiscountType)
+  @IsString()
+  @IsIn(['PERCENTAGE', 'FIXED'])
   @IsOptional()
-  discountType?: CouponDiscountType;
+  discountType?: 'PERCENTAGE' | 'FIXED';
 
+  @Type(() => Number)
   @IsNumber()
   @Min(0.01)
   @IsOptional()
   discountValue?: number;
 
+  @Type(() => Number)
   @IsNumber()
   @Min(0)
   @IsOptional()
   minOrderValue?: number;
 
+  @Type(() => Number)
   @IsNumber()
   @Min(0.01)
   @IsOptional()
@@ -44,31 +48,36 @@ export class UpdateCouponDto {
   @IsOptional()
   expiresAt?: string;
 
+  @Type(() => Number)
   @IsInt()
   @Min(1)
   @IsOptional()
   usageLimit?: number;
 
+  @Type(() => Number)
   @IsInt()
   @Min(1)
   @IsOptional()
   perUserLimit?: number;
 
-  @IsEnum(CouponScope)
+  @IsString()
+  @IsIn(['ALL', 'PRODUCTS', 'CATEGORIES'])
   @IsOptional()
-  scope?: CouponScope;
+  scope?: 'ALL' | 'PRODUCTS' | 'CATEGORIES';
+
+  @IsBoolean()
+  @IsOptional()
+  isActive?: boolean;
 
   @IsArray()
   @IsString({ each: true })
+  @ArrayUnique()
   @IsOptional()
   productIds?: string[];
 
   @IsArray()
   @IsString({ each: true })
+  @ArrayUnique()
   @IsOptional()
   categoryIds?: string[];
-
-  @IsBoolean()
-  @IsOptional()
-  isActive?: boolean;
 }

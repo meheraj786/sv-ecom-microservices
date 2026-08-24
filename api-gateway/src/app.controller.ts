@@ -1,51 +1,52 @@
 import {
-  Controller,
-  Get,
-  Post,
-  Delete,
   Body,
+  Controller,
+  Delete,
+  Get,
   Param,
-  Query,
-  Res,
-  Req,
-  UseGuards,
+  Post,
   Put,
+  Query,
+  Req,
+  Res,
+  UseGuards,
 } from '@nestjs/common';
 import type { Response } from 'express';
 import { AppService } from './app.service';
 import { JwtAuthGuard } from './common/guards/jwt-auth.guard';
 import { AdminGuard } from './common/guards/admin.guard';
 import {
-  RegisterUserDto,
-  RegisterVendorDto,
-  LoginDto,
-  UpdateAccountDto,
-  CreateCategoryDto,
-  CreateSubCategoryDto,
-  CreateProductDto,
-  UpdateProductDto,
-  CreateVariantDto,
-  UpdateVariantDto,
-  GetProductsQueryDto,
-  PaginationQueryDto,
-  AddToCartDto,
-  UpdateCartQuantityDto,
   AddBatchDto,
-  GetStocksQueryDto,
-  ValidateCouponDto,
-  UpdateCouponDto,
+  AddToCartDto,
+  CalculateFifoDto,
+  CreateCategoryDto,
   CreateCouponDto,
   CreateDivisionDto,
+  CreateOrderDto,
+  CreateProductDto,
+  CreateSubCategoryDto,
+  CreateVariantDto,
+  GetProductsQueryDto,
+  GetStocksQueryDto,
+  LoginDto,
+  PaginationQueryDto,
+  RegisterUserDto,
+  RegisterVendorDto,
+  UpdateAccountDto,
+  UpdateCartQuantityDto,
+  UpdateCouponDto,
   UpdateDivisionDto,
+  UpdateProductDto,
+  UpdateVariantDto,
+  ValidateCouponDto,
 } from './dto/gateway.dto';
 
 const isProduction = process.env.NODE_ENV === 'production';
 
 @Controller()
 export class AppController {
-  constructor(private appService: AppService) {}
+  constructor(private readonly appService: AppService) {}
 
-  // ================= AUTH & USER =================
   @Post('auth/register')
   registerUser(@Body() dto: RegisterUserDto) {
     return this.appService.rpcCall(
@@ -124,7 +125,6 @@ export class AppController {
     );
   }
 
-  // ================= CATEGORIES =================
   @UseGuards(JwtAuthGuard, AdminGuard)
   @Post('product/category')
   createCategory(@Body() dto: CreateCategoryDto) {
@@ -163,7 +163,6 @@ export class AppController {
     );
   }
 
-  // ================= SUB-CATEGORIES =================
   @UseGuards(JwtAuthGuard, AdminGuard)
   @Post('product/subcategory')
   createSubCategory(@Body() dto: CreateSubCategoryDto) {
@@ -205,7 +204,6 @@ export class AppController {
     );
   }
 
-  // ================= PRODUCTS & VARIANTS =================
   @UseGuards(JwtAuthGuard, AdminGuard)
   @Post('product')
   createProduct(@Body() dto: CreateProductDto) {
@@ -282,7 +280,6 @@ export class AppController {
     );
   }
 
-  // ================= CART =================
   @UseGuards(JwtAuthGuard)
   @Get('cart')
   getCart(@Req() req: any) {
@@ -328,7 +325,6 @@ export class AppController {
     );
   }
 
-  // ================= INVENTORY / STOCKS =================
   @UseGuards(JwtAuthGuard, AdminGuard)
   @Post('inventory/batch')
   addInventoryBatch(@Body() dto: AddBatchDto) {
@@ -352,20 +348,21 @@ export class AppController {
     );
   }
 
-  // ================= ORDERS =================
+  @Post('inventory/fifo-price')
+  calculateFifoPrice(@Body() dto: CalculateFifoDto) {
+    return this.appService.rpcCall(
+      this.appService.inventoryService.calculateFifoPrice(dto),
+    );
+  }
+
   @UseGuards(JwtAuthGuard)
   @Post('order')
-  createOrder(
-    @Req() req: any,
-    @Query('couponCode') couponCode: string,
-    @Body() billing: any,
-  ) {
-    const userId = req.user.userId;
+  createOrder(@Req() req: any, @Body() dto: CreateOrderDto) {
+    const userId = req.user.userId as string;
     return this.appService.rpcCall(
       this.appService.orderService.createOrder({
         userId,
-        couponCode,
-        billing,
+        ...dto,
       }),
     );
   }
@@ -373,13 +370,20 @@ export class AppController {
   @UseGuards(JwtAuthGuard)
   @Get('order')
   getOrders(@Req() req: any, @Query() query: PaginationQueryDto) {
-    const userId = req.user.userId;
+    const userId = req.user.userId as string;
     return this.appService.rpcCall(
       this.appService.orderService.getOrders({ userId, ...query }),
     );
   }
 
-  // ================= COUPONS =================
+  @UseGuards(JwtAuthGuard)
+  @Get('order/single/:id')
+  getOrderById(@Param('id') id: string) {
+    return this.appService.rpcCall(
+      this.appService.orderService.getOrderById({ id }),
+    );
+  }
+
   @UseGuards(JwtAuthGuard, AdminGuard)
   @Post('order/coupon')
   createCoupon(@Body() dto: CreateCouponDto) {
@@ -423,7 +427,7 @@ export class AppController {
   @UseGuards(JwtAuthGuard)
   @Post('order/coupon/validate')
   validateCoupon(@Req() req: any, @Body() dto: ValidateCouponDto) {
-    const userId = req.user.userId;
+    const userId = req.user.userId as string;
     return this.appService.rpcCall(
       this.appService.orderService.validateCouponForUser({
         userId,
@@ -432,26 +436,25 @@ export class AppController {
     );
   }
 
-  // ================= DIVISIONS =================
   @UseGuards(JwtAuthGuard, AdminGuard)
   @Post('order/division')
   createDivision(@Body() dto: CreateDivisionDto) {
     return this.appService.rpcCall(
-      this.appService.orderService.createDivision(dto),
+      this.appService.divisionService.createDivision(dto),
     );
   }
 
   @Get('order/divisions')
   getAllDivisions() {
     return this.appService.rpcCall(
-      this.appService.orderService.getAllDivisions(),
+      this.appService.divisionService.getAllDivisions(),
     );
   }
 
   @Get('order/division/:id')
   getDivisionById(@Param('id') id: string) {
     return this.appService.rpcCall(
-      this.appService.orderService.getDivisionById({ id }),
+      this.appService.divisionService.getDivisionById({ id }),
     );
   }
 
@@ -459,7 +462,7 @@ export class AppController {
   @Put('order/division/:id')
   updateDivision(@Param('id') id: string, @Body() dto: UpdateDivisionDto) {
     return this.appService.rpcCall(
-      this.appService.orderService.updateDivision({ id, ...dto }),
+      this.appService.divisionService.updateDivision({ id, ...dto }),
     );
   }
 
@@ -467,7 +470,7 @@ export class AppController {
   @Delete('order/division/:id')
   deleteDivision(@Param('id') id: string) {
     return this.appService.rpcCall(
-      this.appService.orderService.deleteDivision({ id }),
+      this.appService.divisionService.deleteDivision({ id }),
     );
   }
 }

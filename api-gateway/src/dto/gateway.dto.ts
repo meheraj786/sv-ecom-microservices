@@ -1,20 +1,24 @@
 import {
-  IsEmail,
-  IsNotEmpty,
-  IsOptional,
-  IsString,
-  MinLength,
-  IsIn,
-  IsNumber,
-  Min,
-  IsHexColor,
+  ArrayMinSize,
+  ArrayUnique,
   IsArray,
   IsBoolean,
-  IsEnum,
   IsDateString,
-  ArrayMinSize,
+  IsEmail,
+  IsEnum,
+  IsHexColor,
+  IsIn,
+  IsInt,
+  IsNotEmpty,
+  IsNumber,
+  IsObject,
+  IsOptional,
+  IsString,
+  Min,
+  MinLength,
+  ValidateNested,
 } from 'class-validator';
-import { Type, Transform } from 'class-transformer';
+import { Transform, Type } from 'class-transformer';
 
 export class RegisterUserDto {
   @IsEmail()
@@ -114,13 +118,69 @@ export class CreateSubCategoryDto {
   image?: string;
 }
 
+export class CreateProductOptionValueDto {
+  @IsString()
+  @IsNotEmpty()
+  value: string;
+
+  @IsOptional()
+  @IsObject()
+  metadata?: Record<string, any>;
+}
+
+export class CreateProductOptionDto {
+  @IsString()
+  @IsNotEmpty()
+  name: string;
+
+  @IsArray()
+  @ArrayMinSize(1)
+  @ValidateNested({ each: true })
+  @Type(() => CreateProductOptionValueDto)
+  values: CreateProductOptionValueDto[];
+}
+
+export class CreateVariantDto {
+  @IsString()
+  @IsNotEmpty()
+  sku: string;
+
+  @IsArray()
+  @IsOptional()
+  @IsString({ each: true })
+  images?: string[];
+
+  @IsArray()
+  @IsString({ each: true })
+  @ArrayUnique()
+  @IsOptional()
+  optionValueIds?: string[];
+}
+
+export class UpdateVariantDto {
+  @IsString()
+  @IsOptional()
+  sku?: string;
+
+  @IsArray()
+  @IsOptional()
+  @IsString({ each: true })
+  images?: string[];
+
+  @IsArray()
+  @IsString({ each: true })
+  @ArrayUnique()
+  @IsOptional()
+  optionValueIds?: string[];
+}
+
 export class CreateProductDto {
   @IsString()
-  @IsNotEmpty({ message: 'Product name is required' })
+  @IsNotEmpty()
   name: string;
 
   @IsString()
-  @IsNotEmpty({ message: 'Product slug is required' })
+  @IsNotEmpty()
   slug: string;
 
   @IsString()
@@ -131,35 +191,20 @@ export class CreateProductDto {
   @IsOptional()
   baseImage?: string;
 
-  @IsArray()
-  @IsOptional()
-  @IsString({ each: true })
-  images?: string[];
-
   @IsString()
   @IsOptional()
   description?: string;
 
-  @Type(() => Number)
-  @IsNumber()
-  @Min(0)
-  @IsOptional()
-  basePrice?: number;
-
-  @Type(() => Number)
-  @IsNumber()
-  @Min(0)
-  @IsOptional()
-  discountPrice?: number;
-
   @IsArray()
-  @ArrayMinSize(1, { message: 'At least one category is required' })
+  @ArrayMinSize(1)
   @IsString({ each: true })
+  @ArrayUnique()
   categoryIds: string[];
 
   @IsArray()
   @IsOptional()
   @IsString({ each: true })
+  @ArrayUnique()
   subCategoryIds?: string[];
 
   @IsBoolean()
@@ -177,6 +222,18 @@ export class CreateProductDto {
   @IsBoolean()
   @IsOptional()
   isActive?: boolean;
+
+  @IsArray()
+  @IsOptional()
+  @ValidateNested({ each: true })
+  @Type(() => CreateProductOptionDto)
+  options?: CreateProductOptionDto[];
+
+  @IsArray()
+  @IsOptional()
+  @ValidateNested({ each: true })
+  @Type(() => CreateVariantDto)
+  variants?: CreateVariantDto[];
 }
 
 export class UpdateProductDto {
@@ -196,35 +253,20 @@ export class UpdateProductDto {
   @IsOptional()
   baseImage?: string;
 
-  @IsArray()
-  @IsOptional()
-  @IsString({ each: true })
-  images?: string[];
-
   @IsString()
   @IsOptional()
   description?: string;
 
-  @Type(() => Number)
-  @IsNumber()
-  @Min(0)
-  @IsOptional()
-  basePrice?: number;
-
-  @Type(() => Number)
-  @IsNumber()
-  @Min(0)
-  @IsOptional()
-  discountPrice?: number;
-
   @IsArray()
   @IsOptional()
   @IsString({ each: true })
+  @ArrayUnique()
   categoryIds?: string[];
 
   @IsArray()
   @IsOptional()
   @IsString({ each: true })
+  @ArrayUnique()
   subCategoryIds?: string[];
 
   @IsBoolean()
@@ -242,80 +284,12 @@ export class UpdateProductDto {
   @IsBoolean()
   @IsOptional()
   isActive?: boolean;
-}
-
-export class CreateVariantDto {
-  @IsString()
-  @IsNotEmpty({ message: 'Variant SKU is required' })
-  sku: string;
-
-  @IsString()
-  @IsOptional()
-  color?: string;
-
-  @IsString()
-  @IsOptional()
-  size?: string;
-
-  @IsString()
-  @IsOptional()
-  material?: string;
-
-  @IsString()
-  @IsOptional()
-  storage?: string;
-
-  @Type(() => Number)
-  @IsNumber()
-  @Min(0)
-  @IsOptional()
-  price?: number;
 
   @IsArray()
   @IsOptional()
-  @IsString({ each: true })
-  images?: string[];
-
-  @IsBoolean()
-  @IsOptional()
-  isActive?: boolean;
-}
-
-export class UpdateVariantDto {
-  @IsString()
-  @IsOptional()
-  sku?: string;
-
-  @IsString()
-  @IsOptional()
-  color?: string;
-
-  @IsString()
-  @IsOptional()
-  size?: string;
-
-  @IsString()
-  @IsOptional()
-  material?: string;
-
-  @IsString()
-  @IsOptional()
-  storage?: string;
-
-  @Type(() => Number)
-  @IsNumber()
-  @Min(0)
-  @IsOptional()
-  price?: number;
-
-  @IsArray()
-  @IsOptional()
-  @IsString({ each: true })
-  images?: string[];
-
-  @IsBoolean()
-  @IsOptional()
-  isActive?: boolean;
+  @ValidateNested({ each: true })
+  @Type(() => CreateProductOptionDto)
+  options?: CreateProductOptionDto[];
 }
 
 export class PaginationQueryDto {
@@ -342,18 +316,6 @@ export class GetProductsQueryDto extends PaginationQueryDto {
   subCategoryId?: string;
 
   @IsOptional()
-  @Type(() => Number)
-  @IsNumber()
-  @Min(0)
-  minPrice?: number;
-
-  @IsOptional()
-  @Type(() => Number)
-  @IsNumber()
-  @Min(0)
-  maxPrice?: number;
-
-  @IsOptional()
   @IsString()
   search?: string;
 
@@ -373,42 +335,54 @@ export class GetProductsQueryDto extends PaginationQueryDto {
   isFeatured?: boolean;
 
   @IsOptional()
-  @IsString()
-  color?: string;
+  @Transform(({ value }) => value === 'true' || value === true)
+  @IsBoolean()
+  isActive?: boolean;
 
   @IsOptional()
   @IsString()
-  size?: string;
+  option?: string;
 
   @IsOptional()
   @IsString()
-  sortBy?: 'newest' | 'price-low' | 'price-high' | 'rating-high';
+  optionValue?: string;
+
+  @IsOptional()
+  @IsIn([
+    'newest',
+    'oldest',
+    'name-asc',
+    'name-desc',
+    'rating-high',
+    'rating-low',
+  ])
+  sortBy?:
+    | 'newest'
+    | 'oldest'
+    | 'name-asc'
+    | 'name-desc'
+    | 'rating-high'
+    | 'rating-low';
 }
 
 export class AddToCartDto {
   @IsString()
-  @IsNotEmpty({ message: 'productId is required' })
+  @IsNotEmpty()
   productId: string;
 
   @IsString()
-  @IsNotEmpty({ message: 'variantId is required' })
+  @IsNotEmpty()
   variantId: string;
 
   @Type(() => Number)
   @IsNumber()
   @Min(1)
   quantity: number;
-
-  @Type(() => Number)
-  @IsNumber()
-  @Min(0)
-  @IsOptional()
-  price?: number;
 }
 
 export class UpdateCartQuantityDto {
   @IsString()
-  @IsNotEmpty({ message: 'variantId is required' })
+  @IsNotEmpty()
   variantId: string;
 
   @Type(() => Number)
@@ -419,7 +393,7 @@ export class UpdateCartQuantityDto {
 
 export class AddBatchDto {
   @IsString()
-  @IsNotEmpty({ message: 'variantId is required' })
+  @IsNotEmpty()
   variantId: string;
 
   @IsString()
@@ -441,9 +415,30 @@ export class AddBatchDto {
   @Min(1)
   quantityReceived: number;
 
+  @IsOptional()
+  @Type(() => Boolean)
+  isDiscounted?: boolean;
+
+  @Type(() => Number)
+  @IsNumber()
+  @Min(0)
+  @IsOptional()
+  beforeDiscount?: number;
+
   @IsString()
   @IsOptional()
   note?: string;
+}
+
+export class CalculateFifoDto {
+  @IsString()
+  @IsNotEmpty()
+  variantId: string;
+
+  @Type(() => Number)
+  @IsNumber()
+  @Min(1)
+  quantity: number;
 }
 
 export class GetStocksQueryDto extends PaginationQueryDto {
@@ -471,18 +466,21 @@ export class CreateCouponDto {
   @IsEnum(CouponDiscountType)
   discountType: CouponDiscountType;
 
+  @Type(() => Number)
   @IsNumber()
   @Min(0.01)
   discountValue: number;
 
   @IsOptional()
+  @Type(() => Number)
   @IsNumber()
   @Min(0)
   minOrderValue?: number;
 
   @IsOptional()
+  @Type(() => Number)
   @IsNumber()
-  @Min(0)
+  @Min(0.01)
   maxDiscount?: number;
 
   @IsOptional()
@@ -493,12 +491,14 @@ export class CreateCouponDto {
   expiresAt: string;
 
   @IsOptional()
-  @IsNumber()
+  @Type(() => Number)
+  @IsInt()
   @Min(1)
   usageLimit?: number;
 
   @IsOptional()
-  @IsNumber()
+  @Type(() => Number)
+  @IsInt()
   @Min(1)
   perUserLimit?: number;
 
@@ -509,11 +509,13 @@ export class CreateCouponDto {
   @IsOptional()
   @IsArray()
   @IsString({ each: true })
+  @ArrayUnique()
   productIds?: string[];
 
   @IsOptional()
   @IsArray()
   @IsString({ each: true })
+  @ArrayUnique()
   categoryIds?: string[];
 
   @IsOptional()
@@ -532,18 +534,21 @@ export class UpdateCouponDto {
   discountType?: CouponDiscountType;
 
   @IsOptional()
+  @Type(() => Number)
   @IsNumber()
   @Min(0.01)
   discountValue?: number;
 
   @IsOptional()
+  @Type(() => Number)
   @IsNumber()
   @Min(0)
   minOrderValue?: number;
 
   @IsOptional()
+  @Type(() => Number)
   @IsNumber()
-  @Min(0)
+  @Min(0.01)
   maxDiscount?: number;
 
   @IsOptional()
@@ -555,12 +560,14 @@ export class UpdateCouponDto {
   expiresAt?: string;
 
   @IsOptional()
-  @IsNumber()
+  @Type(() => Number)
+  @IsInt()
   @Min(1)
   usageLimit?: number;
 
   @IsOptional()
-  @IsNumber()
+  @Type(() => Number)
+  @IsInt()
   @Min(1)
   perUserLimit?: number;
 
@@ -571,11 +578,13 @@ export class UpdateCouponDto {
   @IsOptional()
   @IsArray()
   @IsString({ each: true })
+  @ArrayUnique()
   productIds?: string[];
 
   @IsOptional()
   @IsArray()
   @IsString({ each: true })
+  @ArrayUnique()
   categoryIds?: string[];
 
   @IsOptional()
@@ -589,14 +598,62 @@ export class ValidateCouponDto {
   code: string;
 }
 
+export class BillingInfoDto {
+  @IsString()
+  @IsNotEmpty()
+  fullName: string;
+
+  @IsEmail()
+  email: string;
+
+  @IsString()
+  @IsNotEmpty()
+  phone: string;
+
+  @IsString()
+  @IsNotEmpty()
+  address: string;
+
+  @IsString()
+  @IsNotEmpty()
+  city: string;
+
+  @IsString()
+  @IsOptional()
+  zipCode?: string;
+
+  @IsString()
+  @IsOptional()
+  country?: string;
+}
+
+export class CreateOrderDto {
+  @IsString()
+  @IsNotEmpty()
+  divisionId: string;
+
+  @IsString()
+  @IsOptional()
+  customerId?: string;
+
+  @IsString()
+  @IsOptional()
+  couponCode?: string;
+
+  @ValidateNested()
+  @Type(() => BillingInfoDto)
+  @IsNotEmpty()
+  billing: BillingInfoDto;
+}
+
 export class CreateDivisionDto {
   @IsString()
-  @IsNotEmpty({ message: 'Division name is required' })
+  @IsNotEmpty()
   name: string;
 
   @Type(() => Number)
-  @IsNumber({}, { message: 'Delivery charge must be a valid number' })
-  @Min(0, { message: 'Delivery charge cannot be negative' })
+  @IsNumber()
+  @Min(0)
   deliveryCharge: number;
 }
 
@@ -607,7 +664,7 @@ export class UpdateDivisionDto {
 
   @IsOptional()
   @Type(() => Number)
-  @IsNumber({}, { message: 'Delivery charge must be a valid number' })
-  @Min(0, { message: 'Delivery charge cannot be negative' })
+  @IsNumber()
+  @Min(0)
   deliveryCharge?: number;
 }

@@ -8,28 +8,20 @@ import {
   Put,
   Query,
 } from '@nestjs/common';
-
 import { OrderService } from './order.service';
-import { PaginationQueryDto } from './dto/pagination-query.dto';
+import { CreateOrderDto } from './dto/create-order.dto';
 import { CreateCouponDto } from './dto/create-coupon.dto';
 import { UpdateCouponDto } from './dto/update-coupon.dto';
 import { ValidateCouponDto } from './dto/validate-coupon.dto';
+import { PaginationQueryDto } from './dto/pagination-query.dto';
 
 @Controller('order')
 export class OrderController {
   constructor(private readonly orderService: OrderService) {}
 
   @Post()
-  createOrder(
-    @Query('userId') userId: string,
-    @Query('couponCode') couponCode: string,
-    @Body() billing: any,
-  ) {
-    return this.orderService.createOrder(
-      userId,
-      billing,
-      couponCode || undefined,
-    );
+  createOrder(@Query('userId') userId: string, @Body() dto: CreateOrderDto) {
+    return this.orderService.createOrder(userId || undefined, dto);
   }
 
   @Get()
@@ -37,7 +29,12 @@ export class OrderController {
     @Query('userId') userId: string,
     @Query() query: PaginationQueryDto,
   ) {
-    return this.orderService.getOrders(userId, query);
+    return this.orderService.getOrders(userId || undefined, query);
+  }
+
+  @Get('single/:id')
+  getOrderById(@Param('id') id: string) {
+    return this.orderService.getOrderById(id);
   }
 
   @Post('coupon/validate')

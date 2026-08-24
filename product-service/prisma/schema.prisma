@@ -37,30 +37,81 @@ model SubCategory {
 }
 
 model Product {
-  id            String   @id @default(cuid())
+  id            String  @id @default(cuid())
   name          String
-  slug          String   @unique
-  sku           String?  @unique
+  slug          String  @unique
+  sku           String? @unique
   baseImage     String?
-  images        String[]
   description   String?
-  isActive      Boolean  @default(true)
-  isNew         Boolean  @default(false)
-  isBestSeller  Boolean  @default(false)
-  isFeatured    Boolean  @default(false)
-  basePrice     Float?
-  discountPrice Float?
-  averageRating Float    @default(0.0)
+  isActive      Boolean @default(true)
+  isNew         Boolean @default(true)
+  isBestSeller  Boolean @default(false)
+  isFeatured    Boolean @default(false)
+  averageRating Float   @default(0.0)
 
-  categories    ProductCategory[]
-  subCategories ProductSubCategory[]
-  variants      ProductVariant[]
-  reviews       Review[]
-  createdAt     DateTime             @default(now())
-  updatedAt     DateTime             @updatedAt
+  categories      ProductCategory[]
+  subCategories   ProductSubCategory[]
+  productOptions  ProductOption[]
+  variants ProductVariant[]
+  reviews         Review[]
+  createdAt       DateTime             @default(now())
+  updatedAt       DateTime             @updatedAt
 
   @@index([isActive])
   @@map("products")
+}
+
+model ProductOption {  // color, size
+  id                  String               @id @default(cuid())
+  productId           String
+  product             Product              @relation(fields: [productId], references: [id], onDelete: Cascade)
+  name                String
+  productOptionValues ProductOptionValue[]
+  createdAt      DateTime      @default(now())
+  updatedAt      DateTime      @updatedAt
+  @@unique([productId, name])
+@@index([productId])
+}
+
+model ProductOptionValue {  // red, small
+  id                   String                @id @default(cuid())
+  optionId             String
+  option               ProductOption         @relation(fields: [optionId], references: [id], onDelete: Cascade)
+  value                String
+  productVariantValues ProductVariantValue[]
+  metadata Json?
+  createdAt      DateTime      @default(now())
+  updatedAt      DateTime      @updatedAt
+}
+
+model ProductVariant {  // red small
+  id        String  @id @default(cuid())
+  productId String
+  product   Product @relation(fields: [productId], references: [id], onDelete: Cascade)
+
+  sku                  String
+  images               String[]
+  combinationKey       String
+  productVariantValues ProductVariantValue[]
+  createdAt      DateTime      @default(now())
+  updatedAt      DateTime      @updatedAt
+
+  @@unique([productId, combinationKey])
+@@unique([sku])
+@@index([productId])
+}
+
+model ProductVariantValue {  // red+small
+  id               String @id @default(cuid())
+  productVariantId String
+  optionValueId    String
+
+  productVariant ProductVariant     @relation(fields: [productVariantId], references: [id], onDelete: Cascade)
+  optionValue    ProductOptionValue @relation(fields: [optionValueId], references: [id], onDelete: Cascade)
+  createdAt      DateTime      @default(now())
+  updatedAt      DateTime      @updatedAt
+  @@unique([productVariantId, optionValueId])
+@@index([optionValueId])
 }
 
 model ProductCategory {
@@ -87,64 +138,6 @@ model ProductSubCategory {
   @@map("product_subcategories")
 }
 
-model ProductVariant {
-  id        String  @id @default(cuid())
-  productId String
-  product   Product @relation(fields: [productId], references: [id], onDelete: Cascade)
-
-  sku      String   @unique
-  price    Float?
-  images   String[]
-  isActive Boolean  @default(true)
-
-  // Fashion & Apparel
-  color    String?
-  size     String?
-  fabric   String?
-  material String?
-  fit      String?
-  sleeve   String?
-  neckType String?
-  pattern  String?
-
-  // Footwear
-  shoeSize String?
-
-  // Electronics
-  ram          String?
-  storage      String?
-  processor    String?
-  screenSize   String?
-  connectivity String?
-
-  // Beauty & Skincare
-  volume    String?
-  shade     String?
-  skinType  String?
-  fragrance String?
-
-  // Food & Grocery
-  weight      String?
-  flavor      String?
-  packageType String?
-
-  // Jewelry, Furniture, Books
-  materialPurity String?
-  strap          String?
-  dimensions     String?
-  format         String?
-
-  // Universal
-  packQuantity String?
-  condition    String?
-  warranty     String?
-
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
-
-  @@index([productId])
-  @@map("product_variants")
-}
 
 model Review {
   id        String   @id @default(cuid())
@@ -161,99 +154,4 @@ model Review {
   @@index([productId])
   @@index([userId])
   @@map("reviews")
-}
-
-model Order {
-  id             String        @id @default(cuid())
-  userId         String
-  totalAmount    Float
-  discountAmount Float         @default(0)
-  couponCode     String?
-  status         String        @default("PENDING")
-  items          OrderItem[]
-  couponUsages   CouponUsage[]
-  createdAt      DateTime      @default(now())
-  updatedAt      DateTime      @updatedAt
-
-  @@map("orders")
-}
-
-model OrderItem {
-  id        String   @id @default(cuid())
-  orderId   String
-  order     Order    @relation(fields: [orderId], references: [id], onDelete: Cascade)
-  productId String
-  quantity  Int
-  price     Float
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
-
-  @@index([orderId])
-  @@index([productId])
-  @@map("order_items")
-}
-
-model Coupon {
-  id            String           @id @default(cuid())
-  code          String           @unique
-  discountType  String
-  discountValue Float
-  minOrderValue Float            @default(0)
-  maxDiscount   Float?
-  startsAt      DateTime?
-  expiresAt     DateTime
-  usageLimit    Int?
-  usedCount     Int              @default(0)
-  perUserLimit  Int?
-  scope         String           @default("ALL")
-  isActive      Boolean          @default(true)
-  products      CouponProduct[]
-  categories    CouponCategory[]
-  usages        CouponUsage[]
-  createdAt     DateTime         @default(now())
-  updatedAt     DateTime         @updatedAt
-
-  @@index([isActive])
-  @@index([expiresAt])
-  @@map("coupons")
-}
-
-model CouponProduct {
-  id        String @id @default(cuid())
-  couponId  String
-  productId String
-
-  coupon Coupon @relation(fields: [couponId], references: [id], onDelete: Cascade)
-
-  @@unique([couponId, productId])
-  @@index([productId])
-  @@map("coupon_products")
-}
-
-model CouponCategory {
-  id         String @id @default(cuid())
-  couponId   String
-  categoryId String
-
-  coupon Coupon @relation(fields: [couponId], references: [id], onDelete: Cascade)
-
-  @@unique([couponId, categoryId])
-  @@index([categoryId])
-  @@map("coupon_categories")
-}
-
-model CouponUsage {
-  id        String   @id @default(cuid())
-  couponId  String
-  userId    String
-  orderId   String
-  createdAt DateTime @default(now())
-
-  coupon Coupon @relation(fields: [couponId], references: [id], onDelete: Cascade)
-  order  Order  @relation(fields: [orderId], references: [id], onDelete: Cascade)
-
-  @@unique([couponId, orderId])
-  @@index([couponId, userId])
-  @@index([userId])
-  @@map("coupon_usages")
 }

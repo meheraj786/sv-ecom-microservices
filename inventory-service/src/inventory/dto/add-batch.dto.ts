@@ -1,9 +1,9 @@
 import {
-  IsString,
   IsNotEmpty,
   IsNumber,
-  Min,
   IsOptional,
+  IsString,
+  Min,
 } from 'class-validator';
 import { Type } from 'class-transformer';
 
@@ -30,6 +30,16 @@ export class AddBatchDto {
   @IsNumber()
   @Min(1, { message: 'Quantity received must be at least 1' })
   quantityReceived: number;
+
+  @IsOptional()
+  @Type(() => Boolean)
+  isDiscounted?: boolean;
+
+  @Type(() => Number)
+  @IsNumber()
+  @Min(0)
+  @IsOptional()
+  beforeDiscount?: number;
 
   @IsString()
   @IsOptional()

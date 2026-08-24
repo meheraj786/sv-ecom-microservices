@@ -1,11 +1,12 @@
 import {
-  IsString,
-  IsOptional,
-  IsNumber,
-  Min,
   IsBoolean,
+  IsIn,
+  IsNumber,
+  IsOptional,
+  IsString,
+  Min,
 } from 'class-validator';
-import { Type, Transform } from 'class-transformer';
+import { Transform, Type } from 'class-transformer';
 import { PaginationQueryDto } from './pagination-query.dto';
 
 export class GetProductsQueryDto extends PaginationQueryDto {
@@ -16,18 +17,6 @@ export class GetProductsQueryDto extends PaginationQueryDto {
   @IsOptional()
   @IsString()
   subCategoryId?: string;
-
-  @IsOptional()
-  @Type(() => Number)
-  @IsNumber()
-  @Min(0)
-  minPrice?: number;
-
-  @IsOptional()
-  @Type(() => Number)
-  @IsNumber()
-  @Min(0)
-  maxPrice?: number;
 
   @IsOptional()
   @IsString()
@@ -49,14 +38,32 @@ export class GetProductsQueryDto extends PaginationQueryDto {
   isFeatured?: boolean;
 
   @IsOptional()
-  @IsString()
-  color?: string;
+  @Transform(({ value }) => value === 'true' || value === true)
+  @IsBoolean()
+  isActive?: boolean;
 
   @IsOptional()
   @IsString()
-  size?: string;
+  option?: string;
 
   @IsOptional()
   @IsString()
-  sortBy?: 'newest' | 'price-low' | 'price-high' | 'rating-high';
+  optionValue?: string;
+
+  @IsOptional()
+  @IsIn([
+    'newest',
+    'oldest',
+    'name-asc',
+    'name-desc',
+    'rating-high',
+    'rating-low',
+  ])
+  sortBy?:
+    | 'newest'
+    | 'oldest'
+    | 'name-asc'
+    | 'name-desc'
+    | 'rating-high'
+    | 'rating-low';
 }
