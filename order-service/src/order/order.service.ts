@@ -5,12 +5,12 @@ import {
   NotFoundException,
 } from '@nestjs/common';
 import { ClientProxy } from '@nestjs/microservices';
-import { Prisma } from '../generated/prisma';
 import { PrismaService } from '../prisma/prisma.service';
 import { CreateOrderDto } from './dto/create-order.dto';
 import { CreateCouponDto } from './dto/create-coupon.dto';
 import { UpdateCouponDto } from './dto/update-coupon.dto';
 import { PaginationQueryDto } from './dto/pagination-query.dto';
+import { Prisma } from 'src/generated/prisma/client';
 
 interface CartItem {
   productId: string;
@@ -457,7 +457,9 @@ export class OrderService {
       await this.httpRequest(this.cartBaseUrl, '/cart', 'DELETE', {
         userId: effectiveUserId,
       });
-    } catch {}
+    } catch {
+      console.error('Failed to clear cart');
+    }
 
     return order;
   }

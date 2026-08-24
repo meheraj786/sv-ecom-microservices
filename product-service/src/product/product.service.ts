@@ -157,7 +157,7 @@ export class ProductService {
     }
   }
 
-  private async validateOptionInput(options: CreateProductDto['options']) {
+  private validateOptionInput(options: CreateProductDto['options']) {
     if (!options?.length) {
       return;
     }
@@ -226,60 +226,6 @@ export class ProductService {
     return values;
   }
 
-  private async validateVariantInput(
-    productId: string,
-    variants: CreateVariantDto[],
-    options: CreateProductDto['options'],
-  ) {
-    if (!variants?.length) {
-      return;
-    }
-
-    const skuSet = new Set<string>();
-    const combinationSet = new Set<string>();
-
-    for (const variant of variants) {
-      const sku = this.normalize(variant.sku);
-
-      if (skuSet.has(sku)) {
-        throw new ConflictException(`Duplicate variant SKU: ${variant.sku}`);
-      }
-
-      skuSet.add(sku);
-
-      const optionValueIds = variant.optionValueIds ?? [];
-
-      if (options?.length) {
-        if (optionValueIds.length !== options.length) {
-          throw new BadRequestException(
-            `Variant "${variant.sku}" must contain exactly one value for every product option`,
-          );
-        }
-      }
-
-      const values = await this.resolveVariantOptionValues(
-        productId,
-        optionValueIds,
-      );
-
-      if (!options?.length && values.length) {
-        throw new BadRequestException(
-          `Variant "${variant.sku}" cannot have option values because this product has no options`,
-        );
-      }
-
-      const combinationKey = this.buildCombinationKey(values);
-
-      if (combinationSet.has(combinationKey)) {
-        throw new ConflictException(
-          `Duplicate variant combination: ${combinationKey}`,
-        );
-      }
-
-      combinationSet.add(combinationKey);
-    }
-  }
-
   async createProduct(dto: CreateProductDto) {
     const existingSlug = await this.prisma.write.product.findUnique({
       where: {
@@ -340,7 +286,7 @@ export class ProductService {
         },
       });
 
-      const createdOptions = [];
+      const createdOptions: any[] = [];
 
       if (dto.options?.length) {
         for (const optionDto of dto.options) {
@@ -805,7 +751,7 @@ export class ProductService {
           },
         });
 
-        const createdOptions = [];
+        const createdOptions: any[] = [];
 
         for (const optionDto of dto.options) {
           const option = await tx.productOption.create({
