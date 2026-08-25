@@ -32,8 +32,21 @@ export class CartService {
       if (dto.price !== undefined) {
         cart[existingItemIndex].price = dto.price;
       }
+      if (dto.name) cart[existingItemIndex].name = dto.name;
+      if (dto.image) cart[existingItemIndex].image = dto.image;
+      if (dto.sku) cart[existingItemIndex].sku = dto.sku;
+      if (dto.options) cart[existingItemIndex].options = dto.options;
     } else {
-      cart.push(dto);
+      cart.push({
+        productId: dto.productId,
+        variantId: dto.variantId,
+        quantity: dto.quantity,
+        price: dto.price || 0,
+        name: dto.name || 'Product',
+        image: dto.image || '',
+        sku: dto.sku || '',
+        options: dto.options || {},
+      });
     }
 
     await this.redis.client.set(key, JSON.stringify(cart), 'EX', 604800);

@@ -373,6 +373,28 @@ export class AddToCartDto {
   @IsNumber()
   @Min(1)
   quantity: number;
+
+  @Type(() => Number)
+  @IsNumber()
+  @Min(0)
+  @IsOptional()
+  price?: number;
+
+  @IsString()
+  @IsOptional()
+  name?: string;
+
+  @IsString()
+  @IsOptional()
+  image?: string;
+
+  @IsString()
+  @IsOptional()
+  sku?: string;
+
+  @IsOptional()
+  @IsObject()
+  options?: Record<string, string>;
 }
 
 export class UpdateCartQuantityDto {

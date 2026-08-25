@@ -1,6 +1,7 @@
 import {
   IsNotEmpty,
   IsNumber,
+  IsObject,
   IsOptional,
   IsString,
   Min,
@@ -26,6 +27,22 @@ export class AddToCartDto {
   @Min(0)
   @IsOptional()
   price?: number;
+
+  @IsString()
+  @IsOptional()
+  name?: string;
+
+  @IsString()
+  @IsOptional()
+  image?: string;
+
+  @IsString()
+  @IsOptional()
+  sku?: string;
+
+  @IsOptional()
+  @IsObject()
+  options?: Record<string, string>;
 }
 
 export class UpdateCartQuantityDto {
