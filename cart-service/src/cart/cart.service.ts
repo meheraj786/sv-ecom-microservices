@@ -1,16 +1,20 @@
-import { Injectable } from '@nestjs/common';
+import { BadRequestException, Injectable } from '@nestjs/common';
 import { RedisService } from '../redis/redis.service';
 import { AddToCartDto, UpdateCartQuantityDto } from './dto/add-to-cart.dto';
 
 @Injectable()
 export class CartService {
-  constructor(private redis: RedisService) {}
+  constructor(private readonly redis: RedisService) {}
 
   private getCartKey(userId: string): string {
+    if (!userId) {
+      throw new BadRequestException('userId is required');
+    }
     return `cart:${userId}`;
   }
 
   async getCart(userId: string) {
+    if (!userId) return [];
     const cartData = await this.redis.client.get(this.getCartKey(userId));
     return cartData ? JSON.parse(cartData) : [];
   }
@@ -45,7 +49,11 @@ export class CartService {
     );
 
     if (itemIndex > -1) {
-      cart[itemIndex].quantity = dto.quantity;
+      if (dto.quantity <= 0) {
+        cart.splice(itemIndex, 1);
+      } else {
+        cart[itemIndex].quantity = dto.quantity;
+      }
       await this.redis.client.set(key, JSON.stringify(cart), 'EX', 604800);
     }
 
@@ -63,6 +71,7 @@ export class CartService {
   }
 
   async clearCart(userId: string) {
+    if (!userId) return { message: 'Cart cleared' };
     const key = this.getCartKey(userId);
     await this.redis.client.del(key);
     return { message: 'Cart cleared successfully' };

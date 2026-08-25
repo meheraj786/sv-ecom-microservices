@@ -1,9 +1,9 @@
 import {
-  IsString,
   IsNotEmpty,
   IsNumber,
-  Min,
   IsOptional,
+  IsString,
+  Min,
 } from 'class-validator';
 import { Type } from 'class-transformer';
 
@@ -23,7 +23,7 @@ export class AddToCartDto {
 
   @Type(() => Number)
   @IsNumber()
-  @Min(0, { message: 'Price cannot be negative' })
+  @Min(0)
   @IsOptional()
   price?: number;
 }
@@ -35,6 +35,6 @@ export class UpdateCartQuantityDto {
 
   @Type(() => Number)
   @IsNumber()
-  @Min(1, { message: 'Quantity must be at least 1' })
+  @Min(0)
   quantity: number;
 }

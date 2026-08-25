@@ -161,22 +161,7 @@ export class CreateVariantDto {
   options?: Record<string, string>;
 }
 
-export class UpdateVariantDto {
-  @IsString()
-  @IsOptional()
-  sku?: string;
-
-  @IsArray()
-  @IsOptional()
-  @IsString({ each: true })
-  images?: string[];
-
-  @IsArray()
-  @IsString({ each: true })
-  @ArrayUnique()
-  @IsOptional()
-  optionValueIds?: string[];
-}
+export class UpdateVariantDto extends CreateVariantDto {}
 
 export class CreateProductDto {
   @IsString()

@@ -13,7 +13,7 @@ import { AddToCartDto, UpdateCartQuantityDto } from './dto/add-to-cart.dto';
 
 @Controller('cart')
 export class CartController {
-  constructor(private cartService: CartService) {}
+  constructor(private readonly cartService: CartService) {}
 
   @Get()
   async getCart(@Query('userId') userId: string) {
@@ -47,7 +47,11 @@ export class CartController {
   }
 
   @Delete()
-  clearCart(@Body('userId') userId: string) {
-    return this.cartService.clearCart(userId);
+  async clearCart(
+    @Body('userId') bodyUserId?: string,
+    @Query('userId') queryUserId?: string,
+  ) {
+    const userId = bodyUserId || queryUserId;
+    return this.cartService.clearCart(userId as string);
   }
 }
