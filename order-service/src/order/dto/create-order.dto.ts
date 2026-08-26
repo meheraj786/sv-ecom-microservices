@@ -1,4 +1,5 @@
 import {
+  IsArray,
   IsEmail,
   IsNotEmpty,
   IsOptional,
@@ -53,4 +54,12 @@ export class CreateOrderDto {
   @Type(() => BillingInfoDto)
   @IsNotEmpty({ message: 'Billing info is required' })
   billing: BillingInfoDto;
+
+  @IsOptional()
+  @IsArray()
+  items?: {
+    productId: string;
+    variantId: string;
+    quantity: number;
+  }[];
 }

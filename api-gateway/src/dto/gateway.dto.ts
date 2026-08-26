@@ -650,7 +650,7 @@ export class BillingInfoDto {
 
 export class CreateOrderDto {
   @IsString()
-  @IsNotEmpty()
+  @IsNotEmpty({ message: 'Division ID is required' })
   divisionId: string;
 
   @IsString()
@@ -663,8 +663,12 @@ export class CreateOrderDto {
 
   @ValidateNested()
   @Type(() => BillingInfoDto)
-  @IsNotEmpty()
+  @IsNotEmpty({ message: 'Billing info is required' })
   billing: BillingInfoDto;
+
+  @IsOptional()
+  @IsArray()
+  items?: any[];
 }
 
 export class CreateDivisionDto {

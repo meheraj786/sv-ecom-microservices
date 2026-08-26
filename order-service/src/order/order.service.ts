@@ -254,10 +254,7 @@ export class OrderService {
   }
 
   async createOrder(userId: string | undefined, dto: CreateOrderDto) {
-    const effectiveUserId = userId || dto.customerId;
-    if (!effectiveUserId) {
-      throw new BadRequestException('A valid userId or customerId is required');
-    }
+    const effectiveUserId = userId || dto.customerId || 'GUEST';
 
     const division = await this.prisma.division.findUnique({
       where: { id: dto.divisionId },
@@ -267,13 +264,23 @@ export class OrderService {
       throw new NotFoundException('Selected division does not exist');
     }
 
-    const cartResponse = await this.httpRequest<{ items: CartItem[] }>(
-      this.cartBaseUrl,
-      `/cart?userId=${encodeURIComponent(effectiveUserId)}`,
-      'GET',
-    );
+    let cartItems: {
+      productId: string;
+      variantId: string;
+      quantity: number;
+    }[] = [];
 
-    const cartItems = cartResponse.items || [];
+    if (dto.items && dto.items.length > 0) {
+      cartItems = dto.items;
+    } else {
+      const cartResponse = await this.httpRequest<{ items: CartItem[] }>(
+        this.cartBaseUrl,
+        `/cart?userId=${encodeURIComponent(effectiveUserId)}`,
+        'GET',
+      );
+      cartItems = cartResponse?.items || [];
+    }
+
     if (!cartItems.length) {
       throw new BadRequestException('Cannot place an order with an empty cart');
     }
@@ -457,9 +464,7 @@ export class OrderService {
       await this.httpRequest(this.cartBaseUrl, '/cart', 'DELETE', {
         userId: effectiveUserId,
       });
-    } catch {
-      console.error('Failed to clear cart');
-    }
+    } catch {}
 
     return order;
   }
