@@ -245,13 +245,17 @@ export class AppService {
         'DELETE',
       ),
 
-    validateCouponForUser: (data: { userId: string; code: string }) =>
+    validateCouponForUser: (data: {
+      userId: string;
+      code: string;
+      items?: any[];
+    }) =>
       this.httpRequest(
         'order',
         '/order/coupon/validate',
         'POST',
-        { code: data.code },
-        { userId: data.userId },
+        { code: data.code, items: data.items },
+        data.userId ? { userId: data.userId } : undefined,
       ),
   };
 

@@ -613,6 +613,10 @@ export class ValidateCouponDto {
   @IsString()
   @IsNotEmpty()
   code: string;
+
+  @IsOptional()
+  @IsArray()
+  items?: any[];
 }
 
 export class BillingInfoDto {

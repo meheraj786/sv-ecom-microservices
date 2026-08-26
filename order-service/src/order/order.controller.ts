@@ -42,7 +42,7 @@ export class OrderController {
     @Query('userId') userId: string,
     @Body() dto: ValidateCouponDto,
   ) {
-    return this.orderService.validateCouponForUser(userId, dto.code);
+    return this.orderService.validateCouponForUser(userId, dto.code, dto.items);
   }
 
   @Post('coupon')

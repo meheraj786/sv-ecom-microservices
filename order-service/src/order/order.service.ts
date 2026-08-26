@@ -131,7 +131,7 @@ export class OrderService {
     userId: string,
     perUserLimit?: number | null,
   ) {
-    if (!perUserLimit || !userId) return;
+    if (!perUserLimit || !userId || userId === 'GUEST') return;
 
     const usageCount = await this.prisma.couponUsage.count({
       where: {
@@ -722,14 +722,33 @@ export class OrderService {
     return { message: 'Coupon deleted successfully' };
   }
 
-  async validateCouponForUser(userId: string, code: string) {
-    const cartResponse = await this.httpRequest<{ items: CartItem[] }>(
-      this.cartBaseUrl,
-      `/cart?userId=${encodeURIComponent(userId)}`,
-      'GET',
-    );
+  async validateCouponForUser(
+    userId: string,
+    code: string,
+    providedItems?: {
+      productId: string;
+      variantId: string;
+      quantity: number;
+      price?: number;
+    }[],
+  ) {
+    let cartItems: {
+      productId: string;
+      variantId: string;
+      quantity: number;
+    }[] = [];
 
-    const cartItems = cartResponse.items || [];
+    if (providedItems && providedItems.length > 0) {
+      cartItems = providedItems;
+    } else {
+      const cartResponse = await this.httpRequest<{ items: CartItem[] }>(
+        this.cartBaseUrl,
+        `/cart?userId=${encodeURIComponent(userId)}`,
+        'GET',
+      );
+      cartItems = cartResponse?.items || [];
+    }
+
     if (!cartItems.length) {
       throw new BadRequestException('Your cart is empty');
     }

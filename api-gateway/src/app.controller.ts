@@ -424,14 +424,18 @@ export class AppController {
     );
   }
 
-  @UseGuards(JwtAuthGuard)
   @Post('order/coupon/validate')
-  validateCoupon(@Req() req: any, @Body() dto: ValidateCouponDto) {
-    const userId = req.user.userId as string;
+  validateCoupon(
+    @Req() req: any,
+    @Query('userId') queryUserId: string,
+    @Body() dto: ValidateCouponDto,
+  ) {
+    const userId = req.user?.userId || queryUserId || 'GUEST';
     return this.appService.rpcCall(
       this.appService.orderService.validateCouponForUser({
         userId,
         code: dto.code,
+        items: dto.items,
       }),
     );
   }
