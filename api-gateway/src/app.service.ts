@@ -34,6 +34,32 @@ export class AppService {
       this.httpRequest('user', '/account/update', 'POST', data),
   };
 
+  public customerService = {
+    getCustomers: (query: any) =>
+      this.httpRequest('user', '/customer', 'GET', undefined, query),
+    getCustomerById: (data: { id: string }) =>
+      this.httpRequest(
+        'user',
+        `/customer/${encodeURIComponent(data.id)}`,
+        'GET',
+      ),
+    createCustomer: (data: any) =>
+      this.httpRequest('user', '/customer', 'POST', data),
+    updateCustomer: (data: any) =>
+      this.httpRequest(
+        'user',
+        `/customer/${encodeURIComponent(data.id)}`,
+        'PUT',
+        data.payload,
+      ),
+    deleteCustomer: (data: { id: string }) =>
+      this.httpRequest(
+        'user',
+        `/customer/${encodeURIComponent(data.id)}`,
+        'DELETE',
+      ),
+  };
+
   public productService = {
     createCategory: (data: any) =>
       this.httpRequest('product', '/product/category', 'POST', data),
@@ -210,7 +236,7 @@ export class AppService {
     },
     getOrders: (data: any) =>
       this.httpRequest('order', '/order', 'GET', undefined, {
-        userId: data.userId,
+        ...(data.userId ? { userId: data.userId } : {}),
         ...(data.page ? { page: data.page } : {}),
         ...(data.limit ? { limit: data.limit } : {}),
       }),

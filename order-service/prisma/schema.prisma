@@ -9,22 +9,30 @@ datasource db {
 }
 
 model Order {
-  id             String        @id @default(cuid())
-  userId         String?
-  customerId     String
-  totalAmount    Decimal       @db.Decimal(12, 2)
-  discountAmount Float         @default(0)
-  couponCode     String?
-  status         String        @default("PENDING")
-  divisionId     String
-  couponId       String?
-  coupon         Coupon?       @relation(fields: [couponId], references: [id])
-  items          OrderItem[]
-  couponUsages   CouponUsage[]
-  division       division      @relation(fields: [divisionId], references: [id], onDelete: Cascade)
-  createdAt      DateTime      @default(now())
-  updatedAt      DateTime      @updatedAt
+  id              String        @id @default(cuid())
+  userId          String?
+  customerId      String
+  customerName    String
+  customerEmail   String
+  customerPhone   String
+  shippingAddress String
+  city            String
+  zipCode         String?
+  totalAmount     Decimal       @db.Decimal(12, 2)
+  discountAmount  Float         @default(0)
+  couponCode      String?
+  status          String        @default("PENDING")
+  divisionId      String
+  couponId        String?
+  coupon          Coupon?       @relation(fields: [couponId], references: [id])
+  items           OrderItem[]
+  couponUsages    CouponUsage[]
+  division        division      @relation(fields: [divisionId], references: [id], onDelete: Cascade)
+  createdAt       DateTime      @default(now())
+  updatedAt       DateTime      @updatedAt
 
+  @@index([customerPhone])
+  @@index([customerEmail])
   @@map("orders")
 }
 

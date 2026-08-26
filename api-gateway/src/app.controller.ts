@@ -126,6 +126,46 @@ export class AppController {
   }
 
   @UseGuards(JwtAuthGuard, AdminGuard)
+  @Get('customer')
+  getCustomers(@Query() query: PaginationQueryDto) {
+    return this.appService.rpcCall(
+      this.appService.customerService.getCustomers(query),
+    );
+  }
+
+  @UseGuards(JwtAuthGuard, AdminGuard)
+  @Get('customer/:id')
+  getCustomerById(@Param('id') id: string) {
+    return this.appService.rpcCall(
+      this.appService.customerService.getCustomerById({ id }),
+    );
+  }
+
+  @UseGuards(JwtAuthGuard, AdminGuard)
+  @Post('customer')
+  createCustomer(@Body() dto: any) {
+    return this.appService.rpcCall(
+      this.appService.customerService.createCustomer(dto),
+    );
+  }
+
+  @UseGuards(JwtAuthGuard, AdminGuard)
+  @Put('customer/:id')
+  updateCustomer(@Param('id') id: string, @Body() dto: any) {
+    return this.appService.rpcCall(
+      this.appService.customerService.updateCustomer({ id, payload: dto }),
+    );
+  }
+
+  @UseGuards(JwtAuthGuard, AdminGuard)
+  @Delete('customer/:id')
+  deleteCustomer(@Param('id') id: string) {
+    return this.appService.rpcCall(
+      this.appService.customerService.deleteCustomer({ id }),
+    );
+  }
+
+  @UseGuards(JwtAuthGuard, AdminGuard)
   @Post('product/category')
   createCategory(@Body() dto: CreateCategoryDto) {
     return this.appService.rpcCall(
@@ -355,10 +395,9 @@ export class AppController {
     );
   }
 
-  @UseGuards(JwtAuthGuard)
   @Post('order')
   createOrder(@Req() req: any, @Body() dto: CreateOrderDto) {
-    const userId = req.user.userId as string;
+    const userId = req.user?.userId || dto.customerId || 'GUEST';
     return this.appService.rpcCall(
       this.appService.orderService.createOrder({
         userId,
@@ -369,8 +408,15 @@ export class AppController {
 
   @UseGuards(JwtAuthGuard)
   @Get('order')
-  getOrders(@Req() req: any, @Query() query: PaginationQueryDto) {
-    const userId = req.user.userId as string;
+  getOrders(
+    @Req() req: any,
+    @Query() query: PaginationQueryDto & { all?: string },
+  ) {
+    const isAdmin = req.user?.role === 'ADMIN';
+    const isAllRequested = query.all === 'true';
+    const userId =
+      isAdmin || isAllRequested ? undefined : (req.user?.userId as string);
+
     return this.appService.rpcCall(
       this.appService.orderService.getOrders({ userId, ...query }),
     );

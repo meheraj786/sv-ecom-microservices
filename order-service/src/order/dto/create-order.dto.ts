@@ -57,9 +57,5 @@ export class CreateOrderDto {
 
   @IsOptional()
   @IsArray()
-  items?: {
-    productId: string;
-    variantId: string;
-    quantity: number;
-  }[];
+  items?: any[];
 }

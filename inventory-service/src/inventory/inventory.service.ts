@@ -6,6 +6,7 @@ import {
 import { PrismaService } from 'src/prisma/prisma.service';
 import { AddBatchDto } from './dto/add-batch.dto';
 import { GetStocksQueryDto } from './dto/get-stocks-query.dto';
+import { DeductItemDto } from './dto/deduct-stock.dto';
 
 @Injectable()
 export class InventoryService {
@@ -184,93 +185,88 @@ export class InventoryService {
     };
   }
 
-  async deductFifoStock(variantId: string, quantity: number) {
-    if (!Number.isInteger(quantity) || quantity <= 0) {
-      throw new BadRequestException('Quantity must be a positive integer');
+  async deductMultipleFifoStocks(items: DeductItemDto[]) {
+    if (!items || !items.length) {
+      throw new BadRequestException('No items provided for stock deduction');
     }
 
     return this.prisma.$transaction(async (tx) => {
-      const batches = await tx.stock.findMany({
-        where: {
-          variantId,
-          quantityRemaining: {
-            gt: 0,
-          },
-        },
-        orderBy: {
-          createdAt: 'asc',
-        },
-      });
+      const allDeductions: any[] = [];
 
-      const availableStock = batches.reduce(
-        (sum, batch) => sum + batch.quantityRemaining,
-        0,
-      );
+      for (const item of items) {
+        const { variantId, quantity } = item;
 
-      if (availableStock < quantity) {
-        throw new BadRequestException(
-          `Insufficient stock for variant ${variantId}. Available: ${availableStock}, requested: ${quantity}`,
-        );
-      }
-
-      let remaining = quantity;
-
-      const deductions: {
-        stockId: string;
-        quantity: number;
-        sellingPrice: number;
-        purchasePrice: number;
-      }[] = [];
-
-      for (const batch of batches) {
-        if (remaining <= 0) {
-          break;
+        if (!Number.isInteger(quantity) || quantity <= 0) {
+          throw new BadRequestException('Quantity must be a positive integer');
         }
 
-        const deductQuantity = Math.min(batch.quantityRemaining, remaining);
-
-        const updated = await tx.stock.updateMany({
+        const batches = await tx.stock.findMany({
           where: {
-            id: batch.id,
+            variantId,
             quantityRemaining: {
-              gte: deductQuantity,
+              gt: 0,
             },
           },
-          data: {
-            quantityRemaining: {
-              decrement: deductQuantity,
-            },
+          orderBy: {
+            createdAt: 'asc',
           },
         });
 
-        if (updated.count !== 1) {
+        const availableStock = batches.reduce(
+          (sum, batch) => sum + batch.quantityRemaining,
+          0,
+        );
+
+        if (availableStock < quantity) {
           throw new BadRequestException(
-            'Stock changed while processing the order. Please retry.',
+            `Insufficient stock for variant ${variantId}. Available: ${availableStock}, requested: ${quantity}`,
           );
         }
 
-        deductions.push({
-          stockId: batch.id,
-          quantity: deductQuantity,
-          sellingPrice: batch.sellingPrice,
-          purchasePrice: batch.purchasePrice,
-        });
+        let remaining = quantity;
 
-        remaining -= deductQuantity;
-      }
+        for (const batch of batches) {
+          if (remaining <= 0) {
+            break;
+          }
 
-      if (remaining > 0) {
-        throw new BadRequestException(
-          'Unable to deduct the requested stock quantity',
-        );
+          const deductQuantity = Math.min(batch.quantityRemaining, remaining);
+
+          const updated = await tx.stock.updateMany({
+            where: {
+              id: batch.id,
+              quantityRemaining: {
+                gte: deductQuantity,
+              },
+            },
+            data: {
+              quantityRemaining: {
+                decrement: deductQuantity,
+              },
+            },
+          });
+
+          if (updated.count !== 1) {
+            throw new BadRequestException(
+              `Stock for batch ${batch.id} changed concurrently. Please retry checkout.`,
+            );
+          }
+
+          allDeductions.push({
+            stockId: batch.id,
+            variantId,
+            deducted: deductQuantity,
+            sellingPrice: batch.sellingPrice,
+            purchasePrice: batch.purchasePrice,
+          });
+
+          remaining -= deductQuantity;
+        }
       }
 
       return {
         success: true,
-        variantId,
-        requested: quantity,
-        deducted: quantity,
-        deductions,
+        deductions: allDeductions,
       };
     });
   }

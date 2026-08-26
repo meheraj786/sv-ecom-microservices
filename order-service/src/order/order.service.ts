@@ -59,7 +59,7 @@ export class OrderService {
 
   constructor(
     private readonly prisma: PrismaService,
-    @Inject('RABBITMQ_SERVICE') private readonly rmqClient: ClientProxy,
+    @Inject('USER_RMQ_SERVICE') private readonly userRmqClient: ClientProxy,
   ) {}
 
   private async httpRequest<T>(
@@ -361,6 +361,18 @@ export class OrderService {
       });
     }
 
+    await this.httpRequest(
+      this.inventoryBaseUrl,
+      '/inventory/deduct-fifo',
+      'POST',
+      {
+        items: orderItemsToCreate.map((item) => ({
+          variantId: item.variantId,
+          quantity: item.quantity,
+        })),
+      },
+    );
+
     let discountAmount = 0;
     let couponId: string | null = null;
     let normalizedCouponCode: string | null = null;
@@ -414,6 +426,12 @@ export class OrderService {
         data: {
           userId: userId ?? null,
           customerId: effectiveUserId,
+          customerName: dto.billing.fullName.trim(),
+          customerEmail: dto.billing.email.trim().toLowerCase(),
+          customerPhone: dto.billing.phone.trim(),
+          shippingAddress: dto.billing.address.trim(),
+          city: dto.billing.city.trim(),
+          zipCode: dto.billing.zipCode?.trim() || null,
           divisionId: dto.divisionId,
           totalAmount,
           discountAmount,
@@ -450,14 +468,10 @@ export class OrderService {
       return createdOrder;
     });
 
-    this.rmqClient.emit('order_created', {
+    this.userRmqClient.emit('order_created', {
       orderId: order.id,
-      userId: effectiveUserId,
+      userId: userId || null,
       billing: dto.billing,
-      items: orderItemsToCreate.map((item) => ({
-        variantId: item.variantId,
-        quantity: item.quantity,
-      })),
     });
 
     try {

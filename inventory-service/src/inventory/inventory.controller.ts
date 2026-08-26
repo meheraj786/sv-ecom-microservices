@@ -7,11 +7,11 @@ import {
   Post,
   Query,
 } from '@nestjs/common';
-import { EventPattern, Payload } from '@nestjs/microservices';
 import { InventoryService } from './inventory.service';
 import { AddBatchDto } from './dto/add-batch.dto';
 import { CalculateFifoDto } from './dto/calculate-fifo.dto';
 import { GetStocksQueryDto } from './dto/get-stocks-query.dto';
+import { DeductStockDto } from './dto/deduct-stock.dto';
 
 @Controller('inventory')
 export class InventoryController {
@@ -45,26 +45,9 @@ export class InventoryController {
     );
   }
 
-  @EventPattern('order_created')
-  async handleOrderCreated(
-    @Payload()
-    data: {
-      items: {
-        variantId: string;
-        quantity: number;
-      }[];
-    },
-  ) {
-    for (const item of data.items) {
-      await this.inventoryService.deductFifoStock(
-        item.variantId,
-        item.quantity,
-      );
-    }
-
-    return {
-      success: true,
-    };
+  @Post('deduct-fifo')
+  deductFifoStock(@Body() dto: DeductStockDto) {
+    return this.inventoryService.deductMultipleFifoStocks(dto.items);
   }
 
   @Delete('batch/:id')

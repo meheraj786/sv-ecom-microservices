@@ -44,18 +44,29 @@ export class CustomerController {
   }
 
   @EventPattern('order_created')
-  async handleOrderCreated(@Payload() data: any) {
-    console.log(
-      'RabbitMQ: Received order_created event inside Customer Service!',
-    );
+  async handleOrderCreated(
+    @Payload()
+    data: {
+      billing: {
+        fullName: string;
+        email: string;
+        phone: string;
+        address: string;
+        city: string;
+        zipCode: string;
+      };
+      userId: string;
+    },
+  ) {
+    if (data.billing && data.billing.phone) {
+      const isRegistered = Boolean(data.userId && data.userId !== 'GUEST');
 
-    if (data.billing) {
       await this.customerService.upsertCustomerLead({
         name: data.billing.fullName,
         email: data.billing.email,
         phone: data.billing.phone,
-        address: `${data.billing.address}, ${data.billing.city} ${data.billing.zipCode}`,
-        isRegistered: data.userId ? true : false,
+        address: `${data.billing.address}, ${data.billing.city}${data.billing.zipCode ? ` ${data.billing.zipCode}` : ''}`,
+        isRegistered,
       });
     }
   }
