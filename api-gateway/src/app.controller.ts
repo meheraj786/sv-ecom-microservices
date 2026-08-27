@@ -373,7 +373,6 @@ export class AppController {
     );
   }
 
-  @UseGuards(JwtAuthGuard, AdminGuard)
   @Get('inventory/stocks')
   getStocks(@Query() query: GetStocksQueryDto) {
     return this.appService.rpcCall(
