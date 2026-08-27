@@ -535,6 +535,23 @@ export class OrderService {
     return order;
   }
 
+  async updateOrderStatus(id: string, status: string) {
+    const order = await this.prisma.order.findUnique({ where: { id } });
+    if (!order) {
+      throw new NotFoundException('Order not found');
+    }
+
+    return this.prisma.order.update({
+      where: { id },
+      data: { status: status.toUpperCase() },
+      include: {
+        items: true,
+        division: true,
+        coupon: true,
+      },
+    });
+  }
+
   async createCoupon(dto: CreateCouponDto) {
     const code = dto.code.trim().toUpperCase();
 

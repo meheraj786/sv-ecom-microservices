@@ -437,6 +437,14 @@ export class AppController {
   }
 
   @UseGuards(JwtAuthGuard, AdminGuard)
+  @Put('order/:id/status')
+  updateOrderStatus(@Param('id') id: string, @Body('status') status: string) {
+    return this.appService.rpcCall(
+      this.appService.orderService.updateOrderStatus({ id, status }),
+    );
+  }
+
+  @UseGuards(JwtAuthGuard, AdminGuard)
   @Post('order/coupon')
   createCoupon(@Body() dto: CreateCouponDto) {
     return this.appService.rpcCall(

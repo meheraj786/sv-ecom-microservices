@@ -278,6 +278,14 @@ export class AppService {
         'DELETE',
       ),
 
+    updateOrderStatus: (data: { id: string; status: string }) =>
+      this.httpRequest(
+        'order',
+        `/order/${encodeURIComponent(data.id)}/status`,
+        'PUT',
+        { status: data.status },
+      ),
+
     validateCouponForUser: (data: {
       userId: string;
       code: string;

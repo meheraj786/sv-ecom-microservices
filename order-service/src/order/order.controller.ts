@@ -37,6 +37,11 @@ export class OrderController {
     return this.orderService.getOrderById(id);
   }
 
+  @Put(':id/status')
+  updateOrderStatus(@Param('id') id: string, @Body('status') status: string) {
+    return this.orderService.updateOrderStatus(id, status);
+  }
+
   @Post('coupon/validate')
   validateCoupon(
     @Query('userId') userId: string,
