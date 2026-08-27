@@ -393,6 +393,13 @@ export class AppController {
       this.appService.inventoryService.calculateFifoPrice(dto),
     );
   }
+  @UseGuards(JwtAuthGuard, AdminGuard)
+  @Put('inventory/batch/:id')
+  updateInventoryBatch(@Param('id') id: string, @Body() dto: any) {
+    return this.appService.rpcCall(
+      this.appService.inventoryService.updateBatch({ id, payload: dto }),
+    );
+  }
 
   @Post('order')
   createOrder(@Req() req: any, @Body() dto: CreateOrderDto) {

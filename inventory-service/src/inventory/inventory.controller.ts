@@ -5,6 +5,7 @@ import {
   Get,
   Param,
   Post,
+  Put,
   Query,
 } from '@nestjs/common';
 import { InventoryService } from './inventory.service';
@@ -43,6 +44,11 @@ export class InventoryController {
       dto.variantId,
       dto.quantity,
     );
+  }
+
+  @Put('batch/:id')
+  updateBatch(@Param('id') id: string, @Body() dto: any) {
+    return this.inventoryService.updateBatch(id, dto);
   }
 
   @Post('deduct-fifo')

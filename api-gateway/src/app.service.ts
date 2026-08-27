@@ -221,6 +221,13 @@ export class AppService {
       ),
     calculateFifoPrice: (data: any) =>
       this.httpRequest('inventory', '/inventory/fifo-price', 'POST', data),
+    updateBatch: (data: { id: string; payload: any }) =>
+      this.httpRequest(
+        'inventory',
+        `/inventory/batch/${encodeURIComponent(data.id)}`,
+        'PUT',
+        data.payload,
+      ),
   };
 
   public orderService = {

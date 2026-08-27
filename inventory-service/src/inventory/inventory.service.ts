@@ -7,6 +7,7 @@ import { PrismaService } from 'src/prisma/prisma.service';
 import { AddBatchDto } from './dto/add-batch.dto';
 import { GetStocksQueryDto } from './dto/get-stocks-query.dto';
 import { DeductItemDto } from './dto/deduct-stock.dto';
+import { UpdateBatchDto } from './dto/update-batch.dto';
 
 @Injectable()
 export class InventoryService {
@@ -281,6 +282,35 @@ export class InventoryService {
     }
 
     return stock;
+  }
+
+  async updateBatch(id: string, dto: UpdateBatchDto) {
+    const existing = await this.prisma.stock.findUnique({ where: { id } });
+    if (!existing) {
+      throw new NotFoundException('Stock batch not found');
+    }
+
+    return this.prisma.stock.update({
+      where: { id },
+      data: {
+        ...(dto.purchasePrice !== undefined
+          ? { purchasePrice: Number(dto.purchasePrice) }
+          : {}),
+        ...(dto.sellingPrice !== undefined
+          ? { sellingPrice: Number(dto.sellingPrice) }
+          : {}),
+        ...(dto.quantityRemaining !== undefined
+          ? { quantityRemaining: Number(dto.quantityRemaining) }
+          : {}),
+        ...(dto.isDiscounted !== undefined
+          ? { isDiscounted: dto.isDiscounted }
+          : {}),
+        ...(dto.beforeDiscount !== undefined
+          ? { beforeDiscount: Number(dto.beforeDiscount) }
+          : {}),
+        ...(dto.note !== undefined ? { note: dto.note } : {}),
+      },
+    });
   }
 
   async deleteBatch(id: string) {
