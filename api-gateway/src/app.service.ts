@@ -18,12 +18,13 @@ export class AppService {
       process.env.ORDER_SERVICE_URL ??
       'http://localhost:3005',
   };
-
   public userService = {
     registerUser: (data: any) =>
       this.httpRequest('user', '/auth/register', 'POST', data),
     loginUser: (data: any) =>
       this.httpRequest('user', '/auth/login', 'POST', data),
+    googleAuth: (data: any) =>
+      this.httpRequest('user', '/auth/google', 'POST', data),
     registerVendor: (data: any) =>
       this.httpRequest('user', '/auth/vendor/register', 'POST', data),
     loginVendor: (data: any) =>

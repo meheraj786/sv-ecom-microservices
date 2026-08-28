@@ -6,7 +6,7 @@ import { LoginDto } from './dto/login.dto';
 
 @Controller()
 export class AuthController {
-  constructor(private authService: AuthService) {}
+  constructor(private readonly authService: AuthService) {}
 
   @Post('auth/register')
   registerUser(@Body() dto: RegisterUserDto) {
@@ -16,6 +16,19 @@ export class AuthController {
   @Post('auth/login')
   loginUser(@Body() dto: LoginDto) {
     return this.authService.loginUser(dto);
+  }
+
+  @Post('auth/google')
+  googleAuth(
+    @Body()
+    data: {
+      googleId: string;
+      email: string;
+      name: string;
+      avatar?: string;
+    },
+  ) {
+    return this.authService.googleAuth(data);
   }
 
   @Post('auth/vendor/register')

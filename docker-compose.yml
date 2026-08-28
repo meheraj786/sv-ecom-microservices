@@ -22,6 +22,10 @@ services:
       - CART_SERVICE_URL=http://cart-service:3003
       - INVENTORY_SERVICE_URL=http://inventory-service:3004
       - ORDER_SERVICE_URL=http://order-service:3005
+      - GOOGLE_CLIENT_ID=${GOOGLE_CLIENT_ID}
+      - GOOGLE_CLIENT_SECRET=${GOOGLE_CLIENT_SECRET}
+      - BACKEND_GATEWAY_URL=http://localhost
+      - FRONTEND_URL=http://localhost:3000
     depends_on:
       - user-service
       - product-service
@@ -30,7 +34,6 @@ services:
       - order-service
     networks:
       - ecommerce-network
-
   # 3. User Service (Mongoose + MongoDB on HTTP 3001)
   user-service:
     build:

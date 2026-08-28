@@ -34,6 +34,7 @@ export class AuthService {
       email,
       password: hashedPassword,
       name,
+      provider: 'local',
     });
 
     return {
@@ -50,7 +51,11 @@ export class AuthService {
       throw new UnauthorizedException('Invalid credentials');
     }
 
-    const isMatch = await bcrypt.compare(password, user.password);
+    if (!user.password && user.provider === 'google') {
+      throw new UnauthorizedException('Please login with Google');
+    }
+
+    const isMatch = await bcrypt.compare(password, user.password || '');
     if (!isMatch) {
       throw new UnauthorizedException('Invalid credentials');
     }
@@ -65,6 +70,53 @@ export class AuthService {
       message: 'Login successful',
       token,
       user: { id: user._id, email: user.email, name: user.name },
+    };
+  }
+
+  async googleAuth(data: {
+    googleId: string;
+    email: string;
+    name: string;
+    avatar?: string;
+  }) {
+    const { googleId, email, name, avatar } = data;
+
+    let user = await this.userModel.findOne({
+      $or: [{ googleId }, { email }],
+    });
+
+    if (!user) {
+      user = await this.userModel.create({
+        email,
+        name,
+        googleId,
+        avatar,
+        provider: 'google',
+      });
+    } else {
+      if (!user.googleId) {
+        user.googleId = googleId;
+        user.provider = 'google';
+        if (avatar) user.avatar = avatar;
+        await user.save();
+      }
+    }
+
+    const token = this.jwtService.sign({
+      userId: user._id,
+      email: user.email,
+      role: 'USER',
+    });
+
+    return {
+      message: 'Google login successful',
+      token,
+      user: {
+        id: user._id,
+        email: user.email,
+        name: user.name,
+        avatar: user.avatar,
+      },
     };
   }
 
