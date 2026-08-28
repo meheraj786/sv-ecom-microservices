@@ -11,7 +11,7 @@ import {
   Res,
   UseGuards,
 } from '@nestjs/common';
-import type { Request, Response } from 'express';
+import type { Response } from 'express';
 import { AppService } from './app.service';
 import { JwtAuthGuard } from './common/guards/jwt-auth.guard';
 import { AdminGuard } from './common/guards/admin.guard';
@@ -451,6 +451,22 @@ export class AppController {
   addInventoryBatch(@Body() dto: AddBatchDto) {
     return this.appService.rpcCall(
       this.appService.inventoryService.addBatch(dto),
+    );
+  }
+
+  @UseGuards(JwtAuthGuard, AdminGuard)
+  @Put('inventory/batch/:id')
+  updateInventoryBatch(@Param('id') id: string, @Body() dto: any) {
+    return this.appService.rpcCall(
+      this.appService.inventoryService.updateBatch({ id, payload: dto }),
+    );
+  }
+
+  @UseGuards(JwtAuthGuard, AdminGuard)
+  @Delete('inventory/batch/:id')
+  deleteInventoryBatch(@Param('id') id: string) {
+    return this.appService.rpcCall(
+      this.appService.inventoryService.deleteBatch({ id }),
     );
   }
 

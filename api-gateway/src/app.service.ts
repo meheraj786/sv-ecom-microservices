@@ -18,6 +18,7 @@ export class AppService {
       process.env.ORDER_SERVICE_URL ??
       'http://localhost:3005',
   };
+
   public userService = {
     registerUser: (data: any) =>
       this.httpRequest('user', '/auth/register', 'POST', data),
@@ -206,6 +207,19 @@ export class AppService {
   public inventoryService = {
     addBatch: (data: any) =>
       this.httpRequest('inventory', '/inventory/batch', 'POST', data),
+    updateBatch: (data: { id: string; payload: any }) =>
+      this.httpRequest(
+        'inventory',
+        `/inventory/batch/${encodeURIComponent(data.id)}`,
+        'PUT',
+        data.payload,
+      ),
+    deleteBatch: (data: { id: string }) =>
+      this.httpRequest(
+        'inventory',
+        `/inventory/batch/${encodeURIComponent(data.id)}`,
+        'DELETE',
+      ),
     getStocks: (query: any) =>
       this.httpRequest(
         'inventory',
@@ -222,13 +236,6 @@ export class AppService {
       ),
     calculateFifoPrice: (data: any) =>
       this.httpRequest('inventory', '/inventory/fifo-price', 'POST', data),
-    updateBatch: (data: { id: string; payload: any }) =>
-      this.httpRequest(
-        'inventory',
-        `/inventory/batch/${encodeURIComponent(data.id)}`,
-        'PUT',
-        data.payload,
-      ),
   };
 
   public orderService = {
@@ -254,6 +261,13 @@ export class AppService {
         `/order/single/${encodeURIComponent(data.id)}`,
         'GET',
       ),
+    updateOrderStatus: (data: { id: string; status: string }) =>
+      this.httpRequest(
+        'order',
+        `/order/${encodeURIComponent(data.id)}/status`,
+        'PUT',
+        { status: data.status },
+      ),
 
     createCoupon: (data: any) =>
       this.httpRequest('order', '/order/coupon', 'POST', data),
@@ -277,14 +291,6 @@ export class AppService {
         'order',
         `/order/coupon/${encodeURIComponent(data.id)}`,
         'DELETE',
-      ),
-
-    updateOrderStatus: (data: { id: string; status: string }) =>
-      this.httpRequest(
-        'order',
-        `/order/${encodeURIComponent(data.id)}/status`,
-        'PUT',
-        { status: data.status },
       ),
 
     validateCouponForUser: (data: {
