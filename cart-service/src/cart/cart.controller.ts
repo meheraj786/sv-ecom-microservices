@@ -18,7 +18,8 @@ export class CartController {
 
   @Get()
   async getCart(@Query('userId') userId: string) {
-    const items = await this.cartService.getCart(userId);
+    const effectiveUserId = userId || 'GUEST';
+    const items = await this.cartService.getCart(effectiveUserId);
     return { items };
   }
 
@@ -53,7 +54,11 @@ export class CartController {
     @Param('variantId') variantId: string,
     @Query('userId') userId: string,
   ) {
-    const items = await this.cartService.removeFromCart(userId, variantId);
+    const effectiveUserId = userId || 'GUEST';
+    const items = await this.cartService.removeFromCart(
+      effectiveUserId,
+      variantId,
+    );
     return { items };
   }
 
@@ -62,7 +67,7 @@ export class CartController {
     @Body('userId') bodyUserId?: string,
     @Query('userId') queryUserId?: string,
   ) {
-    const userId = bodyUserId || queryUserId;
-    return this.cartService.clearCart(userId as string);
+    const userId = bodyUserId || queryUserId || 'GUEST';
+    return this.cartService.clearCart(userId);
   }
 }

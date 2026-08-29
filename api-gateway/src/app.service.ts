@@ -187,9 +187,21 @@ export class AppService {
         userId: data.userId,
       }),
     addToCart: (data: any) =>
-      this.httpRequest('cart', '/cart/add', 'POST', data),
+      this.httpRequest(
+        'cart',
+        '/cart/add',
+        'POST',
+        data,
+        data.userId ? { userId: data.userId } : undefined,
+      ),
     updateQuantity: (data: any) =>
-      this.httpRequest('cart', '/cart/update-quantity', 'PUT', data),
+      this.httpRequest(
+        'cart',
+        '/cart/update-quantity',
+        'PUT',
+        data,
+        data.userId ? { userId: data.userId } : undefined,
+      ),
     removeFromCart: (data: any) =>
       this.httpRequest(
         'cart',
@@ -201,7 +213,13 @@ export class AppService {
         },
       ),
     clearCart: (data: any) =>
-      this.httpRequest('cart', '/cart', 'DELETE', { userId: data.userId }),
+      this.httpRequest(
+        'cart',
+        '/cart',
+        'DELETE',
+        { userId: data.userId },
+        { userId: data.userId },
+      ),
   };
 
   public inventoryService = {

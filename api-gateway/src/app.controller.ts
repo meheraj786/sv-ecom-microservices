@@ -11,7 +11,7 @@ import {
   Res,
   UseGuards,
 } from '@nestjs/common';
-import type { Response } from 'express';
+import type { Request, Response } from 'express';
 import { AppService } from './app.service';
 import { JwtAuthGuard } from './common/guards/jwt-auth.guard';
 import { AdminGuard } from './common/guards/admin.guard';
@@ -147,7 +147,7 @@ export class AppController {
   getMe(@Req() req: any) {
     return {
       user: {
-        id: req.user.userId,
+        id: req.user.userId || req.user.id || req.user.sub,
         email: req.user.email,
         role: req.user.role || 'USER',
       },
@@ -404,7 +404,7 @@ export class AppController {
   @UseGuards(JwtAuthGuard)
   @Get('cart')
   getCart(@Req() req: any) {
-    const userId = req.user.userId as string;
+    const userId = req.user?.userId || req.user?.id || req.user?.sub;
     return this.appService.rpcCall(
       this.appService.cartService.getCart({ userId }),
     );
@@ -413,25 +413,25 @@ export class AppController {
   @UseGuards(JwtAuthGuard)
   @Post('cart/add')
   addToCart(@Req() req: any, @Body() dto: AddToCartDto) {
-    const userId = req.user.userId;
+    const userId = req.user?.userId || req.user?.id || req.user?.sub;
     return this.appService.rpcCall(
-      this.appService.cartService.addToCart({ userId, ...dto }),
+      this.appService.cartService.addToCart({ ...dto, userId }),
     );
   }
 
   @UseGuards(JwtAuthGuard)
   @Put('cart/update-quantity')
   updateCartQuantity(@Req() req: any, @Body() dto: UpdateCartQuantityDto) {
-    const userId = req.user.userId;
+    const userId = req.user?.userId || req.user?.id || req.user?.sub;
     return this.appService.rpcCall(
-      this.appService.cartService.updateQuantity({ userId, ...dto }),
+      this.appService.cartService.updateQuantity({ ...dto, userId }),
     );
   }
 
   @UseGuards(JwtAuthGuard)
   @Delete('cart/:variantId')
   removeFromCart(@Req() req: any, @Param('variantId') variantId: string) {
-    const userId = req.user.userId;
+    const userId = req.user?.userId || req.user?.id || req.user?.sub;
     return this.appService.rpcCall(
       this.appService.cartService.removeFromCart({ userId, variantId }),
     );
@@ -440,7 +440,7 @@ export class AppController {
   @UseGuards(JwtAuthGuard)
   @Delete('cart')
   clearCart(@Req() req: any) {
-    const userId = req.user.userId;
+    const userId = req.user?.userId || req.user?.id || req.user?.sub;
     return this.appService.rpcCall(
       this.appService.cartService.clearCart({ userId }),
     );
