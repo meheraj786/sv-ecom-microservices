@@ -1,4 +1,5 @@
 import {
+  BadRequestException,
   Body,
   Controller,
   Delete,
@@ -22,18 +23,28 @@ export class CartController {
   }
 
   @Post('add')
-  async addToCart(@Body() dto: AddToCartDto & { userId: string }) {
-    const { userId, ...addToCartDto } = dto;
-    const items = await this.cartService.addToCart(userId, addToCartDto);
+  async addToCart(
+    @Body() dto: AddToCartDto,
+    @Query('userId') queryUserId?: string,
+  ) {
+    const userId = dto.userId || queryUserId;
+    if (!userId) {
+      throw new BadRequestException('userId is required');
+    }
+    const items = await this.cartService.addToCart(userId, dto);
     return { items };
   }
 
   @Put('update-quantity')
   async updateQuantity(
-    @Body() dto: UpdateCartQuantityDto & { userId: string },
+    @Body() dto: UpdateCartQuantityDto,
+    @Query('userId') queryUserId?: string,
   ) {
-    const { userId, ...updateDto } = dto;
-    const items = await this.cartService.updateQuantity(userId, updateDto);
+    const userId = dto.userId || queryUserId;
+    if (!userId) {
+      throw new BadRequestException('userId is required');
+    }
+    const items = await this.cartService.updateQuantity(userId, dto);
     return { items };
   }
 

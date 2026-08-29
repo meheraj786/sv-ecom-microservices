@@ -362,6 +362,10 @@ export class GetProductsQueryDto extends PaginationQueryDto {
 
 export class AddToCartDto {
   @IsString()
+  @IsOptional()
+  userId?: string;
+
+  @IsString()
   @IsNotEmpty()
   productId: string;
 
@@ -399,12 +403,16 @@ export class AddToCartDto {
 
 export class UpdateCartQuantityDto {
   @IsString()
+  @IsOptional()
+  userId?: string;
+
+  @IsString()
   @IsNotEmpty()
   variantId: string;
 
   @Type(() => Number)
   @IsNumber()
-  @Min(1)
+  @Min(0)
   quantity: number;
 }
 

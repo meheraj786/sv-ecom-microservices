@@ -10,6 +10,10 @@ import { Type } from 'class-transformer';
 
 export class AddToCartDto {
   @IsString()
+  @IsOptional()
+  userId?: string;
+
+  @IsString()
   @IsNotEmpty({ message: 'productId is required' })
   productId: string;
 
@@ -46,6 +50,10 @@ export class AddToCartDto {
 }
 
 export class UpdateCartQuantityDto {
+  @IsString()
+  @IsOptional()
+  userId?: string;
+
   @IsString()
   @IsNotEmpty({ message: 'variantId is required' })
   variantId: string;
