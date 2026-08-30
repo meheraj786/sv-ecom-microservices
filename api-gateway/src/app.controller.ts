@@ -3,6 +3,7 @@ import {
   Controller,
   Delete,
   Get,
+  InternalServerErrorException,
   Param,
   Post,
   Put,
@@ -48,6 +49,101 @@ const isProduction = process.env.NODE_ENV === 'production';
 export class AppController {
   constructor(private readonly appService: AppService) {}
 
+  @Get('auth/google')
+  googleAuth(@Res() res: Response) {
+    const clientId = process.env.GOOGLE_CLIENT_ID;
+
+    if (!clientId) {
+      throw new InternalServerErrorException(
+        'GOOGLE_CLIENT_ID is not configured',
+      );
+    }
+
+    const backendUrl = process.env.BACKEND_GATEWAY_URL || 'http://localhost';
+    const redirectUri = `${backendUrl.replace(/\/$/, '')}/auth/google/callback`;
+    const googleAuthUrl = `https://accounts.google.com/o/oauth2/v2/auth?client_id=${encodeURIComponent(clientId)}&redirect_uri=${encodeURIComponent(redirectUri)}&response_type=code&scope=openid%20email%20profile&access_type=offline&prompt=consent`;
+
+    return res.redirect(googleAuthUrl);
+  }
+
+  @Get('auth/google/callback')
+  async googleAuthCallback(
+    @Query('code') code: string,
+    @Query('error') googleError: string,
+    @Res() res: Response,
+  ) {
+    const frontendUrl = (
+      process.env.FRONTEND_URL || 'http://localhost:3000'
+    ).replace(/\/$/, '');
+
+    if (googleError || !code) {
+      return res.redirect(`${frontendUrl}/login?error=GoogleAccessDenied`);
+    }
+
+    try {
+      const backendUrl = process.env.BACKEND_GATEWAY_URL || 'http://localhost';
+      const redirectUri = `${backendUrl.replace(/\/$/, '')}/auth/google/callback`;
+
+      const tokenRes = await fetch('https://oauth2.googleapis.com/token', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+        body: new URLSearchParams({
+          code,
+          client_id: process.env.GOOGLE_CLIENT_ID || '',
+          client_secret: process.env.GOOGLE_CLIENT_SECRET || '',
+          redirect_uri: redirectUri,
+          grant_type: 'authorization_code',
+        }),
+      });
+
+      const tokenData = await tokenRes.json();
+
+      if (!tokenRes.ok || !tokenData.access_token) {
+        return res.redirect(
+          `${frontendUrl}/login?error=GoogleTokenExchangeFailed`,
+        );
+      }
+
+      const profileRes = await fetch(
+        'https://www.googleapis.com/oauth2/v3/userinfo',
+        {
+          headers: { Authorization: `Bearer ${tokenData.access_token}` },
+        },
+      );
+
+      const profile = await profileRes.json();
+
+      if (!profile || !profile.email) {
+        return res.redirect(
+          `${frontendUrl}/login?error=GoogleProfileFetchFailed`,
+        );
+      }
+
+      const result: any = await this.appService.rpcCall(
+        this.appService.userService.googleAuth({
+          googleId: profile.sub,
+          email: profile.email,
+          name: profile.name || profile.email.split('@')[0],
+          avatar: profile.picture,
+        }),
+      );
+
+      res.cookie('token', result.token, {
+        httpOnly: true,
+        secure: isProduction,
+        sameSite: isProduction ? 'none' : 'lax',
+        maxAge: 24 * 60 * 60 * 1000,
+      });
+
+      const userJson = encodeURIComponent(JSON.stringify(result.user));
+      return res.redirect(
+        `${frontendUrl}/auth/success?token=${result.token}&user=${userJson}`,
+      );
+    } catch {
+      return res.redirect(`${frontendUrl}/login?error=GoogleAuthFailed`);
+    }
+  }
+
   @Post('auth/register')
   registerUser(@Body() dto: RegisterUserDto) {
     return this.appService.rpcCall(
@@ -72,56 +168,6 @@ export class AppController {
     });
 
     return { message: result.message, user: result.user };
-  }
-
-  @Post('auth/google/verify')
-  async verifyGooglePopupToken(
-    @Body('credential') credential: string,
-    @Res({ passthrough: true }) response: Response,
-  ) {
-    if (!credential) {
-      throw new UnauthorizedException('Missing Google credential token');
-    }
-
-    try {
-      const googleRes = await fetch(
-        `https://oauth2.googleapis.com/tokeninfo?id_token=${credential}`,
-      );
-
-      if (!googleRes.ok) {
-        throw new UnauthorizedException('Invalid Google token');
-      }
-
-      const googleUser = await googleRes.json();
-
-      if (
-        process.env.GOOGLE_CLIENT_ID &&
-        googleUser.aud !== process.env.GOOGLE_CLIENT_ID
-      ) {
-        throw new UnauthorizedException('Token audience mismatch');
-      }
-
-      const result: any = await this.appService.rpcCall(
-        this.appService.userService.googleAuth({
-          googleId: googleUser.sub,
-          email: googleUser.email,
-          name: googleUser.name,
-          avatar: googleUser.picture,
-        }),
-      );
-
-      response.cookie('token', result.token, {
-        httpOnly: true,
-        secure: isProduction,
-        sameSite: isProduction ? 'none' : 'lax',
-        maxAge: 24 * 60 * 60 * 1000,
-      });
-
-      return { message: result.message, user: result.user };
-    } catch (error) {
-      console.error('Google Auth Error:', error);
-      throw new UnauthorizedException('Google authentication failed');
-    }
   }
 
   @UseGuards(JwtAuthGuard)

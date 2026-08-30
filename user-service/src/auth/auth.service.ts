@@ -13,6 +13,12 @@ import { RegisterUserDto } from './dto/register-user.dto';
 import { RegisterVendorDto } from './dto/register-vendor.dto';
 import { LoginDto } from './dto/login.dto';
 
+export interface UserRole {
+  id: string;
+  email: string;
+  role: string;
+}
+
 @Injectable()
 export class AuthService {
   constructor(
@@ -79,27 +85,19 @@ export class AuthService {
     name: string;
     avatar?: string;
   }) {
-    const { googleId, email, name, avatar } = data;
-
-    let user = await this.userModel.findOne({
-      $or: [{ googleId }, { email }],
-    });
+    let user = await this.userModel.findOne({ email: data.email });
 
     if (!user) {
+      const randomPassword = await bcrypt.hash(
+        Math.random().toString(36).slice(-8),
+        10,
+      );
       user = await this.userModel.create({
-        email,
-        name,
-        googleId,
-        avatar,
+        email: data.email,
+        name: data.name || data.email.split('@')[0],
+        password: randomPassword,
         provider: 'google',
       });
-    } else {
-      if (!user.googleId) {
-        user.googleId = googleId;
-        user.provider = 'google';
-        if (avatar) user.avatar = avatar;
-        await user.save();
-      }
     }
 
     const token = this.jwtService.sign({
@@ -115,7 +113,6 @@ export class AuthService {
         id: user._id,
         email: user.email,
         name: user.name,
-        avatar: user.avatar,
       },
     };
   }

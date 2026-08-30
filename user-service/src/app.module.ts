@@ -11,6 +11,7 @@ import { CustomerModule } from './customer/customer.module';
   imports: [
     ConfigModule.forRoot({
       isGlobal: true,
+      envFilePath: '.env',
     }),
     MongooseModule.forRoot(process.env.DATABASE_URL || ''),
     AuthModule,
