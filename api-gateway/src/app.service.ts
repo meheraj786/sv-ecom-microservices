@@ -179,6 +179,38 @@ export class AppService {
         `/product/variant/${encodeURIComponent(data.id)}`,
         'DELETE',
       ),
+
+    createReview: (data: any, headers?: Record<string, string>) =>
+      this.httpRequest('product', '/review', 'POST', data, undefined, headers),
+    getReviewsByProduct: (data: { productId: string; query?: any }) =>
+      this.httpRequest(
+        'product',
+        `/review/product/${encodeURIComponent(data.productId)}`,
+        'GET',
+        undefined,
+        data.query,
+      ),
+    updateReview: (
+      data: { id: string; payload: any },
+      headers?: Record<string, string>,
+    ) =>
+      this.httpRequest(
+        'product',
+        `/review/${encodeURIComponent(data.id)}`,
+        'PUT',
+        data.payload,
+        undefined,
+        headers,
+      ),
+    deleteReview: (data: { id: string }, headers?: Record<string, string>) =>
+      this.httpRequest(
+        'product',
+        `/review/${encodeURIComponent(data.id)}`,
+        'DELETE',
+        undefined,
+        undefined,
+        headers,
+      ),
   };
 
   public cartService = {
@@ -360,6 +392,7 @@ export class AppService {
     method: 'GET' | 'POST' | 'PUT' | 'DELETE' = 'GET',
     body?: any,
     query?: Record<string, QueryValue>,
+    customHeaders?: Record<string, string>,
   ): Promise<T> {
     const baseUrl = this.serviceUrls[service];
     const url = new URL(path, baseUrl.endsWith('/') ? baseUrl : `${baseUrl}/`);
@@ -374,6 +407,7 @@ export class AppService {
 
     const headers: Record<string, string> = {
       'Content-Type': 'application/json',
+      ...(customHeaders || {}),
     };
 
     const response = await fetch(url.toString(), {

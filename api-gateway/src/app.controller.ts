@@ -10,7 +10,6 @@ import {
   Query,
   Req,
   Res,
-  UnauthorizedException,
   UseGuards,
 } from '@nestjs/common';
 import type { Response } from 'express';
@@ -177,6 +176,7 @@ export class AppController {
       user: {
         id: req.user.userId || req.user.id || req.user.sub,
         email: req.user.email,
+        name: req.user.name,
         role: req.user.role || 'USER',
       },
     };
@@ -426,6 +426,76 @@ export class AppController {
   deleteVariant(@Param('id') id: string) {
     return this.appService.rpcCall(
       this.appService.productService.deleteVariant({ id }),
+    );
+  }
+
+  @UseGuards(JwtAuthGuard)
+  @Post('review')
+  createReview(@Req() req: any, @Body() dto: any) {
+    const user = req.user;
+    const rawToken = req.cookies?.token || req.headers.authorization || '';
+
+    return this.appService.rpcCall(
+      this.appService.productService.createReview(dto, {
+        Authorization: rawToken.startsWith('Bearer ')
+          ? rawToken
+          : `Bearer ${rawToken}`,
+        Cookie: `token=${rawToken}`,
+        'x-user-id': user.userId || user.id,
+        'x-user-name': user.name || 'Customer',
+        'x-user-role': user.role || 'USER',
+      }),
+    );
+  }
+
+  @Get('review/product/:productId')
+  getReviewsByProduct(
+    @Param('productId') productId: string,
+    @Query() query: PaginationQueryDto,
+  ) {
+    return this.appService.rpcCall(
+      this.appService.productService.getReviewsByProduct({ productId, query }),
+    );
+  }
+
+  @UseGuards(JwtAuthGuard)
+  @Put('review/:id')
+  updateReview(@Req() req: any, @Param('id') id: string, @Body() dto: any) {
+    const user = req.user;
+    const rawToken = req.cookies?.token || req.headers.authorization || '';
+
+    return this.appService.rpcCall(
+      this.appService.productService.updateReview(
+        { id, payload: dto },
+        {
+          Authorization: rawToken.startsWith('Bearer ')
+            ? rawToken
+            : `Bearer ${rawToken}`,
+          Cookie: `token=${rawToken}`,
+          'x-user-id': user.userId || user.id,
+        },
+      ),
+    );
+  }
+
+  @UseGuards(JwtAuthGuard)
+  @Delete('review/:id')
+  deleteReview(@Req() req: any, @Param('id') id: string) {
+    const user = req.user;
+    const rawToken = req.cookies?.token || req.headers.authorization || '';
+
+    return this.appService.rpcCall(
+      this.appService.productService.deleteReview(
+        { id },
+        {
+          Authorization: rawToken.startsWith('Bearer ')
+            ? rawToken
+            : `Bearer ${rawToken}`,
+          Cookie: `token=${rawToken}`,
+          'x-user-id': user.userId || user.id,
+          'x-user-role': user.role || 'USER',
+        },
+      ),
     );
   }
 
