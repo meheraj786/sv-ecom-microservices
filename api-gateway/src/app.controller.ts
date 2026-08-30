@@ -9,9 +9,10 @@ import {
   Query,
   Req,
   Res,
+  UnauthorizedException,
   UseGuards,
 } from '@nestjs/common';
-import type { Request, Response } from 'express';
+import type { Response } from 'express';
 import { AppService } from './app.service';
 import { JwtAuthGuard } from './common/guards/jwt-auth.guard';
 import { AdminGuard } from './common/guards/admin.guard';
@@ -42,7 +43,6 @@ import {
 } from './dto/gateway.dto';
 
 const isProduction = process.env.NODE_ENV === 'production';
-const frontendUrl = process.env.FRONTEND_URL || 'http://localhost:3000';
 
 @Controller()
 export class AppController {
@@ -74,71 +74,53 @@ export class AppController {
     return { message: result.message, user: result.user };
   }
 
-  @Get('auth/google')
-  googleAuth(@Res() res: Response) {
-    const clientId = process.env.GOOGLE_CLIENT_ID;
-    const redirectUri = `${process.env.BACKEND_GATEWAY_URL || 'http://localhost'}/auth/google/callback`;
-    const scope = 'openid email profile';
-    const authUrl = `https://accounts.google.com/o/oauth2/v2/auth?client_id=${clientId}&redirect_uri=${encodeURIComponent(redirectUri)}&response_type=code&scope=${encodeURIComponent(scope)}`;
-
-    return res.redirect(authUrl);
-  }
-
-  @Get('auth/google/callback')
-  async googleAuthCallback(@Query('code') code: string, @Res() res: Response) {
-    if (!code) {
-      return res.redirect(`${frontendUrl}/login?error=GoogleAuthFailed`);
+  @Post('auth/google/verify')
+  async verifyGooglePopupToken(
+    @Body('credential') credential: string,
+    @Res({ passthrough: true }) response: Response,
+  ) {
+    if (!credential) {
+      throw new UnauthorizedException('Missing Google credential token');
     }
 
     try {
-      const clientId = process.env.GOOGLE_CLIENT_ID;
-      const clientSecret = process.env.GOOGLE_CLIENT_SECRET;
-      const redirectUri = `${process.env.BACKEND_GATEWAY_URL || 'http://localhost'}/auth/google/callback`;
+      const googleRes = await fetch(
+        `https://oauth2.googleapis.com/tokeninfo?id_token=${credential}`,
+      );
 
-      const tokenRes = await fetch('https://oauth2.googleapis.com/token', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
-        body: new URLSearchParams({
-          code,
-          client_id: clientId || '',
-          client_secret: clientSecret || '',
-          redirect_uri: redirectUri,
-          grant_type: 'authorization_code',
-        }),
-      });
-
-      const tokenData = await tokenRes.json();
-      if (!tokenData.access_token) {
-        return res.redirect(`${frontendUrl}/login?error=TokenExchangeFailed`);
+      if (!googleRes.ok) {
+        throw new UnauthorizedException('Invalid Google token');
       }
 
-      const userRes = await fetch(
-        'https://www.googleapis.com/oauth2/v2/userinfo',
-        {
-          headers: { Authorization: `Bearer ${tokenData.access_token}` },
-        },
+      const googleUser = await googleRes.json();
+
+      if (
+        process.env.GOOGLE_CLIENT_ID &&
+        googleUser.aud !== process.env.GOOGLE_CLIENT_ID
+      ) {
+        throw new UnauthorizedException('Token audience mismatch');
+      }
+
+      const result: any = await this.appService.rpcCall(
+        this.appService.userService.googleAuth({
+          googleId: googleUser.sub,
+          email: googleUser.email,
+          name: googleUser.name,
+          avatar: googleUser.picture,
+        }),
       );
-      const googleUser = await userRes.json();
 
-      const result: any = await this.appService.userService.googleAuth({
-        googleId: googleUser.id,
-        email: googleUser.email,
-        name: googleUser.name,
-        avatar: googleUser.picture,
-      });
-
-      res.cookie('token', result.token, {
+      response.cookie('token', result.token, {
         httpOnly: true,
         secure: isProduction,
         sameSite: isProduction ? 'none' : 'lax',
         maxAge: 24 * 60 * 60 * 1000,
       });
 
-      const userParam = encodeURIComponent(JSON.stringify(result.user));
-      return res.redirect(`${frontendUrl}/auth/callback?user=${userParam}`);
+      return { message: result.message, user: result.user };
     } catch (error) {
-      console.error(error);
-      return res.redirect(`${frontendUrl}/login?error=GoogleLoginError`);
+      console.error('Google Auth Error:', error);
+      throw new UnauthorizedException('Google authentication failed');
     }
   }
 
