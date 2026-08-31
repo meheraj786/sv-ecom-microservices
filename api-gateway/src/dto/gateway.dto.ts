@@ -14,6 +14,7 @@ import {
   IsObject,
   IsOptional,
   IsString,
+  Max,
   Min,
   MinLength,
   ValidateNested,
@@ -358,6 +359,45 @@ export class GetProductsQueryDto extends PaginationQueryDto {
     | 'name-desc'
     | 'rating-high'
     | 'rating-low';
+}
+
+export class CreateReviewDto {
+  @IsString()
+  @IsNotEmpty()
+  productId: string;
+
+  @IsNumber()
+  @Min(1)
+  @Max(5)
+  rating: number;
+
+  @IsString()
+  @IsOptional()
+  comment?: string;
+}
+
+export class UpdateReviewDto {
+  @IsNumber()
+  @Min(1)
+  @Max(5)
+  @IsOptional()
+  rating?: number;
+
+  @IsString()
+  @IsOptional()
+  comment?: string;
+}
+
+export class StartConversationDto {
+  @IsString()
+  @IsNotEmpty()
+  targetUserId: string;
+}
+
+export class MarkChatReadDto {
+  @IsString()
+  @IsNotEmpty()
+  conversationId: string;
 }
 
 export class AddToCartDto {

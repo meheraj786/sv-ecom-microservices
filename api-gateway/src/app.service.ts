@@ -36,6 +36,27 @@ export class AppService {
       this.httpRequest('user', '/account/update', 'POST', data),
   };
 
+  public chatService = {
+    getOrCreateConversation: (data: { userA: string; userB: string }) =>
+      this.httpRequest('user', '/chat/conversation', 'POST', data),
+    getUserConversations: (userId: string) =>
+      this.httpRequest(
+        'user',
+        `/chat/conversations/${encodeURIComponent(userId)}`,
+        'GET',
+      ),
+    getConversationMessages: (data: { conversationId: string; query?: any }) =>
+      this.httpRequest(
+        'user',
+        `/chat/messages/${encodeURIComponent(data.conversationId)}`,
+        'GET',
+        undefined,
+        data.query,
+      ),
+    markAsRead: (data: { conversationId: string; userId: string }) =>
+      this.httpRequest('user', '/chat/read', 'POST', data),
+  };
+
   public customerService = {
     getCustomers: (query: any) =>
       this.httpRequest('user', '/customer', 'GET', undefined, query),

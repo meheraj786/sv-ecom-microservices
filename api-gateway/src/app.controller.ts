@@ -49,22 +49,6 @@ const isProduction = process.env.NODE_ENV === 'production';
 export class AppController {
   constructor(private readonly appService: AppService) {}
 
-  private extractAuthHeaders(req: any) {
-    const rawToken =
-      req.cookies?.token ||
-      (req.headers.authorization?.startsWith('Bearer ')
-        ? req.headers.authorization.split(' ')[1]
-        : req.headers.authorization);
-
-    const authorization = rawToken ? `Bearer ${rawToken}` : '';
-    const cookie = rawToken ? `token=${rawToken}` : req.headers.cookie || '';
-
-    return {
-      authorization,
-      cookie,
-    };
-  }
-
   @Get('auth/google')
   googleAuth(@Res() res: Response) {
     const clientId = process.env.GOOGLE_CLIENT_ID;
@@ -233,6 +217,55 @@ export class AppController {
       sameSite: isProduction ? 'none' : 'lax',
     });
     return { message: 'Logged out successfully' };
+  }
+
+  @Post('chat/conversation')
+  getOrCreateConversation(
+    @Req() req: any,
+    @Body('senderId') bodySenderId: string,
+    @Body('targetUserId') targetUserId: string,
+  ) {
+    const currentUserId =
+      req.user?.userId || req.user?.id || bodySenderId || 'GUEST';
+    return this.appService.rpcCall(
+      this.appService.chatService.getOrCreateConversation({
+        userA: currentUserId,
+        userB: targetUserId || 'ADMIN',
+      }),
+    );
+  }
+
+  @Get('chat/conversations')
+  getUserConversations(@Req() req: any, @Query('userId') queryUserId: string) {
+    const userId = req.user?.userId || req.user?.id || queryUserId || 'ADMIN';
+    return this.appService.rpcCall(
+      this.appService.chatService.getUserConversations(userId),
+    );
+  }
+
+  @Get('chat/messages/:conversationId')
+  getConversationMessages(
+    @Param('conversationId') conversationId: string,
+    @Query() query: PaginationQueryDto,
+  ) {
+    return this.appService.rpcCall(
+      this.appService.chatService.getConversationMessages({
+        conversationId,
+        query,
+      }),
+    );
+  }
+
+  @Post('chat/read')
+  markChatAsRead(
+    @Req() req: any,
+    @Body('conversationId') conversationId: string,
+    @Body('userId') bodyUserId: string,
+  ) {
+    const userId = req.user?.userId || req.user?.id || bodyUserId || 'GUEST';
+    return this.appService.rpcCall(
+      this.appService.chatService.markAsRead({ conversationId, userId }),
+    );
   }
 
   @Get('account/:vendorId')
