@@ -182,10 +182,20 @@ export class AppService {
 
     createReview: (data: any, headers?: Record<string, string>) =>
       this.httpRequest('product', '/review', 'POST', data, undefined, headers),
+    getAllReviews: (query?: any) =>
+      this.httpRequest('product', '/review', 'GET', undefined, query),
     getReviewsByProduct: (data: { productId: string; query?: any }) =>
       this.httpRequest(
         'product',
         `/review/product/${encodeURIComponent(data.productId)}`,
+        'GET',
+        undefined,
+        data.query,
+      ),
+    getReviewsByUser: (data: { userId: string; query?: any }) =>
+      this.httpRequest(
+        'product',
+        `/review/user/${encodeURIComponent(data.userId)}`,
         'GET',
         undefined,
         data.query,

@@ -10,6 +10,7 @@ import {
   Query,
   Req,
   Res,
+  UnauthorizedException,
   UseGuards,
 } from '@nestjs/common';
 import type { Response } from 'express';
@@ -47,6 +48,22 @@ const isProduction = process.env.NODE_ENV === 'production';
 @Controller()
 export class AppController {
   constructor(private readonly appService: AppService) {}
+
+  private extractAuthHeaders(req: any) {
+    const rawToken =
+      req.cookies?.token ||
+      (req.headers.authorization?.startsWith('Bearer ')
+        ? req.headers.authorization.split(' ')[1]
+        : req.headers.authorization);
+
+    const authorization = rawToken ? `Bearer ${rawToken}` : '';
+    const cookie = rawToken ? `token=${rawToken}` : req.headers.cookie || '';
+
+    return {
+      authorization,
+      cookie,
+    };
+  }
 
   @Get('auth/google')
   googleAuth(@Res() res: Response) {
@@ -448,6 +465,14 @@ export class AppController {
     );
   }
 
+  @UseGuards(JwtAuthGuard, AdminGuard)
+  @Get('review')
+  getAllReviews(@Query() query: PaginationQueryDto) {
+    return this.appService.rpcCall(
+      this.appService.productService.getAllReviews(query),
+    );
+  }
+
   @Get('review/product/:productId')
   getReviewsByProduct(
     @Param('productId') productId: string,
@@ -455,6 +480,15 @@ export class AppController {
   ) {
     return this.appService.rpcCall(
       this.appService.productService.getReviewsByProduct({ productId, query }),
+    );
+  }
+
+  @UseGuards(JwtAuthGuard)
+  @Get('review/my-reviews')
+  getMyReviews(@Req() req: any, @Query() query: PaginationQueryDto) {
+    const userId = req.user.userId || req.user.id;
+    return this.appService.rpcCall(
+      this.appService.productService.getReviewsByUser({ userId, query }),
     );
   }
 

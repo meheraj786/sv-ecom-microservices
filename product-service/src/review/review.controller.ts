@@ -28,12 +28,25 @@ export class ReviewController {
     return this.reviewService.createReview(userId, userName, dto);
   }
 
+  @Get()
+  getAllReviews(@Query() query: PaginationQueryDto) {
+    return this.reviewService.getAllReviews(query);
+  }
+
   @Get('product/:productId')
   getReviewsByProduct(
     @Param('productId') productId: string,
     @Query() query: PaginationQueryDto,
   ) {
     return this.reviewService.getReviewsByProduct(productId, query);
+  }
+
+  @Get('user/:userId')
+  getReviewsByUser(
+    @Param('userId') userId: string,
+    @Query() query: PaginationQueryDto,
+  ) {
+    return this.reviewService.getReviewsByUser(userId, query);
   }
 
   @Put(':id')

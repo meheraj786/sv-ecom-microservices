@@ -58,6 +58,41 @@ export class ReviewService {
     return review;
   }
 
+  async getAllReviews(query: PaginationQueryDto) {
+    const page = query.page || 1;
+    const limit = query.limit || 10;
+    const skip = (page - 1) * limit;
+
+    const [total, reviews] = await Promise.all([
+      this.prisma.read.review.count(),
+      this.prisma.read.review.findMany({
+        include: {
+          product: {
+            select: {
+              id: true,
+              name: true,
+              slug: true,
+              baseImage: true,
+            },
+          },
+        },
+        skip,
+        take: limit,
+        orderBy: { createdAt: 'desc' },
+      }),
+    ]);
+
+    return {
+      meta: {
+        totalReviews: total,
+        page,
+        limit,
+        totalPages: Math.ceil(total / limit),
+      },
+      reviews,
+    };
+  }
+
   async getReviewsByProduct(productId: string, query: PaginationQueryDto) {
     const page = query.page || 1;
     const limit = query.limit || 10;
@@ -67,6 +102,42 @@ export class ReviewService {
       this.prisma.read.review.count({ where: { productId } }),
       this.prisma.read.review.findMany({
         where: { productId },
+        skip,
+        take: limit,
+        orderBy: { createdAt: 'desc' },
+      }),
+    ]);
+
+    return {
+      meta: {
+        totalReviews: total,
+        page,
+        limit,
+        totalPages: Math.ceil(total / limit),
+      },
+      reviews,
+    };
+  }
+
+  async getReviewsByUser(userId: string, query: PaginationQueryDto) {
+    const page = query.page || 1;
+    const limit = query.limit || 10;
+    const skip = (page - 1) * limit;
+
+    const [total, reviews] = await Promise.all([
+      this.prisma.read.review.count({ where: { userId } }),
+      this.prisma.read.review.findMany({
+        where: { userId },
+        include: {
+          product: {
+            select: {
+              id: true,
+              name: true,
+              slug: true,
+              baseImage: true,
+            },
+          },
+        },
         skip,
         take: limit,
         orderBy: { createdAt: 'desc' },
