@@ -57,8 +57,11 @@ export class ChatGateway implements OnGatewayConnection, OnGatewayDisconnect {
   @SubscribeMessage('joinConversation')
   handleJoinConversation(
     @ConnectedSocket() client: Socket,
-    @MessageBody('conversationId') conversationId: string,
+    @MessageBody() payload: any,
   ) {
+    const conversationId =
+      typeof payload === 'string' ? payload : payload?.conversationId;
+
     if (conversationId) {
       client.join(`conv_${conversationId}`);
     }
@@ -67,8 +70,11 @@ export class ChatGateway implements OnGatewayConnection, OnGatewayDisconnect {
   @SubscribeMessage('leaveConversation')
   handleLeaveConversation(
     @ConnectedSocket() client: Socket,
-    @MessageBody('conversationId') conversationId: string,
+    @MessageBody() payload: any,
   ) {
+    const conversationId =
+      typeof payload === 'string' ? payload : payload?.conversationId;
+
     if (conversationId) {
       client.leave(`conv_${conversationId}`);
     }
@@ -79,22 +85,26 @@ export class ChatGateway implements OnGatewayConnection, OnGatewayDisconnect {
     @ConnectedSocket() client: Socket,
     @MessageBody() payload: SendMessageDto,
   ) {
-    const senderId = client.data.userId;
-    const senderName = client.data.userName || 'User';
-    const senderRole = client.data.role || 'USER';
+    const senderId = client.data.userId || client.handshake.query.userId;
+    const senderName =
+      client.data.userName || client.handshake.query.userName || 'User';
+    const senderRole = (client.data.role ||
+      client.handshake.query.role ||
+      'USER') as string;
 
-    if (!senderId) return;
+    if (!senderId || !payload.conversationId || !payload.content) return;
 
     const message = await this.chatService.saveMessage(
-      senderId,
-      senderName,
-      senderRole,
+      String(senderId),
+      String(senderName),
+      String(senderRole),
       payload,
     );
 
     this.server
       .to(`conv_${payload.conversationId}`)
       .emit('newMessage', message);
+    this.server.emit('inboxUpdated');
 
     return message;
   }
@@ -104,15 +114,16 @@ export class ChatGateway implements OnGatewayConnection, OnGatewayDisconnect {
     @ConnectedSocket() client: Socket,
     @MessageBody() payload: MarkReadDto,
   ) {
-    const userId = client.data.userId;
+    const userId = client.data.userId || client.handshake.query.userId;
     if (!userId || !payload.conversationId) return;
 
-    await this.chatService.markAsRead(payload.conversationId, userId);
+    await this.chatService.markAsRead(payload.conversationId, String(userId));
 
     this.server.to(`conv_${payload.conversationId}`).emit('messagesRead', {
       conversationId: payload.conversationId,
-      userId,
+      userId: String(userId),
     });
+    this.server.emit('inboxUpdated');
   }
 
   @SubscribeMessage('typing')
@@ -121,6 +132,8 @@ export class ChatGateway implements OnGatewayConnection, OnGatewayDisconnect {
     @MessageBody()
     payload: { conversationId: string; isTyping: boolean },
   ) {
+    if (!payload?.conversationId) return;
+
     client.to(`conv_${payload.conversationId}`).emit('userTyping', {
       conversationId: payload.conversationId,
       userId: client.data.userId,

@@ -34,10 +34,10 @@ export class ChatService {
     if (!conversation) {
       conversation = await this.conversationModel.create({
         participants: [userA, userB],
-        unreadCount: new Map([
-          [userA, 0],
-          [userB, 0],
-        ]),
+        unreadCount: {
+          [userA]: 0,
+          [userB]: 0,
+        },
       });
     }
 
@@ -108,38 +108,66 @@ export class ChatService {
       readBy: [senderId],
     });
 
-    const unreadCount = conversation.unreadCount || new Map();
-    conversation.participants.forEach((participantId) => {
-      if (participantId !== senderId) {
-        const current = unreadCount.get(participantId) || 0;
-        unreadCount.set(participantId, current + 1);
+    const isSenderAdmin = senderRole === 'ADMIN' || senderRole === 'STAFF';
+    const incUpdate: Record<string, number> = {};
+
+    conversation.participants.forEach((p) => {
+      if (isSenderAdmin) {
+        if (p !== 'ADMIN') {
+          incUpdate[`unreadCount.${p}`] = 1;
+        }
+      } else {
+        if (p === 'ADMIN') {
+          incUpdate[`unreadCount.ADMIN`] = 1;
+        }
       }
     });
 
-    conversation.lastMessage = dto.content;
-    conversation.lastMessageSenderId = senderId;
-    conversation.lastMessageAt = new Date();
-    conversation.unreadCount = unreadCount;
-    await conversation.save();
+    const resetKey = isSenderAdmin ? 'ADMIN' : senderId;
+
+    const updateDoc: any = {
+      $set: {
+        lastMessage: dto.content,
+        lastMessageSenderId: senderId,
+        lastMessageAt: new Date(),
+        [`unreadCount.${resetKey}`]: 0,
+      },
+    };
+
+    if (Object.keys(incUpdate).length > 0) {
+      updateDoc.$inc = incUpdate;
+    }
+
+    await this.conversationModel.updateOne(
+      { _id: new Types.ObjectId(dto.conversationId) },
+      updateDoc,
+    );
 
     return message;
   }
 
   async markAsRead(conversationId: string, userId: string) {
-    if (!Types.ObjectId.isValid(conversationId)) return;
+    if (!Types.ObjectId.isValid(conversationId) || !userId) return;
 
-    await this.messageModel.updateMany(
-      {
-        conversationId: new Types.ObjectId(conversationId),
-        readBy: { $ne: userId },
-      },
-      { $addToSet: { readBy: userId } },
-    );
+    const resetKey =
+      userId === 'ADMIN' || userId.startsWith('ADMIN') ? 'ADMIN' : userId;
 
-    const conversation = await this.conversationModel.findById(conversationId);
-    if (conversation && conversation.unreadCount) {
-      conversation.unreadCount.set(userId, 0);
-      await conversation.save();
-    }
+    await Promise.all([
+      this.messageModel.updateMany(
+        {
+          conversationId: new Types.ObjectId(conversationId),
+          readBy: { $ne: userId },
+        },
+        { $addToSet: { readBy: userId } },
+      ),
+      this.conversationModel.updateOne(
+        { _id: new Types.ObjectId(conversationId) },
+        {
+          $set: {
+            [`unreadCount.${resetKey}`]: 0,
+          },
+        },
+      ),
+    ]);
   }
 }
