@@ -667,6 +667,13 @@ export class AppController {
     );
   }
 
+  @Get('order/track/:id')
+  trackOrder(@Param('id') id: string) {
+    return this.appService.rpcCall(
+      this.appService.orderService.getOrderById({ id }),
+    );
+  }
+
   @UseGuards(JwtAuthGuard)
   @Get('order')
   getOrders(
