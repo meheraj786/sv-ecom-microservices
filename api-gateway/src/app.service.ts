@@ -36,6 +36,12 @@ export class AppService {
       this.httpRequest('user', '/account/update', 'POST', data),
   };
 
+  public themeService = {
+    getTheme: () => this.httpRequest('user', '/theme', 'GET'),
+    updateTheme: (data: any) => this.httpRequest('user', '/theme', 'PUT', data),
+    resetTheme: () => this.httpRequest('user', '/theme/reset', 'POST'),
+  };
+
   public chatService = {
     getOrCreateConversation: (data: { userA: string; userB: string }) =>
       this.httpRequest('user', '/chat/conversation', 'POST', data),

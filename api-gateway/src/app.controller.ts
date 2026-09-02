@@ -39,6 +39,7 @@ import {
   UpdateCouponDto,
   UpdateDivisionDto,
   UpdateProductDto,
+  UpdateThemeDto,
   UpdateVariantDto,
   ValidateCouponDto,
 } from './dto/gateway.dto';
@@ -217,6 +218,25 @@ export class AppController {
       sameSite: isProduction ? 'none' : 'lax',
     });
     return { message: 'Logged out successfully' };
+  }
+
+  @Get('theme')
+  getTheme() {
+    return this.appService.rpcCall(this.appService.themeService.getTheme());
+  }
+
+  @UseGuards(JwtAuthGuard, AdminGuard)
+  @Put('theme')
+  updateTheme(@Body() dto: UpdateThemeDto) {
+    return this.appService.rpcCall(
+      this.appService.themeService.updateTheme(dto),
+    );
+  }
+
+  @UseGuards(JwtAuthGuard, AdminGuard)
+  @Post('theme/reset')
+  resetTheme() {
+    return this.appService.rpcCall(this.appService.themeService.resetTheme());
   }
 
   @Post('chat/conversation')

@@ -10,8 +10,8 @@ import { SendMessageDto } from './dto/chat.dto';
 import {
   Conversation,
   ConversationDocument,
-} from 'src/schemas/conversation.schema';
-import { Message, MessageDocument } from 'src/schemas/message.schema';
+} from '../schemas/conversation.schema';
+import { Message, MessageDocument } from '../schemas/message.schema';
 
 @Injectable()
 export class ChatService {
