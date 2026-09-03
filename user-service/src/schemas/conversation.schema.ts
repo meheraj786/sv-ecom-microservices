@@ -1,11 +1,11 @@
 import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
-import { Document, Types } from 'mongoose';
+import { Document } from 'mongoose';
 
 export type ConversationDocument = Conversation & Document;
 
 @Schema({ timestamps: true })
 export class Conversation {
-  @Prop({ type: [{ type: String, required: true }], index: true })
+  @Prop({ type: [{ type: String, required: true }] })
   participants: string[];
 
   @Prop({ type: String, default: '' })
@@ -17,8 +17,8 @@ export class Conversation {
   @Prop({ type: Date, default: Date.now })
   lastMessageAt: Date;
 
-  @Prop({ type: Map, of: Number, default: {} })
-  unreadCount: Map<string, number>;
+  @Prop({ type: Object, default: {} })
+  unreadCount: Record<string, number>;
 }
 
 export const ConversationSchema = SchemaFactory.createForClass(Conversation);

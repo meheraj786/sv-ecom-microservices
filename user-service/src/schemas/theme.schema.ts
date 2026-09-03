@@ -309,8 +309,8 @@ export class Theme {
   @Prop({ type: BannerConfig, default: () => ({}) })
   banner: BannerConfig;
 
-  @Prop({ type: CategorySectionConfig, default: () => ({}) })
-  shopByCategoryOrSubcategory: CategorySectionConfig;
+  @Prop({ type: [CategorySectionConfig], default: [] })
+  shopByCategoryOrSubcategory: CategorySectionConfig[];
 
   @Prop({ type: [ProductBySectionConfig], default: [] })
   productBy: ProductBySectionConfig[];

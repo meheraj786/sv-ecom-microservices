@@ -272,9 +272,10 @@ export class UpdateThemeDto {
   banner?: BannerDto;
 
   @IsOptional()
-  @ValidateNested()
+  @IsArray()
+  @ValidateNested({ each: true })
   @Type(() => CategorySectionDto)
-  shopByCategoryOrSubcategory?: CategorySectionDto;
+  shopByCategoryOrSubcategory?: CategorySectionDto[];
 
   @IsOptional()
   @IsArray()
