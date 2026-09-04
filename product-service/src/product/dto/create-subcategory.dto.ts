@@ -1,4 +1,4 @@
-import { IsString, IsNotEmpty } from 'class-validator';
+import { IsString, IsNotEmpty, IsOptional } from 'class-validator';
 
 export class CreateSubCategoryDto {
   @IsString()
@@ -12,4 +12,8 @@ export class CreateSubCategoryDto {
   @IsString()
   @IsNotEmpty({ message: 'Parent categoryId is required' })
   categoryId: string;
+
+  @IsString()
+  @IsOptional()
+  image?: string;
 }
