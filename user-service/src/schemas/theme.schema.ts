@@ -13,6 +13,85 @@ export class NavbarConfig {
 }
 
 @Schema({ _id: false })
+export class ProductConfig {
+  @Prop({ type: Number, default: 1 })
+  cardLayout: number;
+
+  @Prop({ type: Number, default: 1 })
+  detailLayout: number;
+}
+
+@Schema({ _id: false })
+export class SocialLinksConfig {
+  @Prop({ type: String, default: '' })
+  facebook: string;
+
+  @Prop({ type: String, default: '' })
+  instagram: string;
+
+  @Prop({ type: String, default: '' })
+  youtube: string;
+
+  @Prop({ type: String, default: '' })
+  twitter: string;
+
+  @Prop({ type: String, default: '' })
+  tiktok: string;
+
+  @Prop({ type: String, default: '' })
+  linkedin: string;
+}
+
+@Schema({ _id: false })
+export class ChatConfig {
+  @Prop({ type: String, default: '8801700000000' })
+  whatsappNumber: string;
+
+  @Prop({ type: String, default: 'luminastore' })
+  messengerUsername: string;
+
+  @Prop({ type: String, default: '' })
+  telegramUsername: string;
+
+  @Prop({ type: Boolean, default: true })
+  isWhatsappEnabled: boolean;
+
+  @Prop({ type: Boolean, default: true })
+  isMessengerEnabled: boolean;
+}
+
+@Schema({ _id: false })
+export class SeoConfig {
+  @Prop({ type: String, default: 'Lumina - Curated Modern Lifestyle Store' })
+  metaTitle: string;
+
+  @Prop({
+    type: String,
+    default:
+      'Explore dynamic product configurations, minimal apparel, and everyday lifestyle essentials.',
+  })
+  metaDescription: string;
+
+  @Prop({
+    type: [String],
+    default: ['ecommerce', 'lumina', 'lifestyle', 'store'],
+  })
+  keywords: string[];
+
+  @Prop({ type: String, default: '' })
+  ogImage: string;
+
+  @Prop({ type: String, default: '' })
+  canonicalUrl: string;
+
+  @Prop({ type: String, default: '' })
+  googleAnalyticsId: string;
+
+  @Prop({ type: String, default: '' })
+  facebookPixelId: string;
+}
+
+@Schema({ _id: false })
 export class BannerConfig {
   @Prop({ type: Number, default: 1 })
   layout: number;
@@ -106,6 +185,12 @@ export class ShowcasePageConfig {
 export class FooterConfig {
   @Prop({ type: Number, default: 1 })
   layout: number;
+
+  @Prop({ type: String, default: '© 2026 Lumina. All rights reserved.' })
+  copyright: string;
+
+  @Prop({ type: String, default: 'support@lumina.com | +880 1700-000000' })
+  contactInfo: string;
 }
 
 @Schema({ _id: false })
@@ -305,6 +390,18 @@ export class Theme {
 
   @Prop({ type: NavbarConfig, default: () => ({}) })
   navbar: NavbarConfig;
+
+  @Prop({ type: ProductConfig, default: () => ({}) })
+  product: ProductConfig;
+
+  @Prop({ type: SocialLinksConfig, default: () => ({}) })
+  socialLinks: SocialLinksConfig;
+
+  @Prop({ type: ChatConfig, default: () => ({}) })
+  chat: ChatConfig;
+
+  @Prop({ type: SeoConfig, default: () => ({}) })
+  seo: SeoConfig;
 
   @Prop({ type: BannerConfig, default: () => ({}) })
   banner: BannerConfig;

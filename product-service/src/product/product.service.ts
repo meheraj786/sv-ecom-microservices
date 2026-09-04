@@ -157,7 +157,7 @@ export class ProductService {
     }
   }
 
-  private async validateOptionInput(options: CreateProductDto['options']) {
+  private validateOptionInput(options: CreateProductDto['options']) {
     if (!options?.length) {
       return;
     }
@@ -256,7 +256,6 @@ export class ProductService {
     }
 
     await this.validateCategories(dto.categoryIds, dto.subCategoryIds);
-
     await this.validateOptionInput(dto.options);
 
     return this.prisma.write.$transaction(async (tx) => {
@@ -451,6 +450,14 @@ export class ProductService {
     const skip = (page - 1) * limit;
 
     const where: Prisma.ProductWhereInput = {
+      ...(query.slug
+        ? {
+            slug: {
+              equals: query.slug,
+              mode: 'insensitive',
+            },
+          }
+        : {}),
       ...(query.categoryId
         ? {
             categories: {

@@ -1,15 +1,12 @@
-import {
-  IsBoolean,
-  IsIn,
-  IsNumber,
-  IsOptional,
-  IsString,
-  Min,
-} from 'class-validator';
-import { Transform, Type } from 'class-transformer';
+import { IsBoolean, IsIn, IsOptional, IsString } from 'class-validator';
+import { Transform } from 'class-transformer';
 import { PaginationQueryDto } from './pagination-query.dto';
 
 export class GetProductsQueryDto extends PaginationQueryDto {
+  @IsOptional()
+  @IsString()
+  slug?: string;
+
   @IsOptional()
   @IsString()
   categoryId?: string;

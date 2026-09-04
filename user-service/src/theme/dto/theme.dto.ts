@@ -1,5 +1,6 @@
 import {
   IsArray,
+  IsBoolean,
   IsNumber,
   IsOptional,
   IsString,
@@ -16,6 +17,95 @@ export class NavbarDto {
   @IsArray()
   @IsString({ each: true })
   menus?: string[];
+}
+
+export class ProductDto {
+  @IsOptional()
+  @IsNumber()
+  cardLayout?: number;
+
+  @IsOptional()
+  @IsNumber()
+  detailLayout?: number;
+}
+
+export class SocialLinksDto {
+  @IsOptional()
+  @IsString()
+  facebook?: string;
+
+  @IsOptional()
+  @IsString()
+  instagram?: string;
+
+  @IsOptional()
+  @IsString()
+  youtube?: string;
+
+  @IsOptional()
+  @IsString()
+  twitter?: string;
+
+  @IsOptional()
+  @IsString()
+  tiktok?: string;
+
+  @IsOptional()
+  @IsString()
+  linkedin?: string;
+}
+
+export class ChatDto {
+  @IsOptional()
+  @IsString()
+  whatsappNumber?: string;
+
+  @IsOptional()
+  @IsString()
+  messengerUsername?: string;
+
+  @IsOptional()
+  @IsString()
+  telegramUsername?: string;
+
+  @IsOptional()
+  @IsBoolean()
+  isWhatsappEnabled?: boolean;
+
+  @IsOptional()
+  @IsBoolean()
+  isMessengerEnabled?: boolean;
+}
+
+export class SeoDto {
+  @IsOptional()
+  @IsString()
+  metaTitle?: string;
+
+  @IsOptional()
+  @IsString()
+  metaDescription?: string;
+
+  @IsOptional()
+  @IsArray()
+  @IsString({ each: true })
+  keywords?: string[];
+
+  @IsOptional()
+  @IsString()
+  ogImage?: string;
+
+  @IsOptional()
+  @IsString()
+  canonicalUrl?: string;
+
+  @IsOptional()
+  @IsString()
+  googleAnalyticsId?: string;
+
+  @IsOptional()
+  @IsString()
+  facebookPixelId?: string;
 }
 
 export class BannerDto {
@@ -123,6 +213,14 @@ export class FooterDto {
   @IsOptional()
   @IsNumber()
   layout?: number;
+
+  @IsOptional()
+  @IsString()
+  copyright?: string;
+
+  @IsOptional()
+  @IsString()
+  contactInfo?: string;
 }
 
 export class StatItemDto {
@@ -265,6 +363,26 @@ export class UpdateThemeDto {
   @ValidateNested()
   @Type(() => NavbarDto)
   navbar?: NavbarDto;
+
+  @IsOptional()
+  @ValidateNested()
+  @Type(() => ProductDto)
+  product?: ProductDto;
+
+  @IsOptional()
+  @ValidateNested()
+  @Type(() => SocialLinksDto)
+  socialLinks?: SocialLinksDto;
+
+  @IsOptional()
+  @ValidateNested()
+  @Type(() => ChatDto)
+  chat?: ChatDto;
+
+  @IsOptional()
+  @ValidateNested()
+  @Type(() => SeoDto)
+  seo?: SeoDto;
 
   @IsOptional()
   @ValidateNested()
