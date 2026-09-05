@@ -291,6 +291,28 @@ export class CtaDto {
   secondaryBtn?: string;
 }
 
+export class ContactDto {
+  @IsOptional()
+  @IsString()
+  title?: string;
+
+  @IsOptional()
+  @IsString()
+  description?: string;
+
+  @IsOptional()
+  @IsString()
+  mail?: string;
+
+  @IsOptional()
+  @IsString()
+  phone?: string;
+
+  @IsOptional()
+  @IsString()
+  address?: string;
+}
+
 export class AboutPageDto {
   @IsOptional()
   @IsString()
@@ -430,4 +452,9 @@ export class UpdateThemeDto {
   @ValidateNested()
   @Type(() => AboutPageDto)
   aboutPage?: AboutPageDto;
+
+  @IsOptional()
+  @ValidateNested()
+  @Type(() => ContactDto)
+  contact?: ContactDto;
 }

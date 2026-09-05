@@ -374,6 +374,24 @@ export class AboutPageConfig {
   cta: CtaConfig;
 }
 
+@Schema({ _id: false })
+export class ContactConfig {
+  @Prop({ type: String, default: 'Get in touch' })
+  title: string;
+
+  @Prop({ type: String, default: 'We can’t wait to hear from you.' })
+  description: string;
+
+  @Prop({ type: String, default: 'Email' })
+  mail: string;
+
+  @Prop({ type: String, default: 'Phone' })
+  phone: string;
+
+  @Prop({ type: String, default: 'Address' })
+  address: string;
+}
+
 @Schema({ timestamps: true })
 export class Theme {
   @Prop({ type: String, default: 'default', unique: true })
@@ -429,6 +447,10 @@ export class Theme {
 
   @Prop({ type: AboutPageConfig, default: () => ({}) })
   aboutPage: AboutPageConfig;
+
+  // phone, mail, location
+  @Prop({ type: ContactConfig, default: () => ({}) })
+  contact: ContactConfig;
 }
 
 export const ThemeSchema = SchemaFactory.createForClass(Theme);

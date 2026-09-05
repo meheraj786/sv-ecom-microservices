@@ -977,7 +977,6 @@ export class AboutPageDto {
   cta?: CtaDto;
 }
 
-
 export class ProductDto {
   @IsOptional()
   @IsNumber()
@@ -1080,6 +1079,27 @@ export class FooterDto {
   @IsString()
   contactInfo?: string;
 }
+export class ContactDto {
+  @IsOptional()
+  @IsString()
+  title?: string;
+
+  @IsOptional()
+  @IsString()
+  description?: string;
+
+  @IsOptional()
+  @IsString()
+  mail?: string;
+
+  @IsOptional()
+  @IsString()
+  phone?: string;
+
+  @IsOptional()
+  @IsString()
+  address?: string;
+}
 export class UpdateThemeDto {
   @IsOptional()
   @IsString()
@@ -1164,4 +1184,9 @@ export class UpdateThemeDto {
   @ValidateNested()
   @Type(() => AboutPageDto)
   aboutPage?: AboutPageDto;
+
+  @IsOptional()
+  @ValidateNested()
+  @Type(() => ContactDto)
+  contact?: ContactDto;
 }
