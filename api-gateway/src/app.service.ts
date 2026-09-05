@@ -474,4 +474,28 @@ export class AppService {
 
     return (await response.text()) as unknown as T;
   }
+  public contactMessageService = {
+    createMessage: (data: any) =>
+      this.httpRequest('user', '/contact-message', 'POST', data),
+    getMessages: (query: any) =>
+      this.httpRequest('user', '/contact-message', 'GET', undefined, query),
+    getMessageById: (data: { id: string }) =>
+      this.httpRequest(
+        'user',
+        `/contact-message/${encodeURIComponent(data.id)}`,
+        'GET',
+      ),
+    markAsRead: (data: { id: string }) =>
+      this.httpRequest(
+        'user',
+        `/contact-message/${encodeURIComponent(data.id)}/read`,
+        'PUT',
+      ),
+    deleteMessage: (data: { id: string }) =>
+      this.httpRequest(
+        'user',
+        `/contact-message/${encodeURIComponent(data.id)}`,
+        'DELETE',
+      ),
+  };
 }

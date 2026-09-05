@@ -10,7 +10,6 @@ import {
   Query,
   Req,
   Res,
-  UnauthorizedException,
   UseGuards,
 } from '@nestjs/common';
 import type { Response } from 'express';
@@ -22,6 +21,7 @@ import {
   AddToCartDto,
   CalculateFifoDto,
   CreateCategoryDto,
+  CreateContactMessageDto,
   CreateCouponDto,
   CreateDivisionDto,
   CreateOrderDto,
@@ -817,6 +817,44 @@ export class AppController {
   deleteDivision(@Param('id') id: string) {
     return this.appService.rpcCall(
       this.appService.divisionService.deleteDivision({ id }),
+    );
+  }
+  @Post('contact-message')
+  createContactMessage(@Body() dto: CreateContactMessageDto) {
+    return this.appService.rpcCall(
+      this.appService.contactMessageService.createMessage(dto),
+    );
+  }
+
+  @UseGuards(JwtAuthGuard, AdminGuard)
+  @Get('contact-message')
+  getContactMessages(@Query() query: PaginationQueryDto) {
+    return this.appService.rpcCall(
+      this.appService.contactMessageService.getMessages(query),
+    );
+  }
+
+  @UseGuards(JwtAuthGuard, AdminGuard)
+  @Get('contact-message/:id')
+  getContactMessageById(@Param('id') id: string) {
+    return this.appService.rpcCall(
+      this.appService.contactMessageService.getMessageById({ id }),
+    );
+  }
+
+  @UseGuards(JwtAuthGuard, AdminGuard)
+  @Put('contact-message/:id/read')
+  markContactMessageAsRead(@Param('id') id: string) {
+    return this.appService.rpcCall(
+      this.appService.contactMessageService.markAsRead({ id }),
+    );
+  }
+
+  @UseGuards(JwtAuthGuard, AdminGuard)
+  @Delete('contact-message/:id')
+  deleteContactMessage(@Param('id') id: string) {
+    return this.appService.rpcCall(
+      this.appService.contactMessageService.deleteMessage({ id }),
     );
   }
 }
